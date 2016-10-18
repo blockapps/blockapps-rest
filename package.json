@@ -1,0 +1,20 @@
+{
+    "name": "blockapps-rest",
+    "version": "0.0.1",
+    "description": "BlockApps rest api",
+    "main": "index.js",
+    "scripts": {
+      "test": "mocha --reporter spec"
+    },
+    "keywords": [
+        "BlockApps",
+        "rest",
+        "api"
+    ],
+    "author": "lior@blockapps.net",
+    "license": "ISC",
+    "devDependencies": {
+        "chai": "^3.5.0",
+        "mocha": "^3.0.2"
+    }
+}
