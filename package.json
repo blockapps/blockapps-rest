@@ -1,6 +1,6 @@
 {
     "name": "blockapps-rest",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
@@ -20,7 +20,8 @@
         "chai-bignumber": "^2.0.0",
         "commander": "^2.9.0",
         "fs": "0.0.1-security",
-        "js-yaml": "^3.6.1"
+        "js-yaml": "^3.6.1",
+        "solidity-parser": "^0.0.9"
     },
     "devDependencies": {
         "chai": "^3.5.0",
