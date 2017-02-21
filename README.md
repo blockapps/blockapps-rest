@@ -1,15 +1,21 @@
-# blockapps-rest
+# BlockApps-rest
 The BlockApps Node.js library for BlockApps's 3 API's
 
 BlockApps-Rest brings `strato-api`, `bloc-server`, and `cirrus` together, into one
 library.
+
+## Contents
+  1. [Configuration](#Configuration)
+  2. [Deployments](#Deployments)
+  3. [HelloWorld](#HelloWorld)
+
 
 ## Getting Started
 
 ### Configuration
 
 
-To get started with blockapps-rest, we must include our configuration file. Below is an example `config.yaml`:
+To get started with BlockApps-rest, we must include our configuration file. Below is an example `config.yaml`:
 ``` yaml
 apiDebug: true
 password: '1234'
@@ -29,7 +35,7 @@ nodes:
     searchUrl: 'http://tester11.eastus.cloudapp.azure.com/cirrus'
 ```
 
-`apiDebug`: flag to log detailed debugging information
+`apiDebug`: flag to log detailed debugging information b
 
 `password`: the password used to create contracts that are used in deployment
 
@@ -45,7 +51,9 @@ Note: We submit all of our queries to a particular _node_, hence it is supplied 
 
 ### Deployments
  
-Deploying our project sets up smart contracts that are needed to have the project run. It uses information stored in the `dataFilename` field. For an example of project requiring a deployment, see https://github.com/blockapps/blockapps-rest-demo/
+Deploying our project sets up smart contracts that are needed to have the project run. It uses information stored in the `dataFilename` field. For an example of project requiring a deployment, see the [demo-app](https://github.com/blockapps/BlockApps-rest-demo/) and its [deployment file](https://github.com/blockapps/blockapps-rest-demo/blob/master/config/tester11.deploy.yaml)
+
+Very briefly the deployment phase is as follows
 
 ### Using BlockApps-Rest
 
@@ -68,16 +76,15 @@ Let's assume that we have some kind of solidity contracts `UserManager.sol` whic
 
 ### Background
 
-There is some amount of bootstrapping that needs to take place to upload these contracts and expose the api created by them. See the [demo-app](https://github.com/blockapps/blockapps-rest-demo/blob/master/lib/demoapp.js) for an example of what that might look like in full, but the end result is a module which connects blockapps-rest to the particular logic in your smart contracts. So if your application deploys a smart contract with a `fireMissiles` function, this module should contain a function `fireMissiles` which might look like
+There is some amount of bootstrapping that needs to take place to upload our contracts and expose the api created by them. See the [demo-app](https://github.com/blockapps/BlockApps-rest-demo/blob/master/lib/demoapp.js) for one example of what that might look like in full, but the end result is a module which connects BlockApps-rest to the particular logic in your smart contracts. So if your application deploys a smart contract with a `fireMissiles` function, this module should contain a function `fireMissiles` which might look like
 
 ```javascript
-function fireMissiles(source, target) {
+function fireMissiles(source , target) {
   return function(scope) {
     const args = {
       target: util.toBytes32(target)
     };
-    return getUserAddress(adminName, username)(scope)
-      .then(rest.callMethod(source, 'MissileContract', 'fireMissiles', args))
+    rest.callMethod(source, 'MissileContract', 'fireMissiles', args))
       .then(function(scope) {
         scope.targets[target].isDestroyed = true;
         scope.targets[target].destroyedBy = source;
@@ -87,14 +94,14 @@ function fireMissiles(source, target) {
 
 ```
 
-In fact you can see that in the demo-app this is the only module which imports blockapps-rest, and is exported as api to your nodes throughout the rest of the application.
+In fact you can see that in the demo-app this is the only module which imports BlockApps-rest, and is exported as api to your nodes throughout the rest of the application.
 
-As mentioned above, the api calls use _scoped promise-chaining_. This means that there is going to be some initialization of a `scope` object _in a promise context_, and all further updates to that `scope` object should happen in a promise chain. Usually blockapps-rest will update this object for you through its api calls automatically, but any logic that runs outside of that will have to be included in the chain in some way. As for initalization, this can be done using the [`setScope`](https://github.com/blockapps/blockapps-rest/blob/1e50211677b6224cab74af83f1b392f8990ddfc8/lib/rest.js#L39) function.
+As mentioned above, the api calls use _scoped promise-chaining_. This means that there is going to be some initialization of a `scope` object _in a promise context_, and all further updates to that `scope` object should happen in a promise chain. Usually BlockApps-rest will update this object for you through its api calls automatically, but any logic that runs outside of that will have to be included in the chain in some way. As for initalization, this can be done using the [`setScope`](https://github.com/blockapps/BlockApps-rest/blob/1e50211677b6224cab74af83f1b392f8990ddfc8/lib/rest.js#L39) function.
 
 
 ### Making the app
 
-First let's make a function which will upload a contract. blockApps-rest has functions
+First let's make a function which will upload our contracts. BlockApps-rest has functions
 
 ```javascript
 function getContractString(name, filename) { ...
@@ -102,7 +109,7 @@ function getContractString(name, filename) { ...
 function uploadContract(userName, password, contractName, args, txParams, node) { ...
 ```
 
-This is where the `scope promise-chaining` starts to come into play, allowing for a more declarative syntax:
+This is where the `scope promise-chaining` starts to come into play, allowing for a more declarative syntax. We can write out upload function as:
 
 ```javascript
 function addContract(userName, password, contractName, contractString) {
@@ -150,7 +157,7 @@ function addNewUser(???, username, password) {
 }
 ```
 
-We need to fill in the blank `???` with any user who currently has an account. This presents another boostrapping problem-- one solution would be to include an application-wide [admin user](https://github.com/blockapps/blockapps-rest-demo/blob/master/config/tester11.deploy.yaml), then parially apply any blockapps-rest function using this super user. This is the case in the blockapps-rest demo. Alternatively you could set a session object which keeps track of the current user who is presumed to already have an account, give it as user input, or whatever your use case suggests.
+We need to fill in the blank `???` with any user who currently has an account. This presents another boostrapping problem-- one solution would be to include an application-wide [admin user](https://github.com/blockapps/BlockApps-rest-demo/blob/master/config/tester11.deploy.yaml), then parially apply any BlockApps-rest function using this super user. This is the case in the BlockApps-rest demo. Alternatively you could set a session object which keeps track of the current user who is presumed to already have an account, give it as user input, or whatever your use case suggests.
 
 Now let's make a function to add notes to the todo list. Again, your `TaskManager.sol` contract is assumed to have a function `addTask` which takes arguments `task :: string, urgencyLevel :: uint, deadlineDate :: uint`, so we can do
 
