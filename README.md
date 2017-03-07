@@ -10,6 +10,14 @@ library.
   3. [HelloWorld](#HelloWorld)
 
 
+For documentation
+
+```
+> npm install -g documentation
+> documentation build src/** -f html -o docs
+```
+
+
 ## Getting Started
 
 ### Configuration
