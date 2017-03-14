@@ -2,7 +2,7 @@
 The BlockApps Node.js library for BlockApps's 3 API's
 
 ## Why BlockApps-Rest?
-Have you ever worked directly with uploading Solidity contracts and interacting with their abi? If so, did you ever wonder why things had to be so complicated? If blockchain is really the future and ethereum one its primary ecosystems, there's got to be a simpler way of doing things. This is where the BlockApps tool suite steps in, and in particular BlockApps-Rest. BlockApps-Rest is an extremely lightweight, high-level javascript wrapper around the `strato-api`, `bloc-server`, and `cirrus` services which enables rapid development of front end applications. (Note: we presume you already have instances running these required services.)
+Have you ever worked directly with uploading Solidity contracts and interacting with their abi? If so, did you ever wonder why things had to be so complicated? If blockchain is really the future and Ethereum one of its primary ecosystems, there's got to be a simpler way of doing things. This is where the BlockApps tool suite steps in, and in particular BlockApps-Rest. BlockApps-Rest is an extremely lightweight, high-level javascript wrapper around the `strato-api`, `bloc-server`, and `cirrus` services which enables rapid development of front end applications. (Note: we presume you already have instances running these required services.)
 
 ## Contents
   1. [Configuration](#Configuration)
