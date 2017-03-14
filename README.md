@@ -14,11 +14,14 @@ For documentation
 
 ```
 > npm install -g documentation
-> documentation build src/** -f html -o docs
+> documentation build lib/** -f html -o docs
 ```
 
 
 ## Getting Started
+
+## Why BlockApps-Rest?
+Have you ever worked directly with uploading Solidity contracts and interacting with their abi? If so, did you ever wonder why things had to be so complicated? If blockchain is really the future and ehteruem one its  primary ecosystems, there's got to be a simpler way of doing things. This is where the BlockApps tool suite steps in, and in particular BlockApps-Rest. BlockApps-Rest aims to be an extremely lightweight, high-level javascript wrapper around several BlockApps services (Note: we presume you already have instances running these required services.) It's aim is to enable rapid development of front end applications with a BlockApps backend.
 
 ### Configuration
 
@@ -57,19 +60,16 @@ nodes:
 
 Note: We submit all of our queries to a particular _node_, hence it is supplied as an explicit argument to each request. The module `rest.js` uses the `api` object-- created at bootstrapping time using the supplied `config` file-- to communicate with this node. By default all requests are directed at the first node listed in the `config` file, so you can safely ignore this if that is sufficient for your use case.
 
-### Deployments
- 
-Deploying our project sets up smart contracts that are needed to have the project run. It uses information stored in the `dataFilename` field. For an example of project requiring a deployment, see the [demo-app](https://github.com/blockapps/BlockApps-rest-demo/) and its [deployment file](https://github.com/blockapps/blockapps-rest-demo/blob/master/config/tester11.deploy.yaml)
-
-Very briefly the deployment phase is as follows
-
-### Using BlockApps-Rest
+## Using BlockApps-Rest
 
 #### Promise-Chaining
 BlockApps-Rest uses a specific style of promise chaining which we refer to as _scoped promise-chains_. These promises always resolve a scope variable that carries data down the promise-chain. This provides a simple and clear way to reuse and pass data down the chain. We found this led to clear and concise code. Below is an example of creating a user with BlockApps-Rest.
 
-- setting up your config
-- deployments what, and why
+### Deployments
+ 
+Deploying our project sets up smart contracts that are needed to have the project run. It uses information stored in the `dataFilename` field. For an example of project requiring a deployment, see the [demo-app](https://github.com/blockapps/BlockApps-rest-demo/) and its [deployment file](https://github.com/blockapps/blockapps-rest-demo/blob/master/config/tester11.deploy.yaml)
+
+Let's discuss the case of the demo app's deployment very briefly. In order to post and interact with smart contracts, you need an address at the very least. Since we're using the BlockApps tool kit, we will also be going through the bloc service, meaning we will need an account there as well. If you look at the config file, this is exactly what you see connected to the `Admin` account. The demo app uses a (deploy.js)[https://github.com/blockapps/blockapps-rest-demo/blob/master/lib/demoapp.js] module to expose a subset of the full BlockApps-Rest api through an `AI` object and suggests that all of these requests be run through the `Admin`. (Note: this is not strictly necessary after bootstrapping time-- if your app is exposed to multiple users with their own individual accounts you could of course keep their auth data in a session object to be used in the individual api calls.) This `AI` object is initialized be feeding it a path to the directory containing the smart contracts and the config, at which point those contracts are uploaded under the `Admin`'s account and you're ready to interact with them.
 
 ## HelloWorld
 
@@ -214,3 +214,6 @@ function getTasks() {
 }
 
 ```
+
+## Conclusion
+This takes care of the basic put and get logic for maintaining our todo list app. BlockApps-Rest exposes a lot more of the BlockApps APIs than were used here, and a good place to start would be looking at the source code, getting a better understanding of the (demo-app)[https://github.com/blockapps/blockapps-rest-demo], and having a look at some of the BlockApps developer API documentation that BlockApps-Rest is wrapping. If you're looking for a more comprehensive wrapper of the BlockApps APIs, we recomment taking a look at (blockapps.js)[https://github.com/blockapps/blockapps-js]. If you have written an interesting application that uses BlockApps-Rest, please let us know!
