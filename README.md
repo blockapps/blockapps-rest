@@ -30,17 +30,17 @@ password: '1234'
 timeout: 600000
 contractsPath: ./contracts
 dataFilename: ./config/demo-data.yaml
-deployFilename: ./config/tester11.deploy.yaml
+deployFilename: ./config/<YOUR NODE NAME>.deploy.yaml
 
 # WARNING - extra strict syntax
 # DO NOT change the nodes order
 # node 0 is the default url for all single node api calls
 nodes:
   - id: 0
-    explorerUrl: 'http://tester11.eastus.cloudapp.azure.com:9000'
-    stratoUrl: 'http://tester11.eastus.cloudapp.azure.com/strato-api'
-    blocUrl: 'http://tester11.eastus.cloudapp.azure.com/bloc'
-    searchUrl: 'http://tester11.eastus.cloudapp.azure.com/cirrus'
+    explorerUrl: <YOUR EXPLORER INSTANCE>
+    stratoUrl: <YOUR STRATO INSTANCE>
+    blocUrl: <YOUR BLOCK INSTANCE>
+    searchUrl: <YOUR CIRRUS INSTANCE>
 ```
 
 `apiDebug`: flag to log detailed debugging information b
