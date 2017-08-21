@@ -106,7 +106,8 @@ function* fireMissiles(user, contract, target) {
 First let's make a function which will upload our contracts. BlockApps-rest has functions
 
 ```javascript
-function* uploadContract(user, contractName, contractFilename, args, txParams, node)```
+function* uploadContract(user, contractName, contractFilename, args, txParams, node)
+```
 
 This is where we take advantage of the generator function. We can write out upload function as:
 
