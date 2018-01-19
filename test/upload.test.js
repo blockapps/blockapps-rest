@@ -53,13 +53,14 @@ describe('Upload contract list test', function(){
     const response = yield rest.uploadContractList(user, txs, true);
 
     const hashesAreValid = response.reduce((result, hash) => {
+      console.log(hash);
       if(!result) {
         return result;
       }
       return result && util.isTxHash(hash);
     }, true)
 
-    assert.isOk(hashesAreValid, 'Should get back valid addresses');
+    assert.isOk(hashesAreValid, 'Should get back valid hashes');
     
   })
 
