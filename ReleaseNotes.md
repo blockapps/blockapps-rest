@@ -1,9 +1,14 @@
 ## RELEASE NOTES
 
-### Version: 5.1.3
+### Version: 5.1.5
 
 #### Minor upgrades
-* Gas limit increased to avoid contract-in-a-contract out of gas 
+* `util.uid()` and `util.iuid()` now use Math.random()
+
+### Version: 5.1.4
+
+#### Minor upgrades
+* Gas limit increased to avoid contract-in-a-contract out of gas
 
 ### Version: 5.1.2
 
