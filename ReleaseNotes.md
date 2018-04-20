@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.1.3
+
+#### Minor upgrades
+* Gas limit increased to avoid contract-in-a-contract out of gas 
+
 ### Version: 5.1.2
 
 #### New features
