@@ -6,6 +6,7 @@ const config = common.config;
 const assert = common.assert;
 const util = common.util;
 const path = require('path');
+const constants = common.constants;
 
 describe('Upload contract list test', function(){
 
@@ -64,6 +65,31 @@ describe('Upload contract list test', function(){
     
   })
 
-  
+    it('should upload and resolve multiple contracts', function * () {
+        const response = yield rest.uploadContractList(user, txs, true);
+
+        const hashesAreValid = response.reduce((result, hash) => {
+            console.log(hash);
+            if(!result) {
+                return result;
+            }
+            return result && util.isTxHash(hash);
+        }, true)
+
+        assert.isOk(hashesAreValid, 'Should get back valid hashes');
+
+        const results = response.map(r => {return {hash: r}})
+        const resolved = yield rest.resolveResults(results)
+
+        const allAreResolved = resolved.reduce((result, res) => {
+            console.log(res)
+            if(!result) {
+                return result;
+            }
+            return result && (res.statue !== constants.PENDING)
+        }, true)
+
+        assert.isOk(allAreResolved, 'Should resolve all transactions');
+    })
 
 });
