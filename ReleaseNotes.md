@@ -1,6 +1,9 @@
 ## RELEASE NOTES
 
-### Version: 5.1.5
+### Version: 5.2.0
+
+#### Backward Incompatibilities
+* requires Node.js® ^8.0.0
 
 #### Minor upgrades
 * `util.uid()` and `util.iuid()` now use Math.random()
