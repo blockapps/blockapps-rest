@@ -1,5 +1,11 @@
 ## RELEASE NOTES
 
+### Version: 5.2.3
+
+#### Minor upgrades
+* `common.cwd` contains a platform independent version of `process.cwd()`
+* `asseert.shouldThrowRest` added
+
 ### Version: 5.2.0
 
 #### Backward Incompatibilities
