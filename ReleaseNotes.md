@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.2.4
+
+#### Minor upgrades
+* `eparser.getFields()` reads variable members and their initializers from a contract into a javascript object
+
 ### Version: 5.2.3
 
 #### Minor upgrades
