@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.2.5
+
+#### Minor upgrades
+* `importer` Solidity imports that start with '/' are treated as relative paths to the project root (process.cwd)
+
 ### Version: 5.2.4
 
 #### Minor upgrades
