@@ -5,8 +5,6 @@
 #### Minor upgrades
 * `importer` Solidity imports that start with '/' are treated as relative paths to the project root (process.cwd)
 
-// if import name starts with '/' - read relative to project root -LS
-
 ### Version: 5.2.4
 
 #### Minor upgrades
