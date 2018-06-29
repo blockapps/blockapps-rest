@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.2.6
+
+#### Issues Fixed
+* `util.response` handles rest code 201 properly
+
 ### Version: 5.2.5
 
 #### Minor upgrades
