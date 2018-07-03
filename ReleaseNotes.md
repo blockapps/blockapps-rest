@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.2.7
+
+#### Issues Fixed
+* `rest.getFields()` now parses both `ExpressionStatement` and `StateVariableDeclaration` 
+
 ### Version: 5.2.6
 
 #### Issues Fixed
