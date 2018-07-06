@@ -29,7 +29,7 @@
 
 #### Minor upgrades
 * `common.cwd` contains a platform independent version of `process.cwd()`
-* `asseert.shouldThrowRest` added
+* `assert.shouldThrowRest` added
 
 ### Version: 5.2.0
 
