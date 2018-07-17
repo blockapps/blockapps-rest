@@ -1,9 +1,17 @@
 ## RELEASE NOTES
 
+### Version: 5.2.9
+
+#### Minor upgrades
+* config printed to stdout only when apiDebug == true
+
+#### Issues Fixed
+* `solc` messages properly display new lines
+
 ### Version: 5.2.8
 
 #### Issues Fixed
-* `rest.getFields()` ignore null value on `StateVariableDeclaration` 
+* `rest.getFields()` ignore null value on `StateVariableDeclaration`
 
 ### Version: 5.2.7
 
