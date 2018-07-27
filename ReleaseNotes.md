@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.3.1
+
+#### Issues Fixed
+* `assert.shouldThrowRest` checks `statusText` too.
+
 ### Version: 5.3.0
 
 #### Minor upgrades
