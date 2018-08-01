@@ -1,5 +1,28 @@
 ## RELEASE NOTES
 
+### Version: 5.2.9
+
+#### Minor upgrades
+* config printed to stdout only when apiDebug == true
+
+#### Issues Fixed
+* `solc` messages properly display new lines
+
+### Version: 5.2.8
+
+#### Issues Fixed
+* `rest.getFields()` ignore null value on `StateVariableDeclaration`
+
+### Version: 5.2.7
+
+#### Issues Fixed
+* `rest.getFields()` now parses both `ExpressionStatement` and `StateVariableDeclaration`
+
+### Version: 5.2.6
+
+#### Issues Fixed
+* `util.response` handles rest code 201 properly
+
 ### Version: 5.2.5
 
 #### Minor upgrades
