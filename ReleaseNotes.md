@@ -1,5 +1,43 @@
 ## RELEASE NOTES
 
+### Version: 5.3.1
+
+#### Issues Fixed
+* `assert.shouldThrowRest` checks `statusText` too.
+
+### Version: 5.3.0
+
+#### Minor upgrades
+* `rest.getFields()` parses arrays. Values returned as strings.
+
+### Version: 5.2.9
+
+#### Minor upgrades
+* config printed to stdout only when apiDebug == true
+
+#### Issues Fixed
+* `solc` messages properly display new lines
+
+### Version: 5.2.8
+
+#### Issues Fixed
+* `rest.getFields()` ignore null value on `StateVariableDeclaration`
+
+### Version: 5.2.7
+
+#### Issues Fixed
+* `rest.getFields()` now parses both `ExpressionStatement` and `StateVariableDeclaration`
+
+### Version: 5.2.6
+
+#### Issues Fixed
+* `util.response` handles rest code 201 properly
+
+### Version: 5.2.5
+
+#### Minor upgrades
+* `importer` Solidity imports that start with '/' are treated as relative paths to the project root (process.cwd)
+
 ### Version: 5.2.4
 
 #### Minor upgrades
