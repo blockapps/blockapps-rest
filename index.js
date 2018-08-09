@@ -1,4 +1,4 @@
-const rest = require('./lib/rest_5.js');
+const rest = require('./lib/rest_6.js');
 const common = require('./lib/common.js');
 
 module.exports = {
