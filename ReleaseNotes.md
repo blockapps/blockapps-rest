@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.3.4
+
+#### Minor upgrades
+* Added function `createTestUser()` that creates test users.
+
 ### Version: 5.3.1
 
 #### Issues Fixed
