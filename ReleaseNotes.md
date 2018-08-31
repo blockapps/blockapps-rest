@@ -1,5 +1,20 @@
 ## RELEASE NOTES
 
+### Version: 5.3.4
+
+#### Minor upgrades
+* Added function `createTestUser()` that creates test users.
+
+### Version: 5.3.1
+
+#### Issues Fixed
+* `assert.shouldThrowRest` checks `statusText` too.
+
+### Version: 5.3.0
+
+#### Minor upgrades
+* `rest.getFields()` parses arrays. Values returned as strings.
+
 ### Version: 5.2.9
 
 #### Minor upgrades
