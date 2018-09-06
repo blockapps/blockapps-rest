@@ -31,6 +31,11 @@
   - `getChainInfos`: takes a list of chainIds, returns a list of ChainInfo.
   - `createChain`: takes a label, a list of members, a list of balances, contract source, and contract arguments, and returns a chainId, if successful.
 
+### Version: 5.3.4
+
+#### Minor upgrades
+* Added function `createTestUser()` that creates test users.
+
 ### Version: 5.3.1
 
 #### Issues Fixed
