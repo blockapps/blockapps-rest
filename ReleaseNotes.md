@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.3.5
+
+#### Minor upgrades
+* Added util function `intToBytes32(int)` that converts int to Bytes32.
+
 ### Version: 5.3.4
 
 #### Minor upgrades
