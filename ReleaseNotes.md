@@ -3,7 +3,8 @@
 ### Version: 5.3.5
 
 #### Minor upgrades
-* Added util function `intToBytes32(int)` that converts int to Bytes32.
+* Added util function `intToBytes32(int)` that converts int to Bytes32
+* Added rest function `getNonce(admin, _index)` that return a nonce value
 
 ### Version: 5.3.4
 
