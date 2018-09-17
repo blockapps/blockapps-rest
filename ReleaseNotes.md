@@ -31,6 +31,12 @@
   - `getChainInfos`: takes a list of chainIds, returns a list of ChainInfo.
   - `createChain`: takes a label, a list of members, a list of balances, contract source, and contract arguments, and returns a chainId, if successful.
 
+### Version: 5.3.5
+
+#### Minor upgrades
+* intToBytes32(int) added. Convert int to Bytes32
+* getNonce(user, index) added. Return the account's nonce value
+
 ### Version: 5.3.4
 
 #### Minor upgrades
