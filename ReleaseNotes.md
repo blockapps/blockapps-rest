@@ -1,5 +1,36 @@
 ## RELEASE NOTES
 
+### Version: 5.4.0
+
+#### Minor upgrades
+* All endpoints are up-to-date with `private-chain` functionality.
+* The affected endpoints are:
+  - `strato.account`: now accepts an array of chainIds.
+  - `strato.transaction`: now accepts a chainId.
+  - `strato.transactionLast`: now accepts a chainId.
+  - `strato.transactionResult`: now accepts a chainId.
+  - `strato.storage`: now accepts a list of chainIds.
+  - `bloc.contract`: now accepts a chainId.
+  - `bloc.uploadList`: now accepts a chainId.
+  - `bloc.call`: now accepts a chainId.
+  - `bloc.method`: now accepts a chainId.
+  - `bloc.callList`: now accepts a chainId.
+  - `bloc.send`: now accepts a chainId.
+  - `bloc.sendList`: now accepts a chainId.
+  - `bloc.result`: now accepts a chainId.
+  - `bloc.results`: now accepts a chainId.
+  - `bloc.state`: now accepts a chainId.
+  - `bloc.stateVar`: now accepts a chainId.
+* New endpoints:
+  - `strato.chain`: takes a list of chainIds, returns a list of ChainInfo.
+  - `strato.createChain`: takes a body, and returns a chainId, if successful.
+  - `bloc.chain`: takes a list of chainIds, returns a list of ChainInfo.
+  - `bloc.createChain`: takes a body, and returns a chainId, if successful.
+* New `rest` methods:
+  - `getChainInfo`: takes a chainId, returns the ChainInfo associated with that chain.
+  - `getChainInfos`: takes a list of chainIds, returns a list of ChainInfo.
+  - `createChain`: takes a label, a list of members, a list of balances, contract source, and contract arguments, and returns a chainId, if successful.
+
 ### Version: 5.3.5
 
 #### Minor upgrades
