@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.3.6
+
+#### Issues Fixed
+* rest error response returned as stringified json
+
 ### Version: 5.3.5
 
 #### Minor upgrades
