@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.4.1
+
+#### Minor upgrades
+* `rest.createChain` now accepts an optional contract name argument before `node`.
+
 ### Version: 5.4.0
 
 #### Minor upgrades
