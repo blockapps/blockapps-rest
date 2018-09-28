@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.4.0
+
+#### Minor upgrades
+* `rest.keystore(user, keyStore)` added to wrap `/users/{user}/keystore`
+
 ### Version: 5.3.6
 
 #### Issues Fixed
