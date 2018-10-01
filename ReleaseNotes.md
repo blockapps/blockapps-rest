@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 5.5.0
+
+#### Minor upgrades
+* `setLogger` added. Used to pass a standard logger into blockapps-rest, to replace the debug console output
+
 ### Version: 5.4.0
 
 #### Minor upgrades
