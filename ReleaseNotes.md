@@ -1,11 +1,11 @@
 ## RELEASE NOTES
 
-### Version: 5.4.1
+### Version: 5.6.1
 
 #### Minor upgrades
 * `rest.createChain` now accepts an optional contract name argument before `node`.
 
-### Version: 5.4.0
+### Version: 5.6.0
 
 #### Minor upgrades
 * All endpoints are up-to-date with `private-chain` functionality.
@@ -35,6 +35,21 @@
   - `getChainInfo`: takes a chainId, returns the ChainInfo associated with that chain.
   - `getChainInfos`: takes a list of chainIds, returns a list of ChainInfo.
   - `createChain`: takes a label, a list of members, a list of balances, contract source, and contract arguments, and returns a chainId, if successful.
+
+### Version: 5.5.0
+
+#### Minor upgrades
+* `setLogger` added. Used to pass a standard logger into blockapps-rest, to replace the debug console output
+
+### Version: 5.4.0
+
+#### Minor upgrades
+* `rest.keystore(user, keyStore)` added to wrap `/users/{user}/keystore`
+
+### Version: 5.3.6
+
+#### Issues Fixed
+* rest error response returned as stringified json
 
 ### Version: 5.3.5
 
