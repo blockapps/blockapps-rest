@@ -21,6 +21,7 @@
         "commander": "^2.9.0",
         "fs": "0.0.1-security",
         "js-yaml": "^3.6.1",
+        "jwt-simple": "^0.5.5",
         "solidity-parser": "^0.4.0"
     },
     "devDependencies": {
