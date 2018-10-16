@@ -5,7 +5,8 @@ var util = rest.common.util;
 const MAX = Math.floor(Math.pow(2,64));
 
 function bytes32ToInt(bytes) {
-  if(bytes[0] >= 'a' && bytes[0] <= 'f') {
+  if(bytes.length == 0) return 0;
+  if(parseInt(bytes[0],16) >= 8) {
     return negativeBytes(bytes,0);
   } else {
     return positiveBytes(bytes,0);
