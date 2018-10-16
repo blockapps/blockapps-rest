@@ -4,7 +4,7 @@
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
-        "test": "mocha --reporter spec"
+        "test": "mocha test/util.test.js"
     },
     "keywords": [
         "BlockApps",
