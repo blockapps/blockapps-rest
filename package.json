@@ -24,6 +24,7 @@
         "https": "^1.0.0",
         "js-yaml": "^3.6.1",
         "jwt-simple": "^0.5.5",
+        "simple-oauth2": "^2.2.1",
         "solidity-parser": "^0.4.0"
     },
     "devDependencies": {
