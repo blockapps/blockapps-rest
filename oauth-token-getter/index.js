@@ -1,10 +1,15 @@
+const bacommon = require('../lib/common');
 const express = require('express');
-var https = require('https');
-var port = process.env.PORT || '443';
+const https = require('https');
+const url = require('url');
 
 const app = express();
-const oauth = require('../lib/common').oauth;
+const OAuth = bacommon.oauth;
+const oauthConfig = bacommon.config.oauth;
+const port = process.env.PORT || '443';
 
+
+// TODO: Make the way to set real ssl cert/key (read from directory provided in env var)
 const DUMMY_SSL_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBVqh671M27QJW
 ekIc/QkKnF9I3rM7/XXyvFlYAAscRRNs9TpxTGW8n/KnBMeKFdPwj19YLMk43tf4
@@ -57,19 +62,41 @@ EDxFZuwghztIpmp2ItFOIxpsiZnEVlHNsq4H6YcZg4XENKhb9/lgIFiYADDbAEcq
 pBMYLinJZN+jM/Xddr18fL0obdkk5Q==
 -----END CERTIFICATE-----`;
 
+if (!oauthConfig) {
+  console.error(`ERROR: Could not load oauth configuration section from ${process.cwd()}/config.yaml. Please check your configuration.`);
+  return
+}
+
+let oauth = null;
+(async() => {
+  oauth = await OAuth.init(oauthConfig);
+  if (!oauth) {
+    console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
+    return
+  }
+  if (port+'' === '443') {
+    https.createServer({
+      key: DUMMY_SSL_KEY,
+      cert: DUMMY_SSL_CERT
+    }, app)
+        .listen(port, function () {
+          console.log(`App listening on port ${port}.`)
+        });
+  } else {
+    app.listen(port, function () {
+      console.log(`App listening on port ${port}.`)
+    });
+  }
+
+})();
+
 app.get('/', function (req, res) {
   res.redirect(oauth.oauthGetSigninURL())
 });
 
-app.get('/callback', async function (req, res) {
+const callbackPath = url.parse(oauthConfig.redirectUri).path;
+app.get(callbackPath, async function (req, res) {
   const accessTokenResponse = await oauth.oauthGetAccessTokenByAuthCode(req.query['code']);
   res.send(`Copy your ACCESS_CODE: <br/><br/>${accessTokenResponse.token['access_token']}<br/><br/>\Code expires in: ~${Math.floor(accessTokenResponse.token['expires_in']/60)} min`)
 });
 
-https.createServer({
-  key: DUMMY_SSL_KEY,
-  cert: DUMMY_SSL_CERT
-}, app)
-    .listen(port, function () {
-      console.log(`App listening on port ${port}.`)
-    });
