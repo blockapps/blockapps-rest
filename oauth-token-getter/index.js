@@ -65,19 +65,19 @@ pBMYLinJZN+jM/Xddr18fL0obdkk5Q==
 
 if (!oauthConfig) {
   console.error(`ERROR: Could not load oauth configuration section from ${process.cwd()}/config.yaml. Please check your configuration.`);
-  return
+  process.exit(1)
 }
 
 let oauth = null;
 (async() => {
-  if (await tcpPortUsed.check(+port)) {
-    console.error(`Port ${port} is in use. Exiting.`);
-    return
-  }
   oauth = await OAuth.init(oauthConfig);
   if (!oauth) {
     console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
-    return
+    process.exit(2)
+  }
+  if (await tcpPortUsed.check(+port)) {
+    console.error(`ERROR: Port ${port} is in use.`);
+    process.exit(3)
   }
   if (port+'' === '443') {
     https.createServer({
