@@ -1,6 +1,7 @@
 const bacommon = require('../lib/common');
 const express = require('express');
 const https = require('https');
+const tcpPortUsed = require('tcp-port-used');
 const url = require('url');
 
 const app = express();
@@ -69,6 +70,10 @@ if (!oauthConfig) {
 
 let oauth = null;
 (async() => {
+  if (await tcpPortUsed.check(+port)) {
+    console.error(`Port ${port} is in use. Exiting.`);
+    return
+  }
   oauth = await OAuth.init(oauthConfig);
   if (!oauth) {
     console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
