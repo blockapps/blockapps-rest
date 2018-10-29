@@ -1,6 +1,6 @@
 {
     "name": "blockapps-rest",
-    "version": "5.6.1",
+    "version": "6.0.0",
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
@@ -26,7 +26,8 @@
         "jwt-simple": "^0.5.5",
         "simple-oauth2": "^2.2.1",
         "solidity-parser": "^0.4.0",
-        "tcp-port-used": "^1.0.0"
+        "tcp-port-used": "^1.0.0",
+        "unix-time": "^1.0.1"
     },
     "devDependencies": {
         "chai": "^3.5.0",
