@@ -101,7 +101,11 @@ app.get('/', function (req, res) {
 
 const callbackPath = url.parse(oauthConfig.redirectUri).path;
 app.get(callbackPath, async function (req, res) {
-  const accessTokenResponse = await oauth.oauthGetAccessTokenByAuthCode(req.query['code']);
-  res.send(`Copy your ACCESS_CODE: <br/><br/>${accessTokenResponse.token['access_token']}<br/><br/>\Code expires in: ~${Math.floor(accessTokenResponse.token['expires_in']/60)} min`)
+  try {
+    const accessTokenResponse = await oauth.oauthGetAccessTokenByAuthCode(req.query['code']);
+    res.send(`Copy your ACCESS_CODE: <br/><br/>${accessTokenResponse.token['access_token']}<br/><br/>\Code expires in: ~${Math.floor(accessTokenResponse.token['expires_in'] / 60)} min`)
+  } catch(err) {
+    console.error(err, 'OAUTH ERROR occured, see above. Quiting.');
+  }
 });
 
