@@ -68,13 +68,13 @@ if (!oauthConfig) {
   process.exit(1)
 }
 
-let oauth = null;
+let oauth = OAuth.init(oauthConfig);
+if (!oauth) {
+  console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
+  process.exit(2)
+}
+
 (async() => {
-  oauth = await OAuth.init(oauthConfig);
-  if (!oauth) {
-    console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
-    process.exit(2)
-  }
   if (await tcpPortUsed.check(+port)) {
     console.error(`ERROR: Port ${port} is in use.`);
     process.exit(3)
