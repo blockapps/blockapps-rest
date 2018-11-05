@@ -1,4 +1,4 @@
-const common = require('../../lib/common');
+const common = require('../lib/common');
 const config = common.config;
 const util = common.util;
 const assert = common.assert;
