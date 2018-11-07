@@ -68,13 +68,13 @@ if (!oauthConfig) {
   process.exit(1)
 }
 
-let oauth = null;
+let oauth = OAuth.init(oauthConfig);
+if (!oauth) {
+  console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
+  process.exit(2)
+}
+
 (async() => {
-  oauth = await OAuth.init(oauthConfig);
-  if (!oauth) {
-    console.error(`ERROR: Could not initialize the OAuth. Please check if the 'openIdDiscoveryUrl' is valid in ${process.cwd()}/config.yaml 'oauth' section`);
-    process.exit(2)
-  }
   if (await tcpPortUsed.check(+port)) {
     console.error(`ERROR: Port ${port} is in use.`);
     process.exit(3)
@@ -101,7 +101,11 @@ app.get('/', function (req, res) {
 
 const callbackPath = url.parse(oauthConfig.redirectUri).path;
 app.get(callbackPath, async function (req, res) {
-  const accessTokenResponse = await oauth.oauthGetAccessTokenByAuthCode(req.query['code']);
-  res.send(`Copy your ACCESS_CODE: <br/><br/>${accessTokenResponse.token['access_token']}<br/><br/>\Code expires in: ~${Math.floor(accessTokenResponse.token['expires_in']/60)} min`)
+  try {
+    const accessTokenResponse = await oauth.oauthGetAccessTokenByAuthCode(req.query['code']);
+    res.send(`Copy your ACCESS_CODE: <br/><br/>${accessTokenResponse.token['access_token']}<br/><br/>\Code expires in: ~${Math.floor(accessTokenResponse.token['expires_in'] / 60)} min`)
+  } catch(err) {
+    console.error(err, 'OAUTH ERROR occured, see above. Quiting.');
+  }
 });
 
