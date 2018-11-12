@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version: 6.1.0
+* Audit trail (contract history) functionality added (rest_6 only)
+* The wrapper functions arguments are now grouped under one `options` object for all the optional args (rest_6 only)
+* resolve argument is superseded with options.doNotResolve and is now false by default (rest_6 only)
+
 ### Version: 6.0.0
 * STRATO API v2.3 support with OAuth-enabled user management replacing the bloc users;
   - `createKey(accessToken)` - to create user on the STRATO blockchain
