@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version: 6.1.1
+* Hotfix: Requiring `rest` module is deprecated now and imports rest 5 as well as `rest5`. For rest 6 one needs to explicitly require `rest6`
+
 ### Version: 6.1.0
 * Audit trail (contract history) functionality added (rest_6 only)
 * The wrapper functions arguments are now grouped under one `options` object for all the optional args (rest_6 only)
