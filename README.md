@@ -20,6 +20,10 @@ For documentation
 
 ## Getting Started
 
+### Prerequisites
+
+Node.js version >= 8.0.0 is required.
+
 ### Configuration
 
 
