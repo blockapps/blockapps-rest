@@ -1,6 +1,6 @@
 {
     "name": "blockapps-rest",
-    "version": "6.1.1",
+    "version": "6.2.0",
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
@@ -14,21 +14,21 @@
     "author": "lior@blockapps.net",
     "license": "ISC",
     "dependencies": {
-        "axios": "^0.12.0",
+        "axios": "0.12.0",
         "bignumber.js": "2.4.0",
         "bluebird": "^3.4.6",
         "chai-bignumber": "^2.0.0",
         "commander": "^2.9.0",
         "express": "^4.16.4",
         "fs": "0.0.1-security",
-        "https": "^1.0.0",
-        "js-yaml": "^3.6.1",
-        "jwt-simple": "^0.5.5",
-        "simple-oauth2": "^2.2.1",
+        "https": "1.0.0",
+        "js-yaml": "3.6.1",
+        "jsonwebtoken": "8.4.0",
+        "simple-oauth2": "2.2.1",
         "solidity-parser": "^0.4.0",
-        "sync-request": "^6.0.0",
+        "sync-request": "6.0.0",
         "tcp-port-used": "^1.0.0",
-        "unix-time": "^1.0.1"
+        "unix-time": "1.0.1"
     },
     "devDependencies": {
         "chai": "^3.5.0",
