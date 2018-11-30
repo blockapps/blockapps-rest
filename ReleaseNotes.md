@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 6.1.2
+
+#### Minor upgrades
+* `util.intToBytes32` now processes integers passed as strings correctly and throws an error if can not convert an argument to an integer.
+
 ### Version: 6.1.1
 * Hotfix: Requiring `rest` module is deprecated now and imports rest 5 as well as `rest5`. For rest 6 one needs to explicitly require `rest6`
 
