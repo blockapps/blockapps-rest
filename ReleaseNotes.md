@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 6.2.1
+
+#### Minor upgrades
+* `util.intToBytes32` now processes integers passed as strings correctly and throws an error if can not convert an argument to an integer.
+
 ### Version: 6.2.0
 * Client credential OAuth flow implemented
 
