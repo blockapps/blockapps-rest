@@ -1,9 +1,15 @@
 ## RELEASE NOTES
 
-### Version 6.2.2
+### Version 6.2.3
 
 #### Minor upgrades
 * The oauth module now looks for a `tokenField` setting in the oauth config to decide which field to use as the access token, in the response received from the oauth server. If this setting is not present, it uses `access_token` by default. The other possible value is `id_token`.
+
+### Version 6.2.2
+
+#### Minor upgrades
+* Added Bloc /details endpoint
+* Added options to createChain
 
 ### Version 6.2.1
 
