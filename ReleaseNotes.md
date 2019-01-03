@@ -1,5 +1,11 @@
 ## RELEASE NOTES
 
+### Version 6.2.2
+
+#### Minor upgrades
+* Added Bloc /details endpoint
+* Added options to createChain
+
 ### Version 6.2.1
 
 #### Minor upgrades
