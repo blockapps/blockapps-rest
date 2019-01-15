@@ -2,6 +2,10 @@
 
 ### Version 6.2.2
 
+* stratoUrl of oauth config is deprecated and no longer used
+
+### Version 6.2.2
+
 #### Minor upgrades
 * Added Bloc /details endpoint
 * Added options to createChain
