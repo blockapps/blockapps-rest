@@ -1,8 +1,13 @@
 ## RELEASE NOTES
 
-### Version 6.2.3
+### Version 6.2.4
 
 * stratoUrl of oauth config is deprecated and no longer used
+
+### Version 6.2.3
+
+#### Minor upgrades
+* The oauth module now looks for a `tokenField` setting in the oauth config to decide which field to use as the access token, in the response received from the oauth server. If this setting is not present, it uses `access_token` by default. The other possible value is `id_token`.
 
 ### Version 6.2.2
 
