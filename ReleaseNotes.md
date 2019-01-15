@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 6.2.5
+
+* private chains hotfix
+
 ### Version 6.2.4
 
 * stratoUrl of oauth config is deprecated and no longer used
