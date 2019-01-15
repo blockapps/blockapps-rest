@@ -1,6 +1,6 @@
 ## RELEASE NOTES
 
-### Version 6.2.2
+### Version 6.2.3
 
 * stratoUrl of oauth config is deprecated and no longer used
 
