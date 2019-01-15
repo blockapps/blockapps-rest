@@ -3,6 +3,7 @@
 ### Version 6.2.5
 
 * private chains hotfix
+* nodeUrl in config as a preferable way to pass STRATO hostname for oauth
 
 ### Version 6.2.4
 
