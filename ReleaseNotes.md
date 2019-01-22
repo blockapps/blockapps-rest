@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version: 6.1.2
+* Conform logger.debug() messages to winston format
+* Log API errors
+
 ### Version: 6.1.1
 * Hotfix: Requiring `rest` module is deprecated now and imports rest 5 as well as `rest5`. For rest 6 one needs to explicitly require `rest6`
 
