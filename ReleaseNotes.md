@@ -1,7 +1,9 @@
 ## RELEASE NOTES
 
-### Version 6.2.7
-   
+### Version 6.2.8
+* Optimized resolveResults() function in rest5 and rest6
+
+### Version 6.2.7   
 * isTokenValid args list fix
 
 ### Version: 6.2.6
