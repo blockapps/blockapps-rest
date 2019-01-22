@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version: 6.2.6
+* Conform logger.debug() messages to winston format
+* Log API errors
+
 ### Version 6.2.5
 
 * private chains hotfix
