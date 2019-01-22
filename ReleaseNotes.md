@@ -1,5 +1,43 @@
 ## RELEASE NOTES
 
+### Version 6.2.8
+* Optimized resolveResults() function in rest5 and rest6
+
+### Version 6.2.7   
+* isTokenValid args list fix
+
+### Version: 6.2.6
+* Conform logger.debug() messages to winston format
+* Log API errors
+
+### Version 6.2.5
+
+* private chains hotfix
+* nodeUrl in config as a preferable way to pass STRATO hostname for oauth
+
+### Version 6.2.4
+
+* stratoUrl of oauth config is deprecated and no longer used
+
+### Version 6.2.3
+
+#### Minor upgrades
+* The oauth module now looks for a `tokenField` setting in the oauth config to decide which field to use as the access token, in the response received from the oauth server. If this setting is not present, it uses `access_token` by default. The other possible value is `id_token`.
+
+### Version 6.2.2
+
+#### Minor upgrades
+* Added Bloc /details endpoint
+* Added options to createChain
+
+### Version 6.2.1
+
+#### Minor upgrades
+* `util.intToBytes32` now processes integers passed as strings correctly and throws an error if can not convert an argument to an integer.
+
+### Version: 6.2.0
+* Client credential OAuth flow implemented
+
 ### Version: 6.1.1
 * Hotfix: Requiring `rest` module is deprecated now and imports rest 5 as well as `rest5`. For rest 6 one needs to explicitly require `rest6`
 
