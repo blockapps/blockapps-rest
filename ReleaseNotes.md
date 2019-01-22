@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 6.2.7
+   
+* isTokenValid args list fix
+
 ### Version: 6.2.6
 * Conform logger.debug() messages to winston format
 * Log API errors
