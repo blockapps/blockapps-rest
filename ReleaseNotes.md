@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version 6.2.9
+* Fixed broken logger
+
 ### Version 6.2.8
 * Optimized resolveResults() function in rest5 and rest6
 
