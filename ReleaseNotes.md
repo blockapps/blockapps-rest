@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 6.2.6
+   
+* isTokenValid args list fix
+
 ### Version 6.2.5
 
 * private chains hotfix
