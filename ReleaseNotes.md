@@ -1,7 +1,10 @@
 ## RELEASE NOTES
 
-### Version 6.2.10
+### Version 6.2.11
 * Use `until` for consistent timeout configuration
+
+###  Version 6.2.10
+* resolveResults() optimization introduced in 6.2.8 is reverted (causing hidden issues)
 
 ### Version 6.2.9
 * Fixed broken logger
