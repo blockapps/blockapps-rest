@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version 6.2.10
+* HttpError fixed
+
 ### Version 6.2.9
 * Fixed broken logger
 
