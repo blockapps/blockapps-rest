@@ -1,7 +1,7 @@
 ## RELEASE NOTES
 
 ### Version 6.2.10
-* HttpError fixed
+* Use `until` for consistent timeout configuration
 
 ### Version 6.2.9
 * Fixed broken logger
@@ -9,7 +9,7 @@
 ### Version 6.2.8
 * Optimized resolveResults() function in rest5 and rest6
 
-### Version 6.2.7   
+### Version 6.2.7
 * isTokenValid args list fix
 
 ### Version: 6.2.6
@@ -56,7 +56,7 @@
 * STRATO API v2.3 support with OAuth-enabled user management replacing the bloc users;
   - `createKey(accessToken)` - to create user on the STRATO blockchain
   - `getKey(accessToken)` - to get user's address
-  - `sendTransactions(..)` - the all-in-one function to make transactions of all types 
+  - `sendTransactions(..)` - the all-in-one function to make transactions of all types
   - accessToken argument added to all previously existing transaction helper functions
   - `oauth` section expected in the config to use new wrappers
 * OAuth flow helper functions;
