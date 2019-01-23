@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 6.2.10
+* Call waitQuery in getState instead of api.bloc.state
+* Call waitQuery in getStateVar instead of api.bloc.stateVar
+
 ### Version 6.2.9
 * Fixed broken logger
 
