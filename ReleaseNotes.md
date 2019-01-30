@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version 6.3.0
+* rest6.getKey now has an option to return other user's account address
+
 ###  Version 6.2.10
 * resolveResults() optimization introduced in 6.2.8 is reverted (causing hidden issues)
 
