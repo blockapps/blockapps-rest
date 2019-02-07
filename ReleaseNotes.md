@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 6.4.0
+* Search URL should not necessarily contain `/cirrus` now - for STRATO platform internal calls compatibility
+* Removed old deprecated API and REST wrappers (v4 and earlier)
+* Removed the old deprecated Explorer API wrappers
+
 ### Version 6.3.0
 * rest6.getKey now has an option to return other user's account address
 
