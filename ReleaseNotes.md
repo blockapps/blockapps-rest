@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version 6.4.1
+* Clean OAuth cookies if access token expired and can't be refreshed
+
 ### Version 6.4.0
 * Search URL should not necessarily contain `/cirrus` now - for STRATO platform internal calls compatibility
 * Removed old deprecated API and REST wrappers (v4 and earlier)
