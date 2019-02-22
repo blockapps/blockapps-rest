@@ -1,10 +1,11 @@
-const rest = require('../lib/rest_6async.js')
+const config = {}
+const { rest } = require('../index.js')
 const { assert } = require('chai')
 
-describe('upload', () => {
-  it('uploads a contract string', async () => {
+describe('user', () => {
+  it('/user', async () => {
     const args = { a: 'b' }
-    const result = await rest.uploadContractString(args)
+    const result = await rest.user(args)
     assert.deepEqual(result, args, 'test async')
   })
 })
