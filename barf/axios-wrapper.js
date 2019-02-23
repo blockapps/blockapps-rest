@@ -1,24 +1,30 @@
-// -----------------------------------
-// axios wrapper
-// -----------------------------------
-const axios = require('axios');
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+const axios = require('axios')
 
-var isDebug = false;
-var getLogger
+axios.defaults.headers.post['Content-Type'] = 'application/json'
 
-function logError(message) {
-  return function(err) {
-    const data = err.data || ''
-    message.error = {status: err.status, statusText: err.statusText, data }
-    if (getLogger) getLogger().debug({ message })
-    if (getLogger) getLogger().error({ message: err })
-    throw(err)
-  }
-}
+
 
 module.exports = {
-  get: function(host, path, headers=null, debug) {
+
+  get: async function(host, path, headers=null, debug) {
+    const url = host + path;
+    const response = await axios({
+      url: url,
+      headers: headers,
+      transformResponse: [function(data) {
+        try {
+          return JSON.parse(data);
+        } catch (e) {
+          return data;
+        }
+      }],
+    })
+    return response.data;
+  },
+
+
+
+  zzget: function(host, path, headers=null, debug) {
     const url = host + path;
     if (isDebug) console.log('curl -i ' + url);
     const message = {method: 'GET', host, path, headers} // MUST be named message
