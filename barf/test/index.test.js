@@ -1,15 +1,7 @@
-const config = {
-  nodes: [
-    {
-      stratoUrl: 'http://localhost/strato-api',
-      blocUrl: 'http://localhost/bloc/v2.2',
-      searchUrl: 'http://localhost/cirrus',
-    },
-  ],
-}
+const { rest, assert } = require('../index')
+const fsUtil = require('../fsUtil')
 
-const { rest } = require('../index')
-const { assert } = require('chai')
+const config = fsUtil.getYaml('barf/test/config.yaml')
 
 describe('user', () => {
   it('/users', async () => {
