@@ -1,12 +1,22 @@
-const config = {}
-const { rest } = require('../index.js')
+const config = {
+  nodes: [
+    {
+      stratoUrl: 'http://localhost/strato-api',
+      blocUrl: 'http://localhost/bloc/v2.2',
+      searchUrl: 'http://localhost/cirrus',
+    },
+  ],
+}
+
+const { rest } = require('../index')
 const { assert } = require('chai')
 
 describe('user', () => {
-  it('/user', async () => {
-    const args = { a: 'b' }
-    const result = await rest.user(args)
-    assert.deepEqual(result, args, 'test async')
+  it('/users', async () => {
+    const args = {}
+    const options = { config }
+    const result = await rest.users(args, options)
+    assert.equal(Array.isArray(result), true, 'return value is an array')
   })
 })
 
@@ -30,4 +40,3 @@ describe('include rest', () => {
     }
   })
 })
-

@@ -1,9 +1,6 @@
-let config
-
 const api = require('./api_7')
 
-async function users(args, options = {}) {
-  options.config = config
+async function users(args, options) {
   const address = await api.users(args, options)
   return address
 }
