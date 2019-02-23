@@ -6,11 +6,19 @@ function getBlocUrl(options) {
   return nodeUrls.blocUrl
 }
 
-async function users(args, options) {
+async function getUsers(args, options) {
   const url = getBlocUrl(options)
-  return ax.get(url, '/users')
+  const endpoint = '/users'
+  return ax.get(url, endpoint)
+}
+
+async function getUser(args, options) {
+  const url = getBlocUrl(options)
+  const endpoint = ('/users/:username').replace(':username', args.username)
+  return ax.get(url, endpoint)
 }
 
 module.exports = {
-  users,
+  getUsers,
+  getUser,
 }
