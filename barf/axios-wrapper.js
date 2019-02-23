@@ -12,13 +12,20 @@ function toJson(string) {
 
 async function get(host, endpoint, options = {}) {
   const url = host + endpoint
-  const response = await axios({
-    method: 'GET',
+  const request ={
+    method: 'get',
     url,
     headers: options.headers || null,
+    params: options.params || null,
     transformResponse: [toJson],
-  })
-  return response.data
+  }
+  try {
+    const response = await axios(request)
+    return response.data
+  } catch (err) {
+    // TODO log error
+    throw err
+  }
 }
 
 module.exports = {
