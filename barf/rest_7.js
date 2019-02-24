@@ -10,6 +10,11 @@ async function getUser(args, options) {
   return address
 }
 
+async function createUser(args, options) {
+  const address = await api.createUser(args, options)
+  return address
+}
+
 async function testAsync(args) {
   return args
 }
@@ -29,4 +34,5 @@ module.exports = {
   testPromise,
   getUsers,
   getUser,
+  createUser,
 }

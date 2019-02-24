@@ -13,7 +13,7 @@ function toJson(string) {
 async function get(host, endpoint, options = {}) {
   const url = host + endpoint
   const request ={
-    method: 'get',
+    method: 'GET',
     url,
     headers: options.headers || null,
     params: options.params || null,
@@ -28,9 +28,55 @@ async function get(host, endpoint, options = {}) {
   }
 }
 
+async function post(host, endpoint, data, options) {
+  const url = host + endpoint
+
+  const config_gasLimit = 32100000000
+  const config_gasPrice = 1
+
+  if (data.txParams === undefined) {
+    data.txParams = { gasLimit: config_gasLimit, gasPrice: config_gasPrice }  // FIXME should come from config
+  } else {
+    data.txParams.gasLimit = data.txParams.gasLimit || config_gasLimit  // FIXME should come from config
+    data.txParams.gasPrice = data.txParams.gasPrice || config_gasPrice  // FIXME should come from config
+  }
+
+  const request = {
+    url,
+    method: 'POST',
+    headers: options.headers || null,
+    data,
+    transformResponse: [toJson],
+  }
+
+  const response = await axios(request)
+  return response.data
+}
+
+async function postue(host, endpoint, body) {
+  const url = host + endpoint
+
+  function transformRequest(body) {
+    const str = []
+    for (var param in body)
+      str.push(param + '=' + body[param])
+    return str.join('&')
+  }
+
+  const response = await axios.post(
+    url,
+    transformRequest(body),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+  )
+  return response.data
+}
+
+
 module.exports = {
 
   get,
+  post,
+  postue,
 
   zzget: function(host, path, headers = null, debug) {
     const url = host + path
@@ -60,7 +106,7 @@ module.exports = {
     }).catch(logError(message))
   },
 
-  post: function(host, body, path, headers = null) {
+  zzpost: function(host, body, path, headers = null) {
     const url = host + path
     //if (isDebug) console.log('ax.post: body: ', JSON.stringify(body, null, 2));
     const config_gasLimit = 32100000000
@@ -99,7 +145,7 @@ module.exports = {
     }).catch(logError(message))
   },
 
-  postue: function(host, body, path) {
+  zzpostue: function(host, body, path) {
     const url = host + path
     // if (isDebug) console.log('ax.postue: body: ', JSON.stringify(body, null, 2));
     // if (isDebug) console.log('curl -i', toDataParams(body), url);

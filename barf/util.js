@@ -44,6 +44,16 @@ function sha3(address) {
   throw new Error('sha3 not found')
 }
 
+function uid(prefix, digits) {
+  if (digits == undefined) digits = 6
+  if (digits < 1) digits = 1
+  if (digits > 16) digits = 16
+  const random = Math.floor(Math.random() * (10 ** digits))
+  if (prefix === undefined) return random
+  return prefix + '_' + random
+}
+
 module.exports = {
   isAddress,
+  uid,
 }

@@ -5,14 +5,23 @@ const fsUtil = require('../fsUtil')
 const config = fsUtil.getYaml('barf/test/config.yaml')
 
 describe('user', () => {
-  it('/users', async () => {
+  it('get all users', async () => {
     const args = {}
     const options = { config }
     const result = await rest.getUsers(args, options)
     assert.equal(Array.isArray(result), true, 'return value is an array')
   })
 
-  it('/users/:username', async () => {
+  it('create user', async () => {
+    const uid = util.uid()
+    const args = { username: `user_${uid}`, password: '1234' }
+    const options = { config }
+    const address = await rest.createUser(args, options)
+    const isAddress = util.isAddress(address)
+    assert.equal(isAddress, true, 'user is valid eth address')
+  })
+
+  it('get user', async () => {
     const args = { username: 'test1' }
     const options = { config }
     const address = await rest.getUser(args, options)
