@@ -3,6 +3,7 @@ const util = require('../util')
 const fsUtil = require('../fsUtil')
 
 const config = fsUtil.getYaml('barf/test/config.yaml')
+const password = '1234'
 
 describe('user', () => {
   it('get all users', async () => {
@@ -14,7 +15,8 @@ describe('user', () => {
 
   it('create user', async () => {
     const uid = util.uid()
-    const args = { username: `user_${uid}`, password: '1234' }
+    const username = `user_${uid}`
+    const args = { username, password }
     const options = { config }
     const address = await rest.createUser(args, options)
     const isAddress = util.isAddress(address)
@@ -22,11 +24,17 @@ describe('user', () => {
   })
 
   it('get user', async () => {
-    const args = { username: 'test1' }
+    // create a new user
+    const uid = util.uid()
+    const username = `user_${uid}`
+    const args = { username, password }
     const options = { config }
-    const address = await rest.getUser(args, options)
-    const isAddress = util.isAddress(address)
-    assert.equal(isAddress, true, 'user is valid eth address')
+    const address = await rest.createUser(args, options)
+    // get the user
+    const args2 = { username }
+    const options2 = { config }
+    const address2 = await rest.getUser(args2, options2)
+    assert.equal(address, address2, 'user is valid eth address')
   })
 })
 
