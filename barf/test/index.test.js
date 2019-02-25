@@ -21,8 +21,9 @@ describe('contracts', () => {
     const uid = util.uid()
     const contract = createTestContract(uid)
     const args = {}
-    const result = await rest.createContract(admin, contract, args, options)
-    assert.equal(Array.isArray(result), true, 'return value is an array')
+    const { name, hash } = await rest.createContract(admin, contract, args, options)
+    assert.equal(name, contract.name, 'name')
+    assert.isDefined(hash, 'name') // TODO add util.isHash for testing
   })
 })
 

@@ -1,5 +1,9 @@
 const api = require('./api_7')
 
+function isTxSuccess(txResult) {
+  return txResult.status === 'Success'
+}
+
 // /users
 async function getUsers(args, options) {
   const users = await api.getUsers(args, options)
@@ -21,29 +25,31 @@ async function createUser(args, options) {
     return { address, user }
   }
   // otherwise - block for faucet fill call
-  const txResult = await fill(user, options);
+  const txResult = await fill(user, options)
   return { address, user }
 }
 
 async function fill(user, options) {
   const body = {}
   const txResult = await api.fill(user, body, options)
-  return txResult;
+  if (!isTxSuccess(txResult)) {
+    throw new Error(JSON.stringify(txResult)) // TODO make a RestError
+  }
+  return txResult
 }
 
 async function createContract(user, contract, args, options) {
   const txParams = options.txParams || {} // TODO generalize txParams
-  const resolve = !options.doNotResolve
   const body = {
     password: user.password,
     contract: contract.name,
     src: contract.source,
     args,
     txParams,
-    metadata: constructMetadata(options, contract.name)
+    metadata: constructMetadata(options, contract.name),
   }
-  const result = await api.createContract(user, contract, body, options)
-  return result
+  const { hash } = await api.createContract(user, contract, body, options)
+  return { name: contract.name, hash }
 }
 
 /////////////////////////////////////////////// util
@@ -56,31 +62,31 @@ async function createContract(user, contract, args, options) {
  * @returns{()} metadata
  */
 function constructMetadata(options, contractName) {
-  const metadata = {};
-  if (options === {}) return metadata;
+  const metadata = {}
+  if (options === {}) return metadata
 
   // history flag (default: off)
   if (options.enableHistory) {
-    metadata['history'] = contractName;
+    metadata['history'] = contractName
   }
   if (options.hasOwnProperty('history')) {
-    const newContracts = options['history'].filter(contract => contract !== contractName).join();
-    metadata['history'] = `${options['history']},${newContracts}`;
+    const newContracts = options['history'].filter(contract => contract !== contractName).join()
+    metadata['history'] = `${options['history']},${newContracts}`
   }
 
   // index flag (default: on)
   if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    metadata['noindex'] = contractName;
+    metadata['noindex'] = contractName
   }
   if (options.hasOwnProperty('noindex')) {
-    const newContracts = options['noindex'].filter(contract => contract !== contractName).join();
-    metadata['noindex'] = `${options['noindex']},${newContracts}`;
+    const newContracts = options['noindex'].filter(contract => contract !== contractName).join()
+    metadata['noindex'] = `${options['noindex']},${newContracts}`
   }
 
   //TODO: construct the "nohistory" and "index" fields for metadata if needed
   // The current implementation only constructs "history" and "noindex"
 
-  return metadata;
+  return metadata
 }
 
 /////////////////////////////////////////////// tests
