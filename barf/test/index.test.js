@@ -5,6 +5,27 @@ const fsUtil = require('../fsUtil')
 const config = fsUtil.getYaml('barf/test/config.yaml')
 const password = '1234'
 
+describe('contracts', () => {
+  let admin
+  const options = { config }
+
+  before(async () => {
+    const uid = util.uid()
+    const username = `admin_${uid}`
+    const args = { username, password }
+    const { user } = await rest.createUser(args, options)
+    admin = user
+  })
+
+  it('create contract', async () => {
+    const uid = util.uid()
+    const contract = createTestContract(uid)
+    const args = {}
+    const result = await rest.createContract(admin, contract, args, options)
+    assert.equal(Array.isArray(result), true, 'return value is an array')
+  })
+})
+
 describe('user', () => {
   it('get all users', async () => {
     const args = {}
@@ -18,9 +39,12 @@ describe('user', () => {
     const username = `user_${uid}`
     const args = { username, password }
     const options = { config }
-    const address = await rest.createUser(args, options)
+    const { address, user } = await rest.createUser(args, options)
     const isAddress = util.isAddress(address)
     assert.equal(isAddress, true, 'user is valid eth address')
+    assert.equal(user.username, args.username, 'username')
+    assert.equal(user.password, args.password, 'password')
+    assert.equal(user.address, address, 'address')
   })
 
   it('get user', async () => {
@@ -58,3 +82,9 @@ describe('include rest', () => {
     }
   })
 })
+
+function createTestContract(uid) {
+  const name = `TestContract${uid}`
+  const source = `contract ${name} { }`
+  return { name, source }
+}

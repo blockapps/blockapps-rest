@@ -27,8 +27,16 @@ async function createUser(args, options) {
   return ax.postue(url, endpoint, data, options)
 }
 
+async function createContract(user, contract, body, options) {
+  const url = getBlocUrl(options)
+  const username = encodeURIComponent(user.username)
+  const endpoint = ('/users/:username/:address/contract?resolve').replace(':username', username).replace(':address', user.address)
+  return ax.post(url, endpoint, body, options)
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
+  createContract,
 }

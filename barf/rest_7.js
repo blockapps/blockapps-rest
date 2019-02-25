@@ -1,19 +1,77 @@
 const api = require('./api_7')
 
+// /users
 async function getUsers(args, options) {
-  const usersArray = await api.getUsers(args, options)
-  return usersArray
+  const users = await api.getUsers(args, options)
+  return users
 }
 
+// /users/:username
 async function getUser(args, options) {
   const [address] = await api.getUser(args, options)
   return address
 }
 
+// /users/:username
 async function createUser(args, options) {
   const address = await api.createUser(args, options)
-  return address
+  const user = Object.assign(args, { address })
+  return { address, user }
 }
+
+async function createContract(user, contract, args, options) {
+  const txParams = options.txParams || {} // TODO generalize txParams
+  const resolve = !options.doNotResolve
+  const body = {
+    password: user.password,
+    contract: contract.name,
+    src: contract.source,
+    args,
+    txParams,
+    metadata: constructMetadata(options, contract.name)
+  }
+  const result = await api.createContract(user, contract, body, options)
+  return result
+}
+
+/////////////////////////////////////////////// util
+
+/**
+ * This function constructes metadata that can be used to control the history and index flags
+ * @method{constructMetadata}
+ * @param{Object} options flags for history and indexing
+ * @param{String} contractName
+ * @returns{()} metadata
+ */
+function constructMetadata(options, contractName) {
+  const metadata = {};
+  if (options === {}) return metadata;
+
+  // history flag (default: off)
+  if (options.enableHistory) {
+    metadata['history'] = contractName;
+  }
+  if (options.hasOwnProperty('history')) {
+    const newContracts = options['history'].filter(contract => contract !== contractName).join();
+    metadata['history'] = `${options['history']},${newContracts}`;
+  }
+
+  // index flag (default: on)
+  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
+    metadata['noindex'] = contractName;
+  }
+  if (options.hasOwnProperty('noindex')) {
+    const newContracts = options['noindex'].filter(contract => contract !== contractName).join();
+    metadata['noindex'] = `${options['noindex']},${newContracts}`;
+  }
+
+  //TODO: construct the "nohistory" and "index" fields for metadata if needed
+  // The current implementation only constructs "history" and "noindex"
+
+  return metadata;
+}
+
+/////////////////////////////////////////////// tests
 
 async function testAsync(args) {
   return args
@@ -35,4 +93,5 @@ module.exports = {
   getUsers,
   getUser,
   createUser,
+  createContract,
 }

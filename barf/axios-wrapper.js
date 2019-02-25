@@ -2,12 +2,19 @@ const axios = require('axios')
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
+const urlencodedHeaders = { 'Content-Type': 'application/x-www-form-urlencoded' }
+
 function toJson(string) {
   try {
     return JSON.parse(string)
   } catch (err) {
     return string
   }
+}
+
+function transformRequest(requestJson) {
+  const params = Object.keys(requestJson).map(key => `${key}=${requestJson[key]}`)
+  return params.join('&')
 }
 
 async function get(host, endpoint, options = {}) {
@@ -24,47 +31,49 @@ async function get(host, endpoint, options = {}) {
     return response.data
   } catch (err) {
     // TODO log error
+    console.log(err)
     throw err
   }
 }
 
-async function post(host, endpoint, data, options) {
+async function post(host, endpoint, body, options) {
   const url = host + endpoint
 
+  // TODO generalize txParams
   const config_gasLimit = 32100000000
   const config_gasPrice = 1
 
-  if (data.txParams === undefined) {
-    data.txParams = { gasLimit: config_gasLimit, gasPrice: config_gasPrice }  // FIXME should come from config
+  if (body.txParams === undefined) {
+    body.txParams = { gasLimit: config_gasLimit, gasPrice: config_gasPrice }  // TODO generalize txParams
   } else {
-    data.txParams.gasLimit = data.txParams.gasLimit || config_gasLimit  // FIXME should come from config
-    data.txParams.gasPrice = data.txParams.gasPrice || config_gasPrice  // FIXME should come from config
+    body.txParams.gasLimit = body.txParams.gasLimit || config_gasLimit  // TODO generalize txParams
+    body.txParams.gasPrice = body.txParams.gasPrice || config_gasPrice  // TODO generalize txParams
   }
 
   const request = {
     url,
     method: 'POST',
     headers: options.headers || null,
-    data,
+    data: body,
     transformResponse: [toJson],
   }
-
-  const response = await axios(request)
-  return response.data
+  try {
+    const response = await axios(request)
+    return response.data
+  } catch (err) {
+    // TODO log error
+    console.log(err)
+    throw err
+  }
 }
 
-async function postue(host, endpoint, body) {
+async function postue(host, endpoint, data, options) {
   const url = host + endpoint
-
-  function transformRequest(requestJson) {
-    const params = Object.keys(requestJson).map(key => `${key}=${requestJson[key]}`)
-    return params.join('&')
-  }
 
   const response = await axios.post(
     url,
-    transformRequest(body),
-    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    transformRequest(data),
+    { headers: urlencodedHeaders },
   )
   return response.data
 }
