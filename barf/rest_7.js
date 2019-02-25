@@ -16,7 +16,19 @@ async function getUser(args, options) {
 async function createUser(args, options) {
   const address = await api.createUser(args, options)
   const user = Object.assign(args, { address })
+  // async creation
+  if (options.isAsync) {
+    return { address, user }
+  }
+  // otherwise - block for faucet fill call
+  const txResult = await fill(user, options);
   return { address, user }
+}
+
+async function fill(user, options) {
+  const body = {}
+  const txResult = await api.fill(user, body, options)
+  return txResult;
 }
 
 async function createContract(user, contract, args, options) {

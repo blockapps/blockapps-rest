@@ -27,6 +27,14 @@ async function createUser(args, options) {
   return ax.postue(url, endpoint, data, options)
 }
 
+async function fill(user, body, options) {
+  const url = getBlocUrl(options)
+  const username = encodeURIComponent(user.username)
+  const resolve = !options.isAsync
+  const endpoint = (`/users/:username/:address/fill?resolve=${resolve}`).replace(':username', username).replace(':address', user.address)
+  return ax.postue(url, endpoint, body, options)
+}
+
 async function createContract(user, contract, body, options) {
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
@@ -39,4 +47,5 @@ module.exports = {
   getUser,
   createUser,
   createContract,
+  fill,
 }
