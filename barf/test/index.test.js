@@ -2,7 +2,9 @@ const { rest, assert } = require('../index')
 const util = require('../util')
 const fsUtil = require('../fsUtil')
 
-const config = fsUtil.getYaml('barf/test/config.yaml')
+const { cwd } = util
+
+const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 const password = '1234'
 
 describe('contracts', () => {
@@ -44,8 +46,31 @@ describe('contracts', () => {
     assert.equal(contract.name, contractDef.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
+    assert.isDefined(contract.bin, 'bin')
+    assert.isDefined(contract.codeHash, 'codeHash')
+    assert.isDefined(contract.chainId, 'chainId')
+  })
+
+  it('create contract - sync - BAD_REQUEST', async () => {
+    const uid = util.uid()
+    const contractDef = createTestContractSyntaxErro(uid)
+    const args = {}
+    await assertRestStatus(async () => {
+      const contract = await rest.createContract(admin, contractDef, args, options)
+    }, 400)
   })
 })
+
+async function assertRestStatus(func, expectedRestStatus) {
+  try {
+    await func()
+  } catch (err) {
+    const restStatus = err.response.status
+    assert.equal(restStatus, expectedRestStatus, 'expected rest status error')
+    return
+  }
+  assert.equal(expectedRestStatus, 200, `expected rest status error`)
+}
 
 describe('user', () => {
   const options = { config }
@@ -104,7 +129,13 @@ describe('include rest', () => {
 })
 
 function createTestContract(uid) {
-  const name = `TestContract${uid}`
+  const name = `TestContract_${uid}`
   const source = `contract ${name} { }`
+  return { name, source }
+}
+
+function createTestContractSyntaxErro(uid) {
+  const name = `TestContract_${uid}`
+  const source = `contract ${name} { zzz zzz }`
   return { name, source }
 }

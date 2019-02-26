@@ -1,3 +1,8 @@
+const path = require('path');
+
+// odds
+const cwd = path.resolve(process.cwd())
+
 /**
  * @see https://github.com/ethereum/go-ethereum/blob/aa9fff3e68b1def0a9a22009c233150bf9ba481f/jsre/ethereum_js.go
  *
@@ -58,6 +63,7 @@ function uid(prefix, digits) {
 }
 
 module.exports = {
+  cwd,
   isAddress,
   isHash,
   uid,
