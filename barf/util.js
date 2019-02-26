@@ -57,7 +57,7 @@ function uid(prefix, digits) {
   return prefix + '_' + random
 }
 
-module.exports = {
+export default {
   isAddress,
   isHash,
   uid,

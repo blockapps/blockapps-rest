@@ -1,5 +1,5 @@
-const api = require('./api_7')
-const constants = require('./constants')
+import api from './api_7'
+import * as constants from './constants'
 
 function isTxSuccess(txResult) {
   return txResult.status === 'Success'
@@ -156,7 +156,7 @@ async function testPromise(args) {
   })
 }
 
-module.exports = {
+export default  {
   testAsync,
   testPromise,
   getUsers,
@@ -164,3 +164,4 @@ module.exports = {
   createUser,
   createContract,
 }
+

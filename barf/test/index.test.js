@@ -1,6 +1,6 @@
-const { rest, assert } = require('../index')
-const util = require('../util')
-const fsUtil = require('../fsUtil')
+import { rest, assert } from '../index'
+import util from '../util'
+import fsUtil from '../fsUtil'
 
 const config = fsUtil.getYaml('barf/test/config.yaml')
 const password = '1234'

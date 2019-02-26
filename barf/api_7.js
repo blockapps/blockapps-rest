@@ -1,4 +1,4 @@
-const ax = require('./axios-wrapper')
+import ax from './axios-wrapper'
 
 function getBlocUrl(options) {
   const node = options.node || 0
@@ -49,7 +49,7 @@ async function blocResults(hashes, options) { // TODO untested code
   return ax.post(url, endpoint, hashes, options);
 }
 
-module.exports = {
+export default {
   getUsers,
   getUser,
   createUser,

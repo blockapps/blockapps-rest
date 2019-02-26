@@ -1,10 +1,11 @@
 {
     "name": "blockapps-rest",
-    "version": "6.4.1",
+    "version": "7.0.0",
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
-        "test": "mocha test/util.test.js"
+        "mocha": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
+        "test": "yarn mocha barf/test/*.test.js"
     },
     "keywords": [
         "BlockApps",
@@ -20,7 +21,6 @@
         "axios": "0.18.0",
         "bignumber.js": "2.4.0",
         "bluebird": "^3.4.6",
-        "chai-bignumber": "^2.0.0",
         "commander": "^2.9.0",
         "express": "^4.16.4",
         "fs": "0.0.1-security",
@@ -34,13 +34,19 @@
         "unix-time": "1.0.1"
     },
     "devDependencies": {
+        "@babel/core": "7.0.0",
+        "@babel/preset-env": "^7.3.4",
+        "babel-loader": "^8.0.5",
+        "chai": "^4.2.0",
+        "co-mocha": "^1.2.1",
         "eslint": "^4.19.1",
         "eslint-config-airbnb": "^17.0.0",
         "eslint-plugin-import": "^2.13.0",
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.10.0",
-        "chai": "^3.5.0",
-        "co-mocha": "^1.2.1",
-        "mocha": "^3.0.2"
+        "mocha": "3",
+        "mocha-webpack": "^1.1.0",
+        "webpack": "3.0.0",
+        "webpack-node-externals": "^1.7.2"
     }
 }

@@ -1,4 +1,4 @@
-const axios = require('axios')
+import axios from 'axios'
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
@@ -78,8 +78,7 @@ async function postue(host, endpoint, data, options) {
   return response.data
 }
 
-module.exports = {
-
+export default {
   get,
   post,
   postue,

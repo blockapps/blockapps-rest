@@ -1,9 +1,10 @@
-const rest = require('./rest_7.js')
-const { assert } = require('chai')
+import rest from './rest_7.js'
+import { assert } from 'chai'
 
 // TODO add functionality to assert HERE
 
-module.exports = {
+
+export {
   rest,
   assert,
 }
