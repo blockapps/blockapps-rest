@@ -4,5 +4,5 @@
     , { "targets": { "node": true } }
     ]
   ],
-  "plugins": []
+  "plugins": [ "@babel/plugin-proposal-object-rest-spread"]
 }

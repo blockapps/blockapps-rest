@@ -39,22 +39,41 @@ async function fill(user, options) {
   return txResult
 }
 
-async function createContract(user, contract, args, options) {
+// options.auth either has {token} or {username, password, address}
+async function createContract(contract, options) {
   const txParams = options.txParams || {} // TODO generalize txParams
   const body = {
-    password: user.password,
     contract: contract.name,
     src: contract.source,
-    args,
-    txParams,
+    args: contract.args,
     metadata: constructMetadata(options, contract.name),
   }
-  const contratTxResult = await api.createContract(user, contract, body, options)
-  if (options.isAsync) {
-    return { hash: contratTxResult.hash }
+
+  let contractTxResult = options.auth.token 
+    ? await api.sendTransactions(
+        {
+          txs: [{
+            payload: body,
+            type: 'CONTRACT'
+          }],
+          txParams
+        },
+        options
+      )
+    : await api.createContract(
+        {
+          password: options.auth.password,
+          ...body,
+          txParams
+        },
+        options
+      )
+
+  if(options.isAsync) {
+    return { hash: contractTxResult.hash }
   }
 
-  const resolvedTxResult = await resolveResult(contratTxResult, options)
+  const resolvedTxResult = await resolveResult(contractTxResult, options)
 
   const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
 
@@ -69,9 +88,37 @@ async function createContract(user, contract, args, options) {
   return { name: result.data.contents.name, address: result.data.contents.address }
 }
 
+async function getKey(options) {
+  const response = await api.getKey(options);
+  return response.address;
+}
+
+async function createKey(options) {
+  const response = await api.createKey(options);
+  return response.address;
+}
+
+async function createOrGetKey(options) {
+  let response;
+
+  try {
+    response = await api.getKey(options)
+  } catch (err) {
+    response = await api.createKey(options)
+    await fill(
+      {
+        address: response.address
+      }, 
+      { isAsync: false, ...options}
+    )
+  }
+  return response.address
+}
+
 async function resolveResult(result, options) {
   return (await resolveResults([result], options))[0]
 }
+
 
 async function resolveResults(results, options = {}) {
   options.doNotResolve = true
@@ -113,31 +160,24 @@ function promiseTimeout(timeout) {
  * @returns{()} metadata
  */
 function constructMetadata(options, contractName) {
-  const metadata = {}
-  if (options === {}) return metadata
+  if (options === {}) return options
 
+  const {
+    history,
+    noindex
+  } = options
+  
   // history flag (default: off)
   if (options.enableHistory) {
-    metadata['history'] = contractName
-  }
-  if (options.hasOwnProperty('history')) {
-    const newContracts = options['history'].filter(contract => contract !== contractName).join()
-    metadata['history'] = `${options['history']},${newContracts}`
+    history = [ ...history, contractName]
   }
 
   // index flag (default: on)
   if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    metadata['noindex'] = contractName
+    noindex = [ ...noindex, contractName]
   }
-  if (options.hasOwnProperty('noindex')) {
-    const newContracts = options['noindex'].filter(contract => contract !== contractName).join()
-    metadata['noindex'] = `${options['noindex']},${newContracts}`
-  }
-
-  //TODO: construct the "nohistory" and "index" fields for metadata if needed
-  // The current implementation only constructs "history" and "noindex"
-
-  return metadata
+  
+  return {history, noindex}
 }
 
 /////////////////////////////////////////////// tests
@@ -163,5 +203,8 @@ export default  {
   getUser,
   createUser,
   createContract,
+  createKey,
+  getKey,
+  createOrGetKey
 }
 

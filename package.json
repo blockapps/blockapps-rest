@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "mocha": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
+        "build": "yarn webpack --config config/webpack.config.js --progress",
         "test": "yarn mocha barf/test/*.test.js"
     },
     "keywords": [
@@ -22,11 +23,13 @@
         "bignumber.js": "2.4.0",
         "bluebird": "^3.4.6",
         "commander": "^2.9.0",
+        "dotenv": "^6.2.0",
         "express": "^4.16.4",
         "fs": "0.0.1-security",
         "https": "1.0.0",
         "js-yaml": "3.6.1",
         "jsonwebtoken": "8.4.0",
+        "query-string": "^6.2.0",
         "simple-oauth2": "2.2.1",
         "solidity-parser": "^0.4.0",
         "sync-request": "6.0.0",
@@ -35,6 +38,7 @@
     },
     "devDependencies": {
         "@babel/core": "7.0.0",
+        "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
         "@babel/preset-env": "^7.3.4",
         "babel-loader": "^8.0.5",
         "chai": "^4.2.0",

@@ -2,10 +2,15 @@ import { rest, assert } from '../index'
 import util from '../util'
 import fsUtil from '../fsUtil'
 
+import dotenv from 'dotenv'
+const loadEnv = dotenv.config();
+assert.isUndefined(loadEnv.error)
+
 const config = fsUtil.getYaml('barf/test/config.yaml')
 const password = '1234'
 
-describe('contracts', () => {
+describe('contracts', function () {
+  this.timeout(config.timeout)
   let admin
   const options = { config }
 
@@ -15,22 +20,39 @@ describe('contracts', () => {
     const args = { username, password }
     const { user } = await rest.createUser(args, options)
     admin = user
+
+    assert.isDefined(process.env.USER_TOKEN)
+    const address = await rest.createOrGetKey({ config, auth: { token: process.env.USER_TOKEN }});
+    assert.isOk(util.isAddress(address))
   })
 
   it('create contract - async', async () => {
     const uid = util.uid()
     const contractDef = createTestContract(uid)
-    const args = {}
-    const asyncOptions = { config, isAsync: true }
-    const { hash } = await rest.createContract(admin, contractDef, args, asyncOptions)
+    const asyncOptions = { 
+      config, 
+      isAsync: true,
+      auth: { 
+        ...admin,
+        password
+      } 
+    }
+    const { hash } = await rest.createContract(contractDef, asyncOptions)
+
     assert.isOk(util.isHash(hash), 'hash')
   })
 
   it('create contract - sync', async () => {
     const uid = util.uid()
     const contractDef = createTestContract(uid)
-    const args = {}
-    const contract = await rest.createContract(admin, contractDef, args, options)
+    const syncOptions = { 
+      config, 
+      auth: { 
+        ...admin,
+        password
+      } 
+    }
+    const contract = await rest.createContract(contractDef, syncOptions)
     assert.equal(contract.name, contractDef.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
   })
@@ -38,9 +60,37 @@ describe('contracts', () => {
   it('create contract - sync - detailed', async () => {
     const uid = util.uid()
     const contractDef = createTestContract(uid)
-    const args = {}
-    options.isDetailed = true
-    const contract = await rest.createContract(admin, contractDef, args, options)
+    const detailedOptions = {
+      isDetailed: true,
+      auth: { 
+        ...admin,
+        password
+      },
+      config
+    }
+    const contract = await rest.createContract(
+      contractDef, 
+      detailedOptions
+    )
+    assert.equal(contract.name, contractDef.name, 'name')
+    assert.isOk(util.isAddress(contract.address), 'address')
+    assert.isDefined(contract.src, 'src')
+  })
+
+  it('create contract - oauth', async() => {
+    const uid = util.uid()
+    const contractDef = createTestContract(uid)
+    const oauthOptions = {
+      isDetailed: true,
+      auth: { 
+        token: process.env.USER_TOKEN
+      },
+      config
+    }
+    const contract = await rest.createContract(
+      contractDef, 
+      oauthOptions
+    )
     assert.equal(contract.name, contractDef.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
@@ -106,5 +156,6 @@ describe('include rest', () => {
 function createTestContract(uid) {
   const name = `TestContract${uid}`
   const source = `contract ${name} { }`
-  return { name, source }
+  const args = {}
+  return { name, source, args }
 }
