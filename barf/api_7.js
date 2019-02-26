@@ -42,10 +42,18 @@ async function createContract(user, contract, body, options) {
   return ax.post(url, endpoint, body, options)
 }
 
+async function blocResults(hashes, options) { // TODO untested code
+  const url = getBlocUrl(options)
+  const resolve = !options.isAsync
+  const endpoint = `/transactions/results?resolve=${resolve}`
+  return ax.post(url, endpoint, hashes, options);
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   createContract,
   fill,
+  blocResults,
 }

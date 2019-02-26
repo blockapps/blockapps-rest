@@ -20,6 +20,10 @@ function isAddress(address) {
   return isChecksumAddress(address)
 }
 
+function isHash(hash) {
+  return /([A-Fa-f0-9]{64})$/.test(hash)
+}
+
 /**
  * Checks if the given string is a checksummed address
  *
@@ -55,5 +59,6 @@ function uid(prefix, digits) {
 
 module.exports = {
   isAddress,
+  isHash,
   uid,
 }

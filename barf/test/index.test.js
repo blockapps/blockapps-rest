@@ -17,20 +17,41 @@ describe('contracts', () => {
     admin = user
   })
 
-  it('create contract', async () => {
+  it('create contract - async', async () => {
     const uid = util.uid()
-    const contract = createTestContract(uid)
+    const contractDef = createTestContract(uid)
     const args = {}
-    const { name, hash } = await rest.createContract(admin, contract, args, options)
-    assert.equal(name, contract.name, 'name')
-    assert.isDefined(hash, 'name') // TODO add util.isHash for testing
+    const asyncOptions = { config, isAsync: true }
+    const { hash } = await rest.createContract(admin, contractDef, args, asyncOptions)
+    assert.isOk(util.isHash(hash), 'hash')
+  })
+
+  it('create contract - sync', async () => {
+    const uid = util.uid()
+    const contractDef = createTestContract(uid)
+    const args = {}
+    const contract = await rest.createContract(admin, contractDef, args, options)
+    assert.equal(contract.name, contractDef.name, 'name')
+    assert.isOk(util.isAddress(contract.address), 'address')
+  })
+
+  it('create contract - sync - detailed', async () => {
+    const uid = util.uid()
+    const contractDef = createTestContract(uid)
+    const args = {}
+    options.isDetailed = true
+    const contract = await rest.createContract(admin, contractDef, args, options)
+    assert.equal(contract.name, contractDef.name, 'name')
+    assert.isOk(util.isAddress(contract.address), 'address')
+    assert.isDefined(contract.src, 'src')
   })
 })
 
 describe('user', () => {
+  const options = { config }
+
   it('get all users', async () => {
     const args = {}
-    const options = { config }
     const result = await rest.getUsers(args, options)
     assert.equal(Array.isArray(result), true, 'return value is an array')
   })
@@ -53,13 +74,11 @@ describe('user', () => {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
-    const options = { config }
-    const address = await rest.createUser(args, options)
+    const { user } = await rest.createUser(args, options)
     // get the user
     const args2 = { username }
-    const options2 = { config }
-    const address2 = await rest.getUser(args2, options2)
-    assert.equal(address, address2, 'user is valid eth address')
+    const address = await rest.getUser(args2, options)
+    assert.equal(address, user.address, 'user is valid eth address')
   })
 })
 
