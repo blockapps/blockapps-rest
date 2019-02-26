@@ -1,7 +1,18 @@
 ## RELEASE NOTES
 
-### Version 6.2.11
+### Version 6.4.2
 * Use `until` for consistent timeout configuration
+
+### Version 6.4.1
+* Clean OAuth cookies if access token expired and can't be refreshed
+
+### Version 6.4.0
+* Search URL should not necessarily contain `/cirrus` now - for STRATO platform internal calls compatibility
+* Removed old deprecated API and REST wrappers (v4 and earlier)
+* Removed the old deprecated Explorer API wrappers
+
+### Version 6.3.0
+* rest6.getKey now has an option to return other user's account address
 
 ###  Version 6.2.10
 * resolveResults() optimization introduced in 6.2.8 is reverted (causing hidden issues)
