@@ -1,5 +1,6 @@
 const RestStatus = require('http-status-codes')
-const { rest, assert } = require('../index')
+const { rest } = require('../index')
+const { assert } = require('../assert')
 const util = require('../util')
 const fsUtil = require('../fsUtil')
 
@@ -54,25 +55,13 @@ describe('contracts', () => {
 
   it('create contract - sync - BAD_REQUEST', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
+    const contractDef = createTestContractSyntaxError(uid)
     const args = {}
-    await assertRestStatus(async () => {
+    await assert.restStatus(async () => {
       return await rest.createContract(admin, contractDef, args, options)
     }, RestStatus.BAD_REQUEST)
   })
 })
-
-async function assertRestStatus(func, expectedRestStatus) {
-  let result
-  try {
-    result = await func()
-  } catch (err) {
-    const restStatus = err.response.status
-    assert.equal(restStatus, expectedRestStatus, 'expected rest status error')
-    return
-  }
-  assert.isUndefined(result, `REST call completed instead of REST error ${expectedRestStatus}`)
-}
 
 describe('user', () => {
   const options = { config }
@@ -136,7 +125,7 @@ function createTestContract(uid) {
   return { name, source }
 }
 
-function createTestContractSyntaxErro(uid) {
+function createTestContractSyntaxError(uid) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { zzz zzz }`
   return { name, source }
