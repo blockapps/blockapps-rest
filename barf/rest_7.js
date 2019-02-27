@@ -27,7 +27,7 @@ async function createUser(args, options) {
   }
   // otherwise - block for faucet fill call
   const txResult = await fill(user, options)
-  return { address, user }
+  return { address, user } // TODO flow user object
 }
 
 async function fill(user, options) {

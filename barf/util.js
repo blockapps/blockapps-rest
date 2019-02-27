@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 // odds
 const cwd = path.resolve(process.cwd())
