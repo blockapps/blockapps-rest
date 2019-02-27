@@ -39,13 +39,13 @@ async function fill(user, options) {
   return txResult
 }
 
-async function createContract(user, contract, args, options) {
+async function createContract(user, contract, options) {
   const txParams = options.txParams || {} // TODO generalize txParams
   const body = {
     password: user.password,
     contract: contract.name,
     src: contract.source,
-    args,
+    args: contract.args,
     txParams,
     metadata: constructMetadata(options, contract.name),
   }

@@ -23,29 +23,26 @@ describe('contracts', () => {
 
   it('create contract - async', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
-    const args = {}
+    const contractArgs = createTestContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
-    const { hash } = await rest.createContract(admin, contractDef, args, asyncOptions)
+    const { hash } = await rest.createContract(admin, contractArgs, asyncOptions)
     assert.isOk(util.isHash(hash), 'hash')
   })
 
   it('create contract - sync', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
-    const args = {}
-    const contract = await rest.createContract(admin, contractDef, args, options)
-    assert.equal(contract.name, contractDef.name, 'name')
+    const contractArgs = createTestContractArgs(uid)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
   })
 
   it('create contract - sync - detailed', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
-    const args = {}
+    const contractArgs = createTestContractArgs(uid)
     options.isDetailed = true
-    const contract = await rest.createContract(admin, contractDef, args, options)
-    assert.equal(contract.name, contractDef.name, 'name')
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
     assert.isDefined(contract.bin, 'bin')
@@ -55,28 +52,26 @@ describe('contracts', () => {
 
   it('create contract - sync - BAD_REQUEST', async () => {
     const uid = util.uid()
-    const contractDef = createTestContractSyntaxError(uid)
-    const args = {}
+    const contractArgs = createTestContractSyntaxErrorArgs(uid)
     await assert.restStatus(async () => {
-      return await rest.createContract(admin, contractDef, args, options)
+      return rest.createContract(admin, contractArgs, options)
     }, RestStatus.BAD_REQUEST, /line (?=., column)/)
   })
 
   it('create contract - constructor args', async () => {
     const uid = util.uid()
-    const contractDef = createTestContractConstructorArgs(uid)
-    const args = { arg_uint: 1234 }
-    const contract = await rest.createContract(admin, contractDef, usc(args), options)
-    assert.equal(contract.name, contractDef.name, 'name')
+    const constructorArgs = { arg_uint: 1234 }
+    const contractArgs = createTestContractConstructorArgs(uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
   })
 
   it('create contract - constructor args missing - BAD_REQUEST', async () => {
     const uid = util.uid()
-    const contractDef = createTestContractConstructorArgs(uid)
-    const args = {}
+    const contractArgs = createTestContractConstructorArgs(uid)
     await assert.restStatus(async () => {
-      return await rest.createContract(admin, contractDef, args, options)
+      return rest.createContract(admin, contractArgs, options)
     }, RestStatus.BAD_REQUEST, /argument names don't match:/)
   })
 
@@ -138,19 +133,19 @@ describe('include rest', () => {
   })
 })
 
-function createTestContract(uid) {
+function createTestContractArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { }`
-  return { name, source }
+  return { name, source, args: usc(args) }
 }
 
-function createTestContractSyntaxError(uid) {
+function createTestContractSyntaxErrorArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { zzz zzz }`
-  return { name, source }
+  return { name, source, args: usc(args) }
 }
 
-function createTestContractConstructorArgs(uid) {
+function createTestContractConstructorArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `
 contract ${name} {
@@ -158,5 +153,5 @@ contract ${name} {
   }   
 }
 `
-  return { name, source }
+  return { name, source, args: usc(args) }
 }
