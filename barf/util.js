@@ -62,9 +62,17 @@ function uid(prefix, digits) {
   return prefix + '_' + random
 }
 
+function usc(args) {
+  return Object.keys(args).reduce(function(acc, key) {
+    acc[`_${key}`] = args[key]
+    return acc
+  }, {})
+}
+
 module.exports = {
   cwd,
   isAddress,
   isHash,
   uid,
+  usc,
 }

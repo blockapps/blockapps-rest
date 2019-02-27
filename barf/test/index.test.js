@@ -4,7 +4,7 @@ const { assert } = require('../assert')
 const util = require('../util')
 const fsUtil = require('../fsUtil')
 
-const { cwd } = util
+const { cwd, usc } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 const password = '1234'
@@ -59,8 +59,27 @@ describe('contracts', () => {
     const args = {}
     await assert.restStatus(async () => {
       return await rest.createContract(admin, contractDef, args, options)
-    }, RestStatus.BAD_REQUEST)
+    }, RestStatus.BAD_REQUEST, /line (?=., column)/)
   })
+
+  it('create contract - constructor args', async () => {
+    const uid = util.uid()
+    const contractDef = createTestContractConstructorArgs(uid)
+    const args = { arg_uint: 1234 }
+    const contract = await rest.createContract(admin, contractDef, usc(args), options)
+    assert.equal(contract.name, contractDef.name, 'name')
+    assert.isOk(util.isAddress(contract.address), 'address')
+  })
+
+  it('create contract - constructor args missing - BAD_REQUEST', async () => {
+    const uid = util.uid()
+    const contractDef = createTestContractConstructorArgs(uid)
+    const args = {}
+    await assert.restStatus(async () => {
+      return await rest.createContract(admin, contractDef, args, options)
+    }, RestStatus.BAD_REQUEST, /argument names don't match:/)
+  })
+
 })
 
 describe('user', () => {
@@ -128,5 +147,16 @@ function createTestContract(uid) {
 function createTestContractSyntaxError(uid) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { zzz zzz }`
+  return { name, source }
+}
+
+function createTestContractConstructorArgs(uid) {
+  const name = `TestContract_${uid}`
+  const source = `
+contract ${name} {
+  constructor(uint _arg_uint) {
+  }   
+}
+`
   return { name, source }
 }
