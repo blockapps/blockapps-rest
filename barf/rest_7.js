@@ -100,6 +100,11 @@ async function getState(contract, options) {
   return result
 }
 
+async function getArray(contract, arrayName, options) {
+  const result = await api.getState(contract, options)
+  return result
+}
+
 function promiseTimeout(timeout) {
   return new Promise(function(resolve, reject) {
     setTimeout(function() {

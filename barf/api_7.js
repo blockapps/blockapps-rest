@@ -1,4 +1,5 @@
 const ax = require('./axios-wrapper')
+const queryString = require('query-string')
 
 function getBlocUrl(options) {
   const node = options.node || 0
@@ -46,15 +47,15 @@ async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
   const resolve = !options.isAsync
   const endpoint = `/transactions/results?resolve=${resolve}`
-  return ax.post(url, endpoint, hashes, options);
+  return ax.post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
   const url = getBlocUrl(options)
-  const endpoint = ('/contracts/:name/:address/state').replace(':name', contract.name).replace(':address', contract.address)
+  const query = queryString.stringify(options.stateQuery)
+  const endpoint = (`/contracts/:name/:address/state?${query}`).replace(':name', contract.name).replace(':address', contract.address)
   return ax.get(url, endpoint, options)
 }
-
 
 module.exports = {
   getUsers,

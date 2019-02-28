@@ -97,6 +97,43 @@ describe('state', () => {
       return rest.getState({ name: uid, address: 0 }, options)
     }, RestStatus.BAD_REQUEST, /Couldn't find/)
   })
+
+  it('get state - large array', async () => {
+    const MAX_SEGMENT_SIZE = 100
+    const SIZE = MAX_SEGMENT_SIZE * 2 + 30
+    const name = 'array'
+    const uid = util.uid()
+    const constructorArgs = { size: SIZE }
+    const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    {
+      options.stateQuery = { name: 'array' }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array.length, MAX_SEGMENT_SIZE)
+    }
+    {
+      options.stateQuery = { name: 'array', length: true }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array, SIZE, 'array size')
+    }
+    {
+      options.stateQuery = { name: 'array', length: true }
+      const state = await rest.getState(contract, options)
+      const length = state[options.stateQuery.name]
+      const all = []
+      for (let segment = 0 ; segment < length/MAX_SEGMENT_SIZE; segment++) {
+        options.stateQuery = { name: 'array', offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+        const state = await rest.getState(contract, options)
+        all.push(...state[options.stateQuery.name])
+      }
+      assert.equal(all.length, length, 'array size')
+      const mismatch = all.filter((entry,index) => { return entry != index })
+      assert.equal(mismatch.length, 0, 'no mismatches')
+    }
+  })
+
 })
 
 describe('user', () => {
