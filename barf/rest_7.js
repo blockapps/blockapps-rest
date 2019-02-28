@@ -100,8 +100,17 @@ async function getState(contract, options) {
   return result
 }
 
-async function getArray(contract, arrayName, options) {
-  const result = await api.getState(contract, options)
+async function getArray(contract, name, options) {
+  const MAX_SEGMENT_SIZE = 100
+  options.stateQuery = { name, length: true }
+  const state = await getState(contract, options)
+  const length = state[name]
+  const result = []
+  for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
+    options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+    const state = await getState(contract, options)
+    result.push(...state[options.stateQuery.name])
+  }
   return result
 }
 
@@ -174,4 +183,5 @@ module.exports = {
   createUser,
   createContract,
   getState,
+  getArray,
 }

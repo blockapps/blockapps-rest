@@ -107,33 +107,45 @@ describe('state', () => {
     const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
     const contract = await rest.createContract(admin, contractArgs, options)
     {
-      options.stateQuery = { name: 'array' }
+      options.stateQuery = { name }
       const state = await rest.getState(contract, options)
       assert.isDefined(state[options.stateQuery.name])
       assert.equal(state.array.length, MAX_SEGMENT_SIZE)
     }
     {
-      options.stateQuery = { name: 'array', length: true }
+      options.stateQuery = { name, length: true }
       const state = await rest.getState(contract, options)
       assert.isDefined(state[options.stateQuery.name])
       assert.equal(state.array, SIZE, 'array size')
     }
     {
-      options.stateQuery = { name: 'array', length: true }
+      options.stateQuery = { name, length: true }
       const state = await rest.getState(contract, options)
       const length = state[options.stateQuery.name]
       const all = []
-      for (let segment = 0 ; segment < length/MAX_SEGMENT_SIZE; segment++) {
-        options.stateQuery = { name: 'array', offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+      for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
+        options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
         const state = await rest.getState(contract, options)
         all.push(...state[options.stateQuery.name])
       }
       assert.equal(all.length, length, 'array size')
-      const mismatch = all.filter((entry,index) => { return entry != index })
+      const mismatch = all.filter((entry, index) => { return entry != index })
       assert.equal(mismatch.length, 0, 'no mismatches')
     }
   })
 
+  it('get state - getArray', async () => {
+    const SIZE = 230
+    const name = 'array'
+    const uid = util.uid()
+    const constructorArgs = { size: SIZE }
+    const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    const result = await rest.getArray(contract, name, options)
+    assert.equal(result.length, SIZE, 'array size')
+    const mismatch = result.filter((entry, index) => { return entry != index })
+    assert.equal(mismatch.length, 0, 'no mismatches')
+  })
 })
 
 describe('user', () => {
