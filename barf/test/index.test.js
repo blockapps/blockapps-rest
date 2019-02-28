@@ -104,7 +104,8 @@ describe('state', () => {
     const name = 'array'
     const uid = util.uid()
     const constructorArgs = { size: SIZE }
-    const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
+    const filename = `${cwd}/barf/test/fixtures/LargeArray.sol`
+    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
     const contract = await rest.createContract(admin, contractArgs, options)
     {
       options.stateQuery = { name }
