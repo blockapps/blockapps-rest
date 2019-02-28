@@ -21,12 +21,15 @@
         "bignumber.js": "2.4.0",
         "bluebird": "^3.4.6",
         "chai-bignumber": "^2.0.0",
+        "chai": "^3.5.0",
         "commander": "^2.9.0",
+        "dotenv": "^6.2.0",
         "express": "^4.16.4",
         "fs": "0.0.1-security",
         "https": "1.0.0",
         "js-yaml": "3.6.1",
         "jsonwebtoken": "8.4.0",
+        "query-string": "^6.2.0",
         "simple-oauth2": "2.2.1",
         "solidity-parser": "^0.4.0",
         "sync-request": "6.0.0",
@@ -35,13 +38,17 @@
         "unix-time": "1.0.1"
     },
     "devDependencies": {
+        "@babel/core": "7.0.0",
+        "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+        "@babel/preset-env": "^7.3.4",
+        "babel-loader": "^8.0.5",
+        "chai": "^3.5.0",
+        "co-mocha": "^1.2.1",
         "eslint": "^4.19.1",
         "eslint-config-airbnb": "^17.0.0",
         "eslint-plugin-import": "^2.13.0",
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.10.0",
-        "chai": "^3.5.0",
-        "co-mocha": "^1.2.1",
         "mocha": "^3.0.2"
     }
 }

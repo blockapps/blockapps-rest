@@ -16,7 +16,9 @@ function createContractConstructorArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `
 contract ${name} {
+  uint var_uint;
   constructor(uint _arg_uint) {
+    var_uint = _arg_uint;
   }   
 }
 `

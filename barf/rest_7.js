@@ -95,6 +95,11 @@ async function getBlocResults(hashes, options = {}) {
   return result
 }
 
+async function getState(contract, options) {
+  const result = await api.getState(contract, options)
+  return result
+}
+
 function promiseTimeout(timeout) {
   return new Promise(function(resolve, reject) {
     setTimeout(function() {
@@ -163,4 +168,5 @@ module.exports = {
   getUser,
   createUser,
   createContract,
+  getState,
 }

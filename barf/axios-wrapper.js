@@ -79,7 +79,6 @@ async function postue(host, endpoint, data, options) {
 }
 
 module.exports = {
-
   get,
   post,
   postue,

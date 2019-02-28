@@ -1,6 +1,6 @@
 const RestStatus = require('http-status-codes')
 const { rest } = require('../index')
-const { assert } = require('../assert')
+const { assert } = require('./assert')
 const util = require('../util')
 const fsUtil = require('../fsUtil')
 const factory = require('./factory')
@@ -76,6 +76,21 @@ describe('contracts', () => {
     }, RestStatus.BAD_REQUEST, /argument names don't match:/)
   })
 
+  it('get state', async () => {
+    const uid = util.uid()
+    const constructorArgs = { arg_uint: 1234 }
+    const contractArgs = factory.createContractConstructorArgs(uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    const state = await rest.getState(contract, options)
+    assert.equal(state.var_uint, constructorArgs.arg_uint)
+  })
+
+  it('get state - BAD_REQUEST - bad contract name', async () => {
+    const uid = util.uid()
+    await assert.restStatus(async () => {
+      return rest.getState({ name: uid, address: 0 }, options)
+    }, RestStatus.BAD_REQUEST, /Couldn't find/)
+  })
 })
 
 describe('user', () => {

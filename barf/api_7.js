@@ -49,6 +49,13 @@ async function blocResults(hashes, options) { // TODO untested code
   return ax.post(url, endpoint, hashes, options);
 }
 
+async function getState(contract, options) {
+  const url = getBlocUrl(options)
+  const endpoint = ('/contracts/:name/:address/state').replace(':name', contract.name).replace(':address', contract.address)
+  return ax.get(url, endpoint, options)
+}
+
+
 module.exports = {
   getUsers,
   getUser,
@@ -56,4 +63,5 @@ module.exports = {
   createContract,
   fill,
   blocResults,
+  getState,
 }
