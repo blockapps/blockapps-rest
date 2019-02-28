@@ -1,6 +1,11 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 
+function get(filename) {
+  const content = fs.readFileSync(filename, 'utf8')
+  return content
+}
+
 function getYaml(filename) {
   const content = fs.readFileSync(filename, 'utf8')
   return yaml.safeLoad(content)
@@ -12,6 +17,7 @@ function getJson(filename, options) {
 }
 
 module.exports = {
+  get,
   getYaml,
   getJson,
 }

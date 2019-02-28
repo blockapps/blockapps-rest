@@ -97,6 +97,28 @@ describe('state', () => {
       return rest.getState({ name: uid, address: 0 }, options)
     }, RestStatus.BAD_REQUEST, /Couldn't find/)
   })
+
+  it('get state - large array', async () => {
+    const MAX_ARRAY_SIZE = 100
+    const SIZE = MAX_ARRAY_SIZE * 2 + 30
+    const uid = util.uid()
+    const constructorArgs = { size: SIZE }
+    const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    {
+      options.stateQuery = { name: 'array' }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array.length, MAX_ARRAY_SIZE)
+    }
+    {
+      options.stateQuery = { name: 'array', length: true }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array, SIZE, 'array size')
+    }
+  })
+
 })
 
 describe('user', () => {
