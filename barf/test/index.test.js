@@ -150,6 +150,7 @@ describe('state', () => {
 
 describe('user', () => {
   const options = { config }
+  const password = '1234'
 
   it('get all users', async () => {
     const args = {}
