@@ -1,4 +1,15 @@
+const { rest } = require('../index')
 const { usc } = require('../util')
+
+/*
+  users
+ */
+async function createAdmin(uid, options, password = '1234') {
+  const username = `admin_${uid}`
+  const args = { username, password }
+  const { user } = await rest.createUser(args, options)
+  return user
+}
 
 function createContractArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
@@ -26,6 +37,7 @@ contract ${name} {
 }
 
 module.exports = {
+  createAdmin,
   createContractArgs,
   createContractSyntaxErrorArgs,
   createContractConstructorArgs,

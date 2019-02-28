@@ -8,7 +8,6 @@ const factory = require('./factory')
 const { cwd } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const password = '1234'
 
 describe('contracts', () => {
   let admin
@@ -16,10 +15,7 @@ describe('contracts', () => {
 
   before(async () => {
     const uid = util.uid()
-    const username = `admin_${uid}`
-    const args = { username, password }
-    const { user } = await rest.createUser(args, options)
-    admin = user
+    admin = await factory.createAdmin(uid, options)
   })
 
   it('create contract - async', async () => {
@@ -74,6 +70,16 @@ describe('contracts', () => {
     await assert.restStatus(async () => {
       return rest.createContract(admin, contractArgs, options)
     }, RestStatus.BAD_REQUEST, /argument names don't match:/)
+  })
+})
+
+describe('state', () => {
+  let admin
+  const options = { config }
+
+  before(async () => {
+    const uid = util.uid()
+    admin = await factory.createAdmin(uid, options)
   })
 
   it('get state', async () => {
