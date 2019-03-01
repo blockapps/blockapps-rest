@@ -23,9 +23,10 @@ describe('contracts', function() {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
-    const { hash } = await rest.createContract(admin, contractArgs, asyncOptions)
-    assert.isOk(util.isHash(hash), 'hash')
-    await util.sleep(2 * 1000)
+    const pendingTxResult = await rest.createContract(admin, contractArgs, asyncOptions)
+    assert.isOk(util.isHash(pendingTxResult.hash), 'hash')
+    // must resolve the tx before continuing to the next test
+    await rest.resolveResult(pendingTxResult, options)
   })
 
   it('create contract - sync', async () => {

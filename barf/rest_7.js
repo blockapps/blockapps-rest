@@ -49,12 +49,12 @@ async function createContract(user, contract, options) {
     txParams,
     metadata: constructMetadata(options, contract.name),
   }
-  const contratTxResult = await api.createContract(user, contract, body, options)
+  const pendingTxResult = await api.createContract(user, contract, body, options)
   if (options.isAsync) {
-    return { hash: contratTxResult.hash }
+    return pendingTxResult
   }
 
-  const resolvedTxResult = await resolveResult(contratTxResult, options)
+  const resolvedTxResult = await resolveResult(pendingTxResult, options)
 
   const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
 
@@ -214,4 +214,6 @@ module.exports = {
   getState,
   getArray,
   call,
+  //
+  resolveResult,
 }
