@@ -1,93 +1,77 @@
-import { rest, assert } from '../index'
+import RestStatus from 'http-status-codes'
+import { rest } from '../index'
+import { assert } from ('./assert')
 import util from '../util'
 import fsUtil from '../fsUtil'
+import factory from './factory'
 
 import dotenv from 'dotenv'
 const loadEnv = dotenv.config();
 assert.isUndefined(loadEnv.error)
 
-const config = fsUtil.getYaml('barf/test/config.yaml')
-const password = '1234'
+
+const { cwd } = util
+
+const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
 describe('contracts', function () {
   this.timeout(config.timeout)
   let admin
+  let tokenUser
   const options = { config }
 
   before(async () => {
     const uid = util.uid()
-    const username = `admin_${uid}`
-    const args = { username, password }
-    const { user } = await rest.createUser(args, options)
-    admin = user
 
     assert.isDefined(process.env.USER_TOKEN)
-    const address = await rest.createOrGetKey({ config, auth: { token: process.env.USER_TOKEN }});
+    const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN },options);
     assert.isOk(util.isAddress(address))
+
+    admin = await factory.createAdmin(uid, options)
+    tokenUser = {token: process.env.USER_TOKEN}
   })
 
   it('create contract - async', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
-    const asyncOptions = { 
-      config, 
-      isAsync: true,
-      auth: { 
-        ...admin,
-        password
-      } 
-    }
-    const { hash } = await rest.createContract(contractDef, asyncOptions)
-
+    const contractArgs = factory.createContractArgs(uid)
+    const asyncOptions = { config, isAsync: true }
+    const { hash } = await rest.createContract(admin, contractArgs, asyncOptions)
     assert.isOk(util.isHash(hash), 'hash')
   })
 
   it('create contract - sync', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
-    const syncOptions = { 
-      config, 
-      auth: { 
-        ...admin,
-        password
-      } 
-    }
-    const contract = await rest.createContract(contractDef, syncOptions)
-    assert.equal(contract.name, contractDef.name, 'name')
+    const contractArgs = factory.createContractArgs(uid)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
   })
 
   it('create contract - sync - detailed', async () => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
+    const contractArgs = factory.createContractArgs(uid)
     const detailedOptions = {
       isDetailed: true,
-      auth: { 
-        ...admin,
-        password
-      },
       config
     }
-    const contract = await rest.createContract(
-      contractDef, 
-      detailedOptions
-    )
-    assert.equal(contract.name, contractDef.name, 'name')
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
+    assert.isDefined(contract.bin, 'bin')
+    assert.isDefined(contract.codeHash, 'codeHash')
+    assert.isDefined(contract.chainId, 'chainId')
   })
 
   it('create contract - oauth', async() => {
     const uid = util.uid()
-    const contractDef = createTestContract(uid)
+    const contractArgs = factory.createContractArgs(uid)
     const oauthOptions = {
       isDetailed: true,
-      auth: { 
-        token: process.env.USER_TOKEN
-      },
       config
     }
     const contract = await rest.createContract(
+      tokenUser,
       contractDef, 
       oauthOptions
     )
@@ -95,10 +79,112 @@ describe('contracts', function () {
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
   })
+
+  it('create contract - sync - BAD_REQUEST', async () => {
+    const uid = util.uid()
+    const contractArgs = factory.createContractSyntaxErrorArgs(uid)
+    await assert.restStatus(async () => {
+      return rest.createContract(admin, contractArgs, options)
+    }, RestStatus.BAD_REQUEST, /line (?=., column)/)
+  })
+
+  it('create contract - constructor args', async () => {
+    const uid = util.uid()
+    const constructorArgs = { arg_uint: 1234 }
+    const contractArgs = factory.createContractConstructorArgs(uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
+    assert.isOk(util.isAddress(contract.address), 'address')
+  })
+
+  it('create contract - constructor args missing - BAD_REQUEST', async () => {
+    const uid = util.uid()
+    const contractArgs = factory.createContractConstructorArgs(uid)
+    await assert.restStatus(async () => {
+      return rest.createContract(admin, contractArgs, options)
+    }, RestStatus.BAD_REQUEST, /argument names don't match:/)
+  })
+})
+
+describe('state', () => {
+  let admin
+  const options = { config }
+
+  before(async () => {
+    const uid = util.uid()
+    admin = await factory.createAdmin(uid, options)
+  })
+
+  it('get state', async () => {
+    const uid = util.uid()
+    const constructorArgs = { arg_uint: 1234 }
+    const contractArgs = factory.createContractConstructorArgs(uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    const state = await rest.getState(contract, options)
+    assert.equal(state.var_uint, constructorArgs.arg_uint)
+  })
+
+  it('get state - BAD_REQUEST - bad contract name', async () => {
+    const uid = util.uid()
+    await assert.restStatus(async () => {
+      return rest.getState({ name: uid, address: 0 }, options)
+    }, RestStatus.BAD_REQUEST, /Couldn't find/)
+  })
+
+  it('get state - large array', async () => {
+    const MAX_SEGMENT_SIZE = 100
+    const SIZE = MAX_SEGMENT_SIZE * 2 + 30
+    const name = 'array'
+    const uid = util.uid()
+    const constructorArgs = { size: SIZE }
+    const filename = `${cwd}/barf/test/fixtures/LargeArray.sol`
+    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    {
+      options.stateQuery = { name }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array.length, MAX_SEGMENT_SIZE)
+    }
+    {
+      options.stateQuery = { name, length: true }
+      const state = await rest.getState(contract, options)
+      assert.isDefined(state[options.stateQuery.name])
+      assert.equal(state.array, SIZE, 'array size')
+    }
+    {
+      options.stateQuery = { name, length: true }
+      const state = await rest.getState(contract, options)
+      const length = state[options.stateQuery.name]
+      const all = []
+      for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
+        options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+        const state = await rest.getState(contract, options)
+        all.push(...state[options.stateQuery.name])
+      }
+      assert.equal(all.length, length, 'array size')
+      const mismatch = all.filter((entry, index) => { return entry != index })
+      assert.equal(mismatch.length, 0, 'no mismatches')
+    }
+  })
+
+  it('get state - getArray', async () => {
+    const SIZE = 230
+    const name = 'array'
+    const uid = util.uid()
+    const constructorArgs = { size: SIZE }
+    const contractArgs = await factory.createContractFromFile(`${cwd}/barf/test/fixtures/LargeArray.sol`, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    const result = await rest.getArray(contract, name, options)
+    assert.equal(result.length, SIZE, 'array size')
+    const mismatch = result.filter((entry, index) => { return entry != index })
+    assert.equal(mismatch.length, 0, 'no mismatches')
+  })
 })
 
 describe('user', () => {
   const options = { config }
+  const password = '1234'
 
   it('get all users', async () => {
     const args = {}
@@ -152,10 +238,3 @@ describe('include rest', () => {
     }
   })
 })
-
-function createTestContract(uid) {
-  const name = `TestContract${uid}`
-  const source = `contract ${name} { }`
-  const args = {}
-  return { name, source, args }
-}

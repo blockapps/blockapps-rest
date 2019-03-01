@@ -1,3 +1,8 @@
+import path from 'path'
+
+// odds
+const cwd = path.resolve(process.cwd())
+
 /**
  * @see https://github.com/ethereum/go-ethereum/blob/aa9fff3e68b1def0a9a22009c233150bf9ba481f/jsre/ethereum_js.go
  *
@@ -57,8 +62,17 @@ function uid(prefix, digits) {
   return prefix + '_' + random
 }
 
+function usc(args) {
+  return Object.keys(args).reduce(function(acc, key) {
+    acc[`_${key}`] = args[key]
+    return acc
+  }, {})
+}
+
 export default {
+  cwd,
   isAddress,
   isHash,
   uid,
+  usc,
 }

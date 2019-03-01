@@ -5,6 +5,8 @@ function isTxSuccess(txResult) {
   return txResult.status === 'Success'
 }
 
+// TODO: remove old user and tx endpoints after STRATO switched to oauth
+
 // /users
 async function getUsers(args, options) {
   const users = await api.getUsers(args, options)
@@ -18,16 +20,16 @@ async function getUser(args, options) {
 }
 
 // /users/:username
-async function createUser(args, options) {
-  const address = await api.createUser(args, options)
-  const user = Object.assign(args, { address })
+async function createUser(user, options) {
+  const address = await api.createUser(user, options)
+  const user = Object.assign(user, { address })
   // async creation
   if (options.isAsync) {
-    return { address, user }
+    return { address, user: user }
   }
   // otherwise - block for faucet fill call
   const txResult = await fill(user, options)
-  return { address, user }
+  return { address, user: user } // TODO flow user object
 }
 
 async function fill(user, options) {
@@ -39,8 +41,7 @@ async function fill(user, options) {
   return txResult
 }
 
-// options.auth either has {token} or {username, password, address}
-async function createContract(contract, options) {
+async function createContract(user, contract, options) {
   const txParams = options.txParams || {} // TODO generalize txParams
   const body = {
     contract: contract.name,
@@ -49,8 +50,9 @@ async function createContract(contract, options) {
     metadata: constructMetadata(options, contract.name),
   }
 
-  let contractTxResult = options.auth.token 
+  let contractTxResult = user.token 
     ? await api.sendTransactions(
+        user, 
         {
           txs: [{
             payload: body,
@@ -61,8 +63,9 @@ async function createContract(contract, options) {
         options
       )
     : await api.createContract(
+        user, 
         {
-          password: options.auth.password,
+          password: user.password,
           ...body,
           txParams
         },
@@ -80,6 +83,8 @@ async function createContract(contract, options) {
   if (result.status === constants.FAILURE) {
     throw new Error(result.txResult.message) // TODO throw RestError
   }
+  // TODO: Recommend removing isDetailed, since the platform is returning
+  // this data anyway
   // options.isDetailed - return all the data
   if (options.isDetailed) {
     return result.data.contents
@@ -88,23 +93,23 @@ async function createContract(contract, options) {
   return { name: result.data.contents.name, address: result.data.contents.address }
 }
 
-async function getKey(options) {
-  const response = await api.getKey(options);
+async function getKey(user, options) {
+  const response = await api.getKey(user, options);
   return response.address;
 }
 
-async function createKey(options) {
-  const response = await api.createKey(options);
+async function createKey(user, options) {
+  const response = await api.createKey(user, options);
   return response.address;
 }
 
-async function createOrGetKey(options) {
+async function createOrGetKey(user, options) {
   let response;
 
   try {
-    response = await api.getKey(options)
+    response = await api.getKey(user, options)
   } catch (err) {
-    response = await api.createKey(options)
+    response = await api.createKey(user, options)
     await fill(
       {
         address: response.address
@@ -139,6 +144,25 @@ async function resolveResults(results, options = {}) {
 
 async function getBlocResults(hashes, options = {}) {
   const result = await api.blocResults(hashes, options)
+  return result
+}
+
+async function getState(contract, options) {
+  const result = await api.getState(contract, options)
+  return result
+}
+
+async function getArray(contract, name, options) {
+  const MAX_SEGMENT_SIZE = 100
+  options.query = { name, length: true }
+  const state = await getState(contract, options)
+  const length = state[name]
+  const result = []
+  for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
+    options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+    const state = await getState(contract, options)
+    result.push(...state[options.query.name])
+  }
   return result
 }
 
@@ -206,5 +230,7 @@ export default  {
   createKey,
   getKey,
   createOrGetKey
+  getState,
+  getArray,
 }
 
