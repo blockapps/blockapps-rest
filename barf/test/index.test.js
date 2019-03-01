@@ -9,7 +9,8 @@ const { cwd, usc } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
-describe('contracts', () => {
+describe('contracts', function() {
+  this.timeout(config.timeout)
   let admin
   const options = { config }
 
@@ -73,7 +74,8 @@ describe('contracts', () => {
   })
 })
 
-describe('state', () => {
+describe('state', function() {
+  this.timeout(config.timeout)
   let admin
   const options = { config }
 
@@ -130,7 +132,7 @@ describe('state', () => {
         all.push(...state[options.stateQuery.name])
       }
       assert.equal(all.length, length, 'array size')
-      const mismatch = all.filter((entry, index) => { return entry != index })
+      const mismatch = all.filter((entry, index) => entry != index)
       assert.equal(mismatch.length, 0, 'no mismatches')
     }
   })
@@ -144,12 +146,13 @@ describe('state', () => {
     const contract = await rest.createContract(admin, contractArgs, options)
     const result = await rest.getArray(contract, name, options)
     assert.equal(result.length, SIZE, 'array size')
-    const mismatch = result.filter((entry, index) => { return entry != index })
+    const mismatch = result.filter((entry, index) => entry != index)
     assert.equal(mismatch.length, 0, 'no mismatches')
   })
 })
 
-describe('call', () => {
+describe('call', function() {
+  this.timeout(config.timeout)
   let admin
   const options = { config }
 
@@ -174,7 +177,8 @@ describe('call', () => {
   })
 })
 
-describe('user', () => {
+describe('user', function() {
+  this.timeout(config.timeout)
   const options = { config }
   const password = '1234'
 
@@ -210,7 +214,8 @@ describe('user', () => {
   })
 })
 
-describe('include rest', () => {
+describe('include rest', function() {
+  this.timeout(config.timeout)
   it('testAsync', async () => {
     const args = { a: 'b' }
     const result = await rest.testAsync(args)
