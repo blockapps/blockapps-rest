@@ -1,6 +1,21 @@
 const queryString = require('query-string')
 const ax = require('./axios-wrapper')
 
+async function post(url, endpoint, _body, options) {
+
+  const body = Object.assign({}, _body)
+  const configTxParams = (options.config) ? options.config.txParams : undefined
+  // in order of priority: 1:body, 2:options, 3:config, 4:default
+  body.txParams = Object.assign(
+    { gasLimit: 32100000000, gasPrice: 1 },
+    configTxParams,
+    options.txParams,
+    _body.txParams,
+  )
+
+  return ax.post(url, endpoint, body, options);
+}
+
 function getBlocUrl(options) {
   const node = options.node || 0
   const nodeUrls = options.config.nodes[node]
@@ -43,7 +58,7 @@ async function createContract(user, contract, body, options) {
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })
   const endpoint = (`/users/:username/:address/contract?${query}`).replace(':username', username).replace(':address', user.address)
-  return ax.post(url, endpoint, body, options)
+  return post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code

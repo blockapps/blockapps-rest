@@ -39,17 +39,6 @@ async function get(host, endpoint, options = {}) {
 async function post(host, endpoint, body, options) {
   const url = host + endpoint
 
-  // TODO generalize txParams
-  const config_gasLimit = 32100000000
-  const config_gasPrice = 1
-
-  if (body.txParams === undefined) {
-    body.txParams = { gasLimit: config_gasLimit, gasPrice: config_gasPrice }  // TODO generalize txParams
-  } else {
-    body.txParams.gasLimit = body.txParams.gasLimit || config_gasLimit  // TODO generalize txParams
-    body.txParams.gasPrice = body.txParams.gasPrice || config_gasPrice  // TODO generalize txParams
-  }
-
   const request = {
     url,
     method: 'POST',
