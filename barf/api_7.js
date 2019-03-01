@@ -43,14 +43,15 @@ const endpoints = {
   getState: '/contracts/:name/:address/state',
   sendTransactions: '/strato/v2.3/transaction',
   getKey:  '/strato/v2.3/key',
-  createKey: '/strato/v2.3/key'
+  createKey: '/strato/v2.3/key',
+  search: '/search/:name'
 }
 
-function constructEndpoint(endpoint, params = {}, queryParams = {}) {
+function constructEndpoint(endpoint, params = {}, options = {}) {
   const url = Object.getOwnPropertyNames(params).reduce((acc, key) =>  {
     return acc.replace(`:${key}`, encodeURIComponent(params[key]))
   }, endpoint)
-  return `${url}?${queryString.stringify(queryParams)}`;
+  return `${url}?${options.isAsync ? '' : 'resolve&'}${options.chainId ? `chainid=${options.chainId}&` : ''}${queryString.stringify(options.query)}`;
 }
 
 async function getUsers(options) {
@@ -74,37 +75,32 @@ async function createUser(user, options) {
 
 async function fill(user, body, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.fill, user, {resolve: !options.isAsync})
+  const endpoint = constructEndpoint(endpoints.fill, user, options)
   return ax.postue(url, endpoint, body, options)
 }
 
 async function createContract(user, body, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.createContract, user, {resolve: true})
+  const endpoint = constructEndpoint(endpoints.createContract, user, options)
   return ax.post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
-  const resolve = !options.isAsync
-  const endpoint = constructEndpoint(endpoints.blocResults, {}, {resolve})
+  const endpoint = constructEndpoint(endpoints.blocResults, {}, options)
   return ax.post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
   const url = getBlocUrl(options)
   const query = queryString.stringify(options.query)
-  const endpoint = constructEndpoint(endpoints.getState, contract, options.query)
+  const endpoint = constructEndpoint(endpoints.getState, contract, options)
   return ax.get(url, endpoint, options)
 }
 
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options);
-  const resolve = !options.isAsync
-  const endpoint = constructEndpoint(endpoints.sendTransactions, {}, {
-    ...options.query,
-    resolve
-  }) 
+  const endpoint = constructEndpoint(endpoints.sendTransactions, {}, options) 
   return ax.post(
     url, 
     endpoint, 
@@ -115,7 +111,7 @@ async function sendTransactions(user, body, options) {
 
 async function getKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options) 
   return ax.get(
     url,
     endpoint,
@@ -125,7 +121,7 @@ async function getKey(user, options) {
 
 async function createKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options) 
   return ax.post(
     url,
     endpoint,
@@ -133,6 +129,16 @@ async function createKey(user, options) {
     getHeaders(user, options)
   )
 }
+
+async function search(contract, options) {
+  const url = getSearchUrl(options);
+  const endpoint = constructEndpoint(endpoints.search, contract, options)
+  return ax.get(
+    url,
+    endpoint
+  )
+}
+
 
 export default {
   getUsers,
@@ -145,4 +151,5 @@ export default {
   getKey,
   createKey
   getState,
+  search
 }

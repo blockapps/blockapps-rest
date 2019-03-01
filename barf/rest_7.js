@@ -93,6 +93,118 @@ async function createContract(user, contract, options) {
   return { name: result.data.contents.name, address: result.data.contents.address }
 }
 
+async function createContractMany(user, contracts, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: contracts.map(contract => {
+        return {
+          payload: {
+            ...contract,
+            metadata: constructMetadata(options, contract.name)
+          },
+          type: 'CONTRACT'
+        }
+      })
+    },
+    options
+  )
+  if(options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolveResults.map(r => r.data.contents)
+}
+
+async function callMethod(user, method, options) {
+  const results = await api.sendTransactions(
+    user,
+    {
+      txs: [
+        {
+          payload: {
+            ...method,
+            metadata: constructMetadata(options, method.contractName)
+          },
+          type: 'FUNCTION'
+        }
+      ]
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results[0].hash
+  }
+
+  const resolvedResult = await resolveResult(results[0], options)
+  return resolvedResult
+}
+
+async function callMethodMany(user, methods, options) {
+  const results = await api.sendTransactions(
+    user,
+    {
+      txs: methods.map(method => {
+        payload: {
+          ...method,
+          metadata: constructMetadata(options, method.contractName)
+        },
+        type: 'FUNCTION'
+      })
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolvedResults.map(r => r.data.contents)
+}
+
+async function send(user, sendTx, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: [{
+        payload: sendTx,
+        type: 'TRANSFER'
+      }]
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results[0].hash
+  }
+
+  const resolvedResult = await resolveResult(results[0], options)
+  return resolvedResult.data.contents
+}
+
+async function sendMany(user, sendTxs, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: sendTxs.map(tx => {
+        payload: tx,
+        type: 'TRANSFER'
+      })
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolvedResults.map(r => r.data.contents)
+}
+
 async function getKey(user, options) {
   const response = await api.getKey(user, options);
   return response.address;
@@ -174,6 +286,29 @@ function promiseTimeout(timeout) {
   })
 }
 
+async function search(contract, options) {
+  try {
+    const results = await api.search(contract, options)
+    return results
+  } catch(err) {
+    if(err.status && err.status === 404) {
+      return []
+    }
+  }
+}
+
+async function searchUntil(contract, predicate, options) {
+  const action = async function(o) {
+    return await search(contract, o)
+  }
+  const results = await until(
+    predicate,
+    action,
+    options
+  )
+  return results
+}
+
 /////////////////////////////////////////////// util
 
 /**
@@ -204,6 +339,25 @@ function constructMetadata(options, contractName) {
   return {history, noindex}
 }
 
+
+async function until(predicate, action, options, timeout = 60000) {
+  const phi = 10
+  let dt = 500
+  let totalSleep = 0
+  while(totalSleep < timeout) {
+    const result = await action(options)
+    if(predicate(result)) {
+      return result
+    }
+    else {
+      await promiseTimeout(dt)
+      totalSleep += dt
+      dt += phi
+    }
+  }
+  throw new Error(`until: timeout ${timeout} ms exceeded`)
+}
+
 /////////////////////////////////////////////// tests
 
 async function testAsync(args) {
@@ -225,12 +379,20 @@ export default  {
   testPromise,
   getUsers,
   getUser,
+  callMethod,
+  callMethodMany,
   createUser,
   createContract,
+  createContractMany,
   createKey,
   getKey,
   createOrGetKey
   getState,
   getArray,
+  search,
+  searchUntil
+  send,
+  sendMany,
+  until
 }
 
