@@ -193,12 +193,11 @@ describe('user', function() {
     const username = `user_${uid}`
     const args = { username, password }
     const options = { config }
-    const { address, user } = await rest.createUser(args, options)
-    const isAddress = util.isAddress(address)
+    const user = await rest.createUser(args, options)
+    const isAddress = util.isAddress(user.address)
     assert.equal(isAddress, true, 'user is valid eth address')
     assert.equal(user.username, args.username, 'username')
     assert.equal(user.password, args.password, 'password')
-    assert.equal(user.address, address, 'address')
   })
 
   it('get user', async () => {
@@ -206,7 +205,7 @@ describe('user', function() {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
-    const { user } = await rest.createUser(args, options)
+    const user = await rest.createUser(args, options)
     // get the user
     const args2 = { username }
     const address = await rest.getUser(args2, options)

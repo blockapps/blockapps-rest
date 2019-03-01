@@ -68,12 +68,6 @@ async function call(user, contract, body, options) {
   return ax.post(url, endpoint, body, options)
 }
 
-//
-// call: function(body, name, address, contractName, contractAddress, resolve, chainId, node) {
-//   const query = chainResolveQuery(chainId, resolve);
-//   return ax.post(config.getBlocUrl(node), body, '/users/' + encodeURIComponent(name) + '/' + address + '/contract/' + contractName + '/' + contractAddress + '/call' + query);
-// },
-
 module.exports = {
   getUsers,
   getUser,

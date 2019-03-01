@@ -8,7 +8,7 @@ const fsUtil = require('../fsUtil')
 async function createAdmin(uid, options, password = '1234') {
   const username = `admin_${uid}`
   const args = { username, password }
-  const { user } = await rest.createUser(args, options)
+  const user = await rest.createUser(args, options)
   return user
 }
 
