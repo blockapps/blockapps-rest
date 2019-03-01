@@ -5,7 +5,7 @@ const util = require('../util')
 const fsUtil = require('../fsUtil')
 const factory = require('./factory')
 
-const { cwd } = util
+const { cwd, usc } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
@@ -146,6 +146,31 @@ describe('state', () => {
     assert.equal(result.length, SIZE, 'array size')
     const mismatch = result.filter((entry, index) => { return entry != index })
     assert.equal(mismatch.length, 0, 'no mismatches')
+  })
+})
+
+describe('call', () => {
+  let admin
+  const options = { config }
+
+  before(async () => {
+    const uid = util.uid()
+    admin = await factory.createAdmin(uid, options)
+  })
+
+  it('call method', async () => {
+    // create contract
+    const uid = util.uid()
+    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
+    const constructorArgs = { var1: 1234 }
+    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    // call method
+    const callArgs = { var2: 5678 }
+    const method = 'multiply'
+    const [result] = await rest.call(admin, contract, method, usc(callArgs), 0, options)
+    const expected = constructorArgs.var1 * callArgs.var2
+    assert.equal(result, expected, 'method call results')
   })
 })
 

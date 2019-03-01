@@ -73,9 +73,9 @@ async function resolveResult(result, options) {
   return (await resolveResults([result], options))[0]
 }
 
-async function resolveResults(results, options = {}) {
-  options.doNotResolve = true
-  var count = 0
+async function resolveResults(results, _options = {}) {
+  const options = Object.assign({ isAsync: true }, _options)
+  let count = 0
   var res = results
   while (count < 60 && res.filter(r => {return r.status === constants.PENDING}).length !== 0) {
     res = await getBlocResults(res.map(r => {return r.hash}), options)
@@ -112,6 +112,35 @@ async function getArray(contract, name, options) {
     result.push(...state[options.stateQuery.name])
   }
   return result
+}
+
+async function call(user, contract, method, args, valueFixed, options) {
+  const body = {
+    password: user.password,
+    method,
+    args,
+    value: valueFixed,
+    metadata: constructMetadata(options, contract.name),
+  }
+  const callTxResult = await api.call(user, contract, body, options)
+
+  if (options.isAsync) {
+    return callTxResult
+  }
+
+  const resolvedTxResult = await resolveResult(callTxResult, options)
+
+  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
+
+  if (result.status === constants.FAILURE) {
+    throw new Error(result.txResult.message) // TODO throw RestError
+  }
+  // options.isDetailed - return all the data
+  if (options.isDetailed) {
+    return result
+  }
+  // return basic contract object
+  return result.data.contents
 }
 
 function promiseTimeout(timeout) {
@@ -184,4 +213,5 @@ module.exports = {
   createContract,
   getState,
   getArray,
+  call,
 }
