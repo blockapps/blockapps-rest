@@ -32,21 +32,25 @@ async function fill(user, body, options) {
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
   const resolve = !options.isAsync
-  const endpoint = (`/users/:username/:address/fill?resolve=${resolve}`).replace(':username', username).replace(':address', user.address)
+  const query = queryString.stringify({ resolve })
+  const endpoint = (`/users/:username/:address/fill?${query}`).replace(':username', username).replace(':address', user.address)
   return ax.postue(url, endpoint, body, options)
 }
 
 async function createContract(user, contract, body, options) {
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
-  const endpoint = ('/users/:username/:address/contract?resolve').replace(':username', username).replace(':address', user.address)
+  const resolve = !options.isAsync
+  const query = queryString.stringify({ resolve })
+  const endpoint = (`/users/:username/:address/contract?${query}`).replace(':username', username).replace(':address', user.address)
   return ax.post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
   const resolve = !options.isAsync
-  const endpoint = `/transactions/results?resolve=${resolve}`
+  const query = queryString.stringify({ resolve })
+  const endpoint = `/transactions/results?${query}`
   return ax.post(url, endpoint, hashes, options)
 }
 
@@ -59,7 +63,8 @@ async function getState(contract, options) {
 
 async function call(user, contract, body, options) {
   const url = getBlocUrl(options)
-  const query = queryString.stringify({ resolve: !options.isAsync })
+  const resolve = !options.isAsync
+  const query = queryString.stringify({ resolve })
   const username = encodeURIComponent(user.username)
   const endpoint = (`/users/:username/:address/contract/:contractName/:contractAddress/call?${query}`).replace(':username', username)
     .replace(':address', user.address)

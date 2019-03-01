@@ -25,6 +25,7 @@ describe('contracts', function() {
     const asyncOptions = { config, isAsync: true }
     const { hash } = await rest.createContract(admin, contractArgs, asyncOptions)
     assert.isOk(util.isHash(hash), 'hash')
+    await util.sleep(2 * 1000)
   })
 
   it('create contract - sync', async () => {
