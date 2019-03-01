@@ -1,5 +1,6 @@
 import ax from './axios-wrapper'
 import qs from 'query-string'
+import { api } from '../lib/common';
 
 function getHeaders(user, options) {
   return {
@@ -36,6 +37,8 @@ function getNodeUrl(options) {
 const endpoints = {
   getUsers: '/users',
   getUser: '/users/:username',
+  getChain: '/chains',  
+  createChain: '/chains',
   createUser: '/users/:username',
   fill: '/users/:username/:address/fill',
   createContract: '/users/:username/:address/contract',
@@ -51,7 +54,7 @@ function constructEndpoint(endpoint, params = {}, options = {}) {
   const url = Object.getOwnPropertyNames(params).reduce((acc, key) =>  {
     return acc.replace(`:${key}`, encodeURIComponent(params[key]))
   }, endpoint)
-  return `${url}?${options.isAsync ? '' : 'resolve&'}${options.chainId ? `chainid=${options.chainId}&` : ''}${queryString.stringify(options.query)}`;
+  return `${url}?${options.isAsync ? '' : 'resolve&'}${options.chainId ? `${queryString.stringify({chainid: options.chainId})}&` : ''}${queryString.stringify(options.query)}`;
 }
 
 async function getUsers(options) {
@@ -138,9 +141,29 @@ async function search(contract, options) {
     endpoint
   )
 }
+// TODO: check options.params and options.headers in axoos wrapper.
+async function getChains(chainIds, options) {
+  const url = getBlocUrl(options)
+  const endpoint = constructEndpoint(endpoints.getChain, {}. options)
+  return ax.get(
+    url,
+    endpoint
+  )
+}
 
+async function createChain(body, options) {
+  const url = getBlocUrl(options)
+  const endpoint = constructEndpoint(endpoints.createChain, {}, options)
+  await ax.post(
+    url,
+    endpoint,
+    body
+  )
+}
 
 export default {
+  getChains,
+  createChain,
   getUsers,
   getUser,
   createUser,

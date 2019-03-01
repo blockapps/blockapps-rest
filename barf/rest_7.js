@@ -309,6 +309,27 @@ async function searchUntil(contract, predicate, options) {
   return results
 }
 
+async function getChain(chainId, options) {
+  const results = await api.getChains([chainId], options)
+  return results && results.length > 0 ? results[0] : {}
+}
+
+async function getChains(chainIds, options) {
+  const results = await api.getChains(chainIds, options)
+  return results 
+}
+
+async function createChain(chain, contract, options) {
+  const result = await api.createChain({
+    ..chain,
+    src: contract.src,
+    args: contract.args,
+    contract: contract.name,
+    metadata: constructMetadata(options, contract.name)
+  }, options) 
+  return result;
+}
+
 /////////////////////////////////////////////// util
 
 /**
@@ -377,6 +398,9 @@ async function testPromise(args) {
 export default  {
   testAsync,
   testPromise,
+  createChain,
+  getChain,
+  getChains,
   getUsers,
   getUser,
   callMethod,
@@ -396,3 +420,11 @@ export default  {
   until
 }
 
+/*
+TODO:
+1. Add flow types
+2. Complete testing
+3. npm publishing
+4. Add missing rest endpoints
+5. review codebase for any additional items
+*/
