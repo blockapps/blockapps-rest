@@ -1,5 +1,42 @@
 const queryString = require('query-string')
+const BigNumber = require('bignumber.js');
 const ax = require('./axios-wrapper')
+
+/**
+ * This function constructes metadata that can be used to control the history and index flags
+ * @method{constructMetadata}
+ * @param{Object} options flags for history and indexing
+ * @param{String} contractName
+ * @returns{()} metadata
+ */
+function constructMetadata(options, contractName) {
+  const metadata = {}
+  if (options === {}) return metadata
+
+  // history flag (default: off)
+  if (options.enableHistory) {
+    metadata['history'] = contractName
+  }
+  if (options.hasOwnProperty('history')) {
+    const newContracts = options['history'].filter(contract => contract !== contractName).join()
+    metadata['history'] = `${options['history']},${newContracts}`
+  }
+
+  // index flag (default: on)
+  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
+    metadata['noindex'] = contractName
+  }
+  if (options.hasOwnProperty('noindex')) {
+    const newContracts = options['noindex'].filter(contract => contract !== contractName).join()
+    metadata['noindex'] = `${options['noindex']},${newContracts}`
+  }
+
+  //TODO: construct the "nohistory" and "index" fields for metadata if needed
+  // The current implementation only constructs "history" and "noindex"
+
+  return metadata
+}
+
 
 async function post(url, endpoint, _body, options) {
 
@@ -51,7 +88,8 @@ async function createUser(args, options) {
   return ax.postue(url, endpoint, data, options)
 }
 
-async function fill(user, body, options) {
+async function fill(user, options) {
+  const body = {}
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
   const resolve = !options.isAsync
@@ -60,7 +98,14 @@ async function fill(user, body, options) {
   return ax.postue(url, endpoint, body, options)
 }
 
-async function createContract(user, contract, body, options) {
+async function createContract(user, contract, options) {
+  const body = {
+    password: user.password,
+    contract: contract.name,
+    src: contract.source,
+    args: contract.args,
+    metadata: constructMetadata(options, contract.name),
+  }
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
   const resolve = !options.isAsync
@@ -84,7 +129,15 @@ async function getState(contract, options) {
   return ax.get(url, endpoint, options)
 }
 
-async function call(user, contract, body, options) {
+async function call(user, contract, method, args, value, options) {
+  const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value;
+  const body = {
+    password: user.password,
+    method,
+    args,
+    value: valueFixed,
+    metadata: constructMetadata(options, contract.name),
+  }
   const url = getBlocUrl(options)
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })

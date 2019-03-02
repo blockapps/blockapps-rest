@@ -31,8 +31,7 @@ async function createUser(args, options) {
 }
 
 async function fill(user, options) {
-  const body = {}
-  const txResult = await api.fill(user, body, options)
+  const txResult = await api.fill(user, options)
   if (!isTxSuccess(txResult)) {
     throw new Error(JSON.stringify(txResult)) // TODO make a RestError
   }
@@ -40,14 +39,7 @@ async function fill(user, options) {
 }
 
 async function createContract(user, contract, options) {
-  const body = {
-    password: user.password,
-    contract: contract.name,
-    src: contract.source,
-    args: contract.args,
-    metadata: constructMetadata(options, contract.name),
-  }
-  const pendingTxResult = await api.createContract(user, contract, body, options)
+  const pendingTxResult = await api.createContract(user, contract, options)
   if (options.isAsync) {
     return pendingTxResult
   }
@@ -112,15 +104,8 @@ async function getArray(contract, name, options) {
   return result
 }
 
-async function call(user, contract, method, args, valueFixed, options) {
-  const body = {
-    password: user.password,
-    method,
-    args,
-    value: valueFixed,
-    metadata: constructMetadata(options, contract.name),
-  }
-  const callTxResult = await api.call(user, contract, body, options)
+async function call(user, contract, method, args, value, options) {
+  const callTxResult = await api.call(user, contract, method, args, value, options)
 
   if (options.isAsync) {
     return callTxResult
@@ -149,62 +134,7 @@ function promiseTimeout(timeout) {
   })
 }
 
-/////////////////////////////////////////////// util
-
-/**
- * This function constructes metadata that can be used to control the history and index flags
- * @method{constructMetadata}
- * @param{Object} options flags for history and indexing
- * @param{String} contractName
- * @returns{()} metadata
- */
-function constructMetadata(options, contractName) {
-  const metadata = {}
-  if (options === {}) return metadata
-
-  // history flag (default: off)
-  if (options.enableHistory) {
-    metadata['history'] = contractName
-  }
-  if (options.hasOwnProperty('history')) {
-    const newContracts = options['history'].filter(contract => contract !== contractName).join()
-    metadata['history'] = `${options['history']},${newContracts}`
-  }
-
-  // index flag (default: on)
-  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    metadata['noindex'] = contractName
-  }
-  if (options.hasOwnProperty('noindex')) {
-    const newContracts = options['noindex'].filter(contract => contract !== contractName).join()
-    metadata['noindex'] = `${options['noindex']},${newContracts}`
-  }
-
-  //TODO: construct the "nohistory" and "index" fields for metadata if needed
-  // The current implementation only constructs "history" and "noindex"
-
-  return metadata
-}
-
-/////////////////////////////////////////////// tests
-
-async function testAsync(args) {
-  return args
-}
-
-async function testPromise(args) {
-  return new Promise((resolve, reject) => {
-    if (args.success) {
-      resolve(args)
-    } else {
-      reject(args)
-    }
-  })
-}
-
 module.exports = {
-  testAsync,
-  testPromise,
   getUsers,
   getUser,
   createUser,
