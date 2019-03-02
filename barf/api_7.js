@@ -1,5 +1,5 @@
 const queryString = require('query-string')
-const BigNumber = require('bignumber.js');
+const BigNumber = require('bignumber.js')
 const ax = require('./axios-wrapper')
 
 /**
@@ -37,7 +37,6 @@ function constructMetadata(options, contractName) {
   return metadata
 }
 
-
 async function post(url, endpoint, _body, options) {
 
   function createBody(_body, options) {
@@ -51,7 +50,7 @@ async function post(url, endpoint, _body, options) {
       { gasLimit: 32100000000, gasPrice: 1 },
       configTxParams,
       options.txParams,
-      _body.txParams,
+      _body.txParams
     )
     return body
   }
@@ -94,7 +93,9 @@ async function fill(user, options) {
   const username = encodeURIComponent(user.username)
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })
-  const endpoint = (`/users/:username/:address/fill?${query}`).replace(':username', username).replace(':address', user.address)
+  const endpoint = (`/users/:username/:address/fill?${query}`)
+    .replace(':username', username)
+    .replace(':address', user.address)
   return ax.postue(url, endpoint, body, options)
 }
 
@@ -104,13 +105,15 @@ async function createContract(user, contract, options) {
     contract: contract.name,
     src: contract.source,
     args: contract.args,
-    metadata: constructMetadata(options, contract.name),
+    metadata: constructMetadata(options, contract.name)
   }
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })
-  const endpoint = (`/users/:username/:address/contract?${query}`).replace(':username', username).replace(':address', user.address)
+  const endpoint = (`/users/:username/:address/contract?${query}`)
+    .replace(':username', username)
+    .replace(':address', user.address)
   return post(url, endpoint, body, options)
 }
 
@@ -125,24 +128,27 @@ async function blocResults(hashes, options) { // TODO untested code
 async function getState(contract, options) {
   const url = getBlocUrl(options)
   const query = queryString.stringify(options.stateQuery)
-  const endpoint = (`/contracts/:name/:address/state?${query}`).replace(':name', contract.name).replace(':address', contract.address)
+  const endpoint = (`/contracts/:name/:address/state?${query}`)
+    .replace(':name', contract.name)
+    .replace(':address', contract.address)
   return ax.get(url, endpoint, options)
 }
 
 async function call(user, contract, method, args, value, options) {
-  const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value;
+  const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
   const body = {
     password: user.password,
     method,
     args,
     value: valueFixed,
-    metadata: constructMetadata(options, contract.name),
+    metadata: constructMetadata(options, contract.name)
   }
   const url = getBlocUrl(options)
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })
   const username = encodeURIComponent(user.username)
-  const endpoint = (`/users/:username/:address/contract/:contractName/:contractAddress/call?${query}`).replace(':username', username)
+  const endpoint = (`/users/:username/:address/contract/:contractName/:contractAddress/call?${query}`)
+    .replace(':username', username)
     .replace(':address', user.address)
     .replace(':contractName', contract.name)
     .replace(':contractAddress', contract.address)
@@ -157,5 +163,5 @@ module.exports = {
   fill,
   blocResults,
   getState,
-  call,
+  call
 }
