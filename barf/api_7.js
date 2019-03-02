@@ -3,17 +3,25 @@ const ax = require('./axios-wrapper')
 
 async function post(url, endpoint, _body, options) {
 
-  const body = Object.assign({}, _body)
-  const configTxParams = (options.config) ? options.config.txParams : undefined
-  // in order of priority: 1:body, 2:options, 3:config, 4:default
-  body.txParams = Object.assign(
-    { gasLimit: 32100000000, gasPrice: 1 },
-    configTxParams,
-    options.txParams,
-    _body.txParams,
-  )
+  function createBody(_body, options) {
+    // array
+    if (Array.isArray(_body)) return _body
+    // object
+    const body = Object.assign({}, _body)
+    const configTxParams = (options.config) ? options.config.txParams : undefined
+    // in order of priority: 1:body, 2:options, 3:config, 4:default
+    body.txParams = Object.assign(
+      { gasLimit: 32100000000, gasPrice: 1 },
+      configTxParams,
+      options.txParams,
+      _body.txParams,
+    )
+    return body
+  }
 
-  return ax.post(url, endpoint, body, options);
+  const body = createBody(_body, options)
+
+  return ax.post(url, endpoint, body, options)
 }
 
 function getBlocUrl(options) {
@@ -66,7 +74,7 @@ async function blocResults(hashes, options) { // TODO untested code
   const resolve = !options.isAsync
   const query = queryString.stringify({ resolve })
   const endpoint = `/transactions/results?${query}`
-  return ax.post(url, endpoint, hashes, options)
+  return post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
@@ -85,7 +93,7 @@ async function call(user, contract, body, options) {
     .replace(':address', user.address)
     .replace(':contractName', contract.name)
     .replace(':contractAddress', contract.address)
-  return ax.post(url, endpoint, body, options)
+  return post(url, endpoint, body, options)
 }
 
 module.exports = {
