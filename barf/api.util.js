@@ -38,7 +38,7 @@ function constructMetadata(options, contractName) {
 
 function createQuery(options) {
   const queryObject = Object.assign(
-    { resolve: !options.isAsync },
+    { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
     options.stateQuery,
   )
   const query = `?${queryString.stringify(queryObject)}`
