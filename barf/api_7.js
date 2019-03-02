@@ -15,30 +15,38 @@ function constructMetadata(options, contractName) {
 
   // history flag (default: off)
   if (options.enableHistory) {
-    metadata['history'] = contractName
+    metadata.history = contractName
   }
   if (options.hasOwnProperty('history')) {
-    const newContracts = options['history'].filter(contract => contract !== contractName).join()
-    metadata['history'] = `${options['history']},${newContracts}`
+    const newContracts = options.history.filter(contract => contract !== contractName).join()
+    metadata.history = `${options.history},${newContracts}`
   }
 
   // index flag (default: on)
   if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    metadata['noindex'] = contractName
+    metadata.noindex = contractName
   }
   if (options.hasOwnProperty('noindex')) {
-    const newContracts = options['noindex'].filter(contract => contract !== contractName).join()
-    metadata['noindex'] = `${options['noindex']},${newContracts}`
+    const newContracts = options.noindex.filter(contract => contract !== contractName).join()
+    metadata.noindex = `${options.noindex},${newContracts}`
   }
 
-  //TODO: construct the "nohistory" and "index" fields for metadata if needed
+  // TODO: construct the "nohistory" and "index" fields for metadata if needed
   // The current implementation only constructs "history" and "noindex"
 
   return metadata
 }
 
-async function post(url, endpoint, _body, options) {
+function createQuery(options) {
+  const queryObject = Object.assign(
+    { resolve: !options.isAsync },
+    options.stateQuery,
+  )
+  const query = `?${queryString.stringify(queryObject)}`
+  return query
+}
 
+async function post(url, endpoint, _body, options) {
   function createBody(_body, options) {
     // array
     if (Array.isArray(_body)) return _body
@@ -50,7 +58,7 @@ async function post(url, endpoint, _body, options) {
       { gasLimit: 32100000000, gasPrice: 1 },
       configTxParams,
       options.txParams,
-      _body.txParams
+      _body.txParams,
     )
     return body
   }
@@ -91,11 +99,11 @@ async function fill(user, options) {
   const body = {}
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
-  const resolve = !options.isAsync
-  const query = queryString.stringify({ resolve })
-  const endpoint = (`/users/:username/:address/fill?${query}`)
+  const query = createQuery(options)
+  const endpoint = ('/users/:username/:address/fill')
     .replace(':username', username)
     .replace(':address', user.address)
+    .concat(query)
   return ax.postue(url, endpoint, body, options)
 }
 
@@ -105,32 +113,32 @@ async function createContract(user, contract, options) {
     contract: contract.name,
     src: contract.source,
     args: contract.args,
-    metadata: constructMetadata(options, contract.name)
+    metadata: constructMetadata(options, contract.name),
   }
   const url = getBlocUrl(options)
   const username = encodeURIComponent(user.username)
-  const resolve = !options.isAsync
-  const query = queryString.stringify({ resolve })
-  const endpoint = (`/users/:username/:address/contract?${query}`)
+  const query = createQuery(options)
+  const endpoint = ('/users/:username/:address/contract')
     .replace(':username', username)
     .replace(':address', user.address)
+    .concat(query)
   return post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
-  const resolve = !options.isAsync
-  const query = queryString.stringify({ resolve })
+  const query = createQuery(options)
   const endpoint = `/transactions/results?${query}`
   return post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
   const url = getBlocUrl(options)
-  const query = queryString.stringify(options.stateQuery)
-  const endpoint = (`/contracts/:name/:address/state?${query}`)
+  const query = createQuery(options)
+  const endpoint = ('/contracts/:name/:address/state')
     .replace(':name', contract.name)
     .replace(':address', contract.address)
+    .concat(query)
   return ax.get(url, endpoint, options)
 }
 
@@ -141,17 +149,17 @@ async function call(user, contract, method, args, value, options) {
     method,
     args,
     value: valueFixed,
-    metadata: constructMetadata(options, contract.name)
+    metadata: constructMetadata(options, contract.name),
   }
   const url = getBlocUrl(options)
-  const resolve = !options.isAsync
-  const query = queryString.stringify({ resolve })
   const username = encodeURIComponent(user.username)
-  const endpoint = (`/users/:username/:address/contract/:contractName/:contractAddress/call?${query}`)
+  const query = createQuery(options)
+  const endpoint = ('/users/:username/:address/contract/:contractName/:contractAddress/call')
     .replace(':username', username)
     .replace(':address', user.address)
     .replace(':contractName', contract.name)
     .replace(':contractAddress', contract.address)
+    .concat(query)
   return post(url, endpoint, body, options)
 }
 
@@ -163,5 +171,5 @@ module.exports = {
   fill,
   blocResults,
   getState,
-  call
+  call,
 }
