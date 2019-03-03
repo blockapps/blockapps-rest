@@ -1,4 +1,5 @@
 import api from './api_7'
+import apiUtil from './api.util'
 import * as constants from './constants'
 
 function isTxSuccess(txResult) {
@@ -33,8 +34,7 @@ async function createUser(user, options) {
 }
 
 async function fill(user, options) {
-  const body = {}
-  const txResult = await api.fill(user, body, options)
+  const txResult = await api.fill(user, options)
   if (!isTxSuccess(txResult)) {
     throw new Error(JSON.stringify(txResult)) // TODO make a RestError
   }
@@ -47,7 +47,7 @@ async function createContract(user, contract, options) {
     contract: contract.name,
     src: contract.source,
     args: contract.args,
-    metadata: constructMetadata(options, contract.name),
+    metadata: apiUtil.constructMetadata(options, contract.name),
   }
 
   let contractTxResult = user.token 
@@ -174,55 +174,7 @@ function promiseTimeout(timeout) {
   })
 }
 
-/////////////////////////////////////////////// util
-
-/**
- * This function constructes metadata that can be used to control the history and index flags
- * @method{constructMetadata}
- * @param{Object} options flags for history and indexing
- * @param{String} contractName
- * @returns{()} metadata
- */
-function constructMetadata(options, contractName) {
-  if (options === {}) return options
-
-  const {
-    history,
-    noindex
-  } = options
-  
-  // history flag (default: off)
-  if (options.enableHistory) {
-    history = [ ...history, contractName]
-  }
-
-  // index flag (default: on)
-  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    noindex = [ ...noindex, contractName]
-  }
-  
-  return {history, noindex}
-}
-
-/////////////////////////////////////////////// tests
-
-async function testAsync(args) {
-  return args
-}
-
-async function testPromise(args) {
-  return new Promise((resolve, reject) => {
-    if (args.success) {
-      resolve(args)
-    } else {
-      reject(args)
-    }
-  })
-}
-
 export default  {
-  testAsync,
-  testPromise,
   getUsers,
   getUser,
   createUser,
@@ -232,5 +184,7 @@ export default  {
   createOrGetKey,
   getState,
   getArray,
+  //
+  resolveResult,
 }
 

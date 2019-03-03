@@ -10,11 +10,11 @@ const loadEnv = dotenv.config();
 assert.isUndefined(loadEnv.error)
 
 
-const { cwd } = util
+const { cwd, usc } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
-describe('contracts', function () {
+describe('contracts', function() {
   this.timeout(config.timeout)
   let admin
   let tokenUser
@@ -35,8 +35,10 @@ describe('contracts', function () {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
-    const { hash } = await rest.createContract(admin, contractArgs, asyncOptions)
-    assert.isOk(util.isHash(hash), 'hash')
+    const pendingTxResult = await rest.createContract(admin, contractArgs, asyncOptions)
+    assert.isOk(util.isHash(pendingTxResult.hash), 'hash')
+    // must resolve the tx before continuing to the next test
+    await rest.resolveResult(pendingTxResult, options)
   })
 
   it('create contract - sync', async () => {
@@ -106,7 +108,8 @@ describe('contracts', function () {
   })
 })
 
-describe('state', () => {
+describe('state', function() {
+  this.timeout(config.timeout)
   let admin
   const options = { config }
 
@@ -163,7 +166,7 @@ describe('state', () => {
         all.push(...state[options.query.name])
       }
       assert.equal(all.length, length, 'array size')
-      const mismatch = all.filter((entry, index) => { return entry != index })
+      const mismatch = all.filter((entry, index) => entry != index)
       assert.equal(mismatch.length, 0, 'no mismatches')
     }
   })
@@ -177,12 +180,13 @@ describe('state', () => {
     const contract = await rest.createContract(admin, contractArgs, options)
     const result = await rest.getArray(contract, name, options)
     assert.equal(result.length, SIZE, 'array size')
-    const mismatch = result.filter((entry, index) => { return entry != index })
+    const mismatch = result.filter((entry, index) => entry != index)
     assert.equal(mismatch.length, 0, 'no mismatches')
   })
 })
 
-describe('user', () => {
+describe('user', function() {
+  this.timeout(config.timeout)
   const options = { config }
   const password = '1234'
 
@@ -214,26 +218,5 @@ describe('user', () => {
     const args2 = { username }
     const address = await rest.getUser(args2, options)
     assert.equal(address, user.address, 'user is valid eth address')
-  })
-})
-
-describe('include rest', () => {
-  it('testAsync', async () => {
-    const args = { a: 'b' }
-    const result = await rest.testAsync(args)
-    assert.deepEqual(result, args, 'test async')
-  })
-
-  it('testPromise', async () => {
-    const args = { success: true }
-    const result = await rest.testPromise(args)
-    assert.deepEqual(result, args, 'test promise')
-
-    args.success = false
-    try {
-      await rest.testPromise(args)
-    } catch (err) {
-      assert.deepEqual(err, args, 'test promise')
-    }
   })
 })

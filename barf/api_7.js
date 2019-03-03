@@ -1,57 +1,16 @@
 import ax from './axios-wrapper'
 import qs from 'query-string'
+import apiUtil from './api.util'
 
-function getHeaders(user, options) {
-  return {
-    headers: {
-      ...options.header,
-      'Authorization': `Bearer ${user.token}`
-    }
-  }
-}
+const { 
+  constructMetadata, 
+  getBlocUrl,
+  getNodeUrl,
+  constructEndpoint,
+  endpoints,
+  getHeaders
+} = apiUtil
 
-function getApiUrl(options, apiSelector) {
-  const node = options.node || 0
-  const nodeUrls = options.config.nodes[node]
-  return nodeUrls[`${apiSelector}Url`]
-}
-
-function getBlocUrl(options) {
-  return getApiUrl(options, 'bloc');
-}
-
-function getStratoUrl(options) {
-  return getApiUrl(options, 'strato');
-}
-
-
-function getSearchUrl(options) {
-  return getApiUrl(options, 'search');
-}
-
-function getNodeUrl(options) {
-  return getApiUrl(options, 'node');
-}
-
-const endpoints = {
-  getUsers: '/users',
-  getUser: '/users/:username',
-  createUser: '/users/:username',
-  fill: '/users/:username/:address/fill',
-  createContract: '/users/:username/:address/contract',
-  blocResults: '/transactions/results',
-  getState: '/contracts/:name/:address/state',
-  sendTransactions: '/strato/v2.3/transaction',
-  getKey:  '/strato/v2.3/key',
-  createKey: '/strato/v2.3/key'
-}
-
-function constructEndpoint(endpoint, params = {}, queryParams = {}) {
-  const url = Object.getOwnPropertyNames(params).reduce((acc, key) =>  {
-    return acc.replace(`:${key}`, encodeURIComponent(params[key]))
-  }, endpoint)
-  return `${url}?${qs.stringify(queryParams)}`;
-}
 
 async function getUsers(options) {
   const url = getBlocUrl(options)
@@ -72,7 +31,8 @@ async function createUser(user, options) {
   return ax.postue(url, endpoint, data, options)
 }
 
-async function fill(user, body, options) {
+async function fill(user, options) {
+  const body = {}
   const url = getBlocUrl(options)
   const endpoint = constructEndpoint(endpoints.fill, user, {resolve: !options.isAsync})
   return ax.postue(url, endpoint, body, options)

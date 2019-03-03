@@ -7,8 +7,8 @@ import fsUtil from '../fsUtil'
  */
 async function createAdmin(uid, options, password = '1234') {
   const username = `admin_${uid}`
-  const userArgs = { username, password }
-  const user = await rest.createUser(userArgs, options)
+  const args = { username, password }
+  const user = await rest.createUser(args, options)
   return user
 }
 
