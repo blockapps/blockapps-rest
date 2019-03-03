@@ -15,6 +15,4 @@ assert.restStatus = async (func, expectedRestStatus, regex) => {
   assert.isUndefined(result, `REST call completed instead of REST error ${expectedRestStatus}`)
 }
 
-export default {
-  assert,
-}
+export default assert

@@ -1,7 +1,7 @@
-const solidityParser = require('../solidityParser')
-const { assert } = require('./assert')
-const { cwd } = require('../util')
-const fsUtil = require('../fsUtil')
+import solidityParser from '../solidityParser'
+import assert  from './assert'
+import util from '../util'
+import fsUtil from '../fsUtil'
 
 describe('solidity parser', () => {
 
@@ -40,7 +40,7 @@ contract ErrorCodes {
   })
 
   it('parse enum - from file', async () => {
-    const filename = `${cwd}/barf/test/fixtures/ErrorCodes.sol`
+    const filename = `${util.cwd}/barf/test/fixtures/ErrorCodes.sol`
     const source = fsUtil.get(filename)
     const parsedEnum = await solidityParser.parseEnum(source)
     for (let i = 0; i < parsedEnum.length/2; i++) {

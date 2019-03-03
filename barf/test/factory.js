@@ -1,5 +1,5 @@
-import { rest } from '../index'
-import { usc } from '../util'
+import rest from '../rest_7'
+import util from '../util'
 import fsUtil from '../fsUtil'
 
 /*
@@ -7,21 +7,21 @@ import fsUtil from '../fsUtil'
  */
 async function createAdmin(uid, options, password = '1234') {
   const username = `admin_${uid}`
-  const userArgs = { username, password }
-  const user = await rest.createUser(userArgs, options)
+  const args = { username, password }
+  const user = await rest.createUser(args, options)
   return user
 }
 
 function createContractArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { }`
-  return { name, source, args: usc(args) } // TODO flow contractArgs object
+  return { name, source, args: util.usc(args) } // TODO flow contractArgs object
 }
 
 function createContractSyntaxErrorArgs(uid, args = {}) {
   const name = `TestContract_${uid}`
   const source = `contract ${name} { zzz zzz }`
-  return { name, source, args: usc(args) } // TODO flow contractArgs object
+  return { name, source, args: util.usc(args) } // TODO flow contractArgs object
 }
 
 function createContractConstructorArgs(uid, args = {}) {
@@ -34,17 +34,16 @@ contract ${name} {
   }   
 }
 `
-  return { name, source, args: usc(args) } // TODO flow contractArgs object
+  return { name, source, args: util.usc(args) } // TODO flow contractArgs object
 }
 
 async function createContractFromFile(filename, uid, constructorArgs) {
   const name = `TestContract_${uid}`
   const source = fsUtil.get(filename).replace('TestContract', name)
-  return { name, source, args: usc(constructorArgs) } // TODO flow contractArgs object
+  return { name, source, args: util.usc(constructorArgs) } // TODO flow contractArgs object
 }
 
-
-module.exports = {
+export default {
   createAdmin,
   createContractArgs,
   createContractSyntaxErrorArgs,

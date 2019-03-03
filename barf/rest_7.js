@@ -1,5 +1,12 @@
 import api from './api_7'
+import apiUtil from './api.util'
 import * as constants from './constants'
+
+const {
+  constructMetadata,
+  promiseTimeout,
+  until
+} = apiUtil
 
 function isTxSuccess(txResult) {
   return txResult.status === 'Success'
@@ -8,8 +15,8 @@ function isTxSuccess(txResult) {
 // TODO: remove old user and tx endpoints after STRATO switched to oauth
 
 // /users
-async function getUsers(args, options) {
-  const users = await api.getUsers(args, options)
+async function getUsers(options) {
+  const users = await api.getUsers(options)
   return users
 }
 
@@ -22,19 +29,18 @@ async function getUser(args, options) {
 // /users/:username
 async function createUser(user, options) {
   const address = await api.createUser(user, options)
-  const user = Object.assign(user, { address })
+  const newUser = Object.assign(user, { address })
   // async creation
   if (options.isAsync) {
-    return { address, user: user }
+    return newUser
   }
   // otherwise - block for faucet fill call
   const txResult = await fill(user, options)
-  return { address, user: user } // TODO flow user object
+  return newUser // TODO flow user object
 }
 
 async function fill(user, options) {
-  const body = {}
-  const txResult = await api.fill(user, body, options)
+  const txResult = await api.fill(user, options)
   if (!isTxSuccess(txResult)) {
     throw new Error(JSON.stringify(txResult)) // TODO make a RestError
   }
@@ -124,7 +130,7 @@ async function callMethod(user, method, options) {
       txs: [
         {
           payload: {
-            ...method,
+            ...methodArgs,
             metadata: constructMetadata(options, method.contractName)
           },
           type: 'FUNCTION'
@@ -147,11 +153,13 @@ async function callMethodMany(user, methods, options) {
     user,
     {
       txs: methods.map(method => {
-        payload: {
-          ...method,
-          metadata: constructMetadata(options, method.contractName)
-        },
-        type: 'FUNCTION'
+        return { 
+          payload: {
+            ...method,
+            metadata: constructMetadata(options, method.contractName)
+          },
+          type: 'FUNCTION'
+        }
       })
     },
     options
@@ -190,8 +198,10 @@ async function sendMany(user, sendTxs, options) {
     user, 
     {
       txs: sendTxs.map(tx => {
-        payload: tx,
-        type: 'TRANSFER'
+        return {
+          payload: tx,
+          type: 'TRANSFER'
+        }   
       })
     },
     options
@@ -271,19 +281,11 @@ async function getArray(contract, name, options) {
   const length = state[name]
   const result = []
   for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
-    options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+    options.query = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
     const state = await getState(contract, options)
     result.push(...state[options.query.name])
   }
   return result
-}
-
-function promiseTimeout(timeout) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      resolve()
-    }, timeout)
-  })
 }
 
 async function search(contract, options) {
@@ -321,7 +323,7 @@ async function getChains(chainIds, options) {
 
 async function createChain(chain, contract, options) {
   const result = await api.createChain({
-    ..chain,
+    ...chain,
     src: contract.src,
     args: contract.args,
     contract: contract.name,
@@ -330,74 +332,12 @@ async function createChain(chain, contract, options) {
   return result;
 }
 
-/////////////////////////////////////////////// util
-
-/**
- * This function constructes metadata that can be used to control the history and index flags
- * @method{constructMetadata}
- * @param{Object} options flags for history and indexing
- * @param{String} contractName
- * @returns{()} metadata
- */
-function constructMetadata(options, contractName) {
-  if (options === {}) return options
-
-  const {
-    history,
-    noindex
-  } = options
-  
-  // history flag (default: off)
-  if (options.enableHistory) {
-    history = [ ...history, contractName]
-  }
-
-  // index flag (default: on)
-  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
-    noindex = [ ...noindex, contractName]
-  }
-  
-  return {history, noindex}
-}
 
 
-async function until(predicate, action, options, timeout = 60000) {
-  const phi = 10
-  let dt = 500
-  let totalSleep = 0
-  while(totalSleep < timeout) {
-    const result = await action(options)
-    if(predicate(result)) {
-      return result
-    }
-    else {
-      await promiseTimeout(dt)
-      totalSleep += dt
-      dt += phi
-    }
-  }
-  throw new Error(`until: timeout ${timeout} ms exceeded`)
-}
 
-/////////////////////////////////////////////// tests
 
-async function testAsync(args) {
-  return args
-}
-
-async function testPromise(args) {
-  return new Promise((resolve, reject) => {
-    if (args.success) {
-      resolve(args)
-    } else {
-      reject(args)
-    }
-  })
-}
 
 export default  {
-  testAsync,
-  testPromise,
   createChain,
   getChain,
   getChains,
@@ -410,21 +350,13 @@ export default  {
   createContractMany,
   createKey,
   getKey,
-  createOrGetKey
+  createOrGetKey,
   getState,
   getArray,
   search,
-  searchUntil
+  searchUntil,
   send,
   sendMany,
-  until
+  //
+  resolveResult,
 }
-
-/*
-TODO:
-1. Add flow types
-2. Complete testing
-3. npm publishing
-4. Add missing rest endpoints
-5. review codebase for any additional items
-*/

@@ -6,7 +6,7 @@
     "scripts": {
         "mocha": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
         "build": "yarn webpack --config config/webpack.config.js --progress",
-        "test": "yarn mocha barf/test/*.test.js"
+        "test": "yarn mocha barf/test/*.test.js -b"
     },
     "keywords": [
         "BlockApps",

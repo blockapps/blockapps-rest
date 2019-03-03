@@ -1,12 +1,11 @@
 import importer from '../importer'
-import { rest } from '../index'
-import { assert } from './assert'
+import rest from '../rest_7'
+import assert from './assert'
 import util from '../util'
-import { cwd } from '../util'
 import factory from './factory'
 import fsUtil from '../fsUtil'
 
-const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
+const config = fsUtil.getYaml(`${util.cwd}/barf/test/config.yaml`)
 
 describe('imports', () => {
   let admin
@@ -18,7 +17,7 @@ describe('imports', () => {
   })
 
   it('combines', async () => {
-    const filename = `${cwd}/barf/test/fixtures/importer/Main.sol`
+    const filename = `${util.cwd}/barf/test/fixtures/importer/Main.sol`
     const source = await importer.combine(filename)
     assert.isAbove(source.indexOf('contract Main'), 0)
     assert.isAbove(source.indexOf('contract A'), 0)
@@ -28,7 +27,7 @@ describe('imports', () => {
   })
 
   it('combines and uploads', async () => {
-    const filename = `${cwd}/barf/test/fixtures/importer/Main.sol`
+    const filename = `${util.cwd}/barf/test/fixtures/importer/Main.sol`
     const source = await importer.combine(filename)
     const name = `Main`
     const contractArgs = { name, source, args: {_size: 10} }
