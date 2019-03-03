@@ -11,7 +11,7 @@ function getImportsTree(fullname) {
   isImported(fullname)
   let array = fs.readFileSync(fullname).toString().split('\n')
   let parentPath = splitPath(fullname)
-  for (let i = 0 i < array.length i++) {
+  for (let i = 0; i < array.length; i++) {
     let line = array[i]
     if (line.startsWith('import')) {
       // console.log('getImportsTree', 'line', line)
@@ -47,7 +47,7 @@ function readFileLines(fullname) {
   isImported(fullname)
   //buffer += '// --- start: ' + fullname + '\n'
   let array = fs.readFileSync(fullname).toString().split('\n')
-  for (let i = 0 i < array.length i++) {
+  for (let i = 0; i < array.length; i++) {
     let line = array[i]
     if (line.startsWith('import')) {
       buffer += importFile(fullname, line) + '\n'

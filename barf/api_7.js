@@ -50,7 +50,7 @@ function constructEndpoint(endpoint, params = {}, queryParams = {}) {
   const url = Object.getOwnPropertyNames(params).reduce((acc, key) =>  {
     return acc.replace(`:${key}`, encodeURIComponent(params[key]))
   }, endpoint)
-  return `${url}?${queryString.stringify(queryParams)}`;
+  return `${url}?${qs.stringify(queryParams)}`;
 }
 
 async function getUsers(options) {
@@ -93,7 +93,7 @@ async function blocResults(hashes, options) { // TODO untested code
 
 async function getState(contract, options) {
   const url = getBlocUrl(options)
-  const query = queryString.stringify(options.query)
+  const query = qs.stringify(options.query)
   const endpoint = constructEndpoint(endpoints.getState, contract, options.query)
   return ax.get(url, endpoint, options)
 }
@@ -143,6 +143,6 @@ export default {
   blocResults,
   sendTransactions,
   getKey,
-  createKey
+  createKey,
   getState,
 }

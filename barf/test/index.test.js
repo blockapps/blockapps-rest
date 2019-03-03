@@ -1,6 +1,6 @@
 import RestStatus from 'http-status-codes'
-import { rest } from '../index'
-import { assert } from ('./assert')
+import rest from '../rest_7'
+import assert from './assert'
 import util from '../util'
 import fsUtil from '../fsUtil'
 import factory from './factory'
@@ -54,7 +54,7 @@ describe('contracts', function () {
       isDetailed: true,
       config
     }
-    const contract = await rest.createContract(admin, contractArgs, options)
+    const contract = await rest.createContract(admin, contractArgs, detailedOptions)
     assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
@@ -72,10 +72,10 @@ describe('contracts', function () {
     }
     const contract = await rest.createContract(
       tokenUser,
-      contractDef, 
+      contractArgs, 
       oauthOptions
     )
-    assert.equal(contract.name, contractDef.name, 'name')
+    assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
     assert.isDefined(contract.src, 'src')
   })
@@ -141,26 +141,26 @@ describe('state', () => {
     const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
     const contract = await rest.createContract(admin, contractArgs, options)
     {
-      options.stateQuery = { name }
+      options.query = { name }
       const state = await rest.getState(contract, options)
-      assert.isDefined(state[options.stateQuery.name])
+      assert.isDefined(state[options.query.name])
       assert.equal(state.array.length, MAX_SEGMENT_SIZE)
     }
     {
-      options.stateQuery = { name, length: true }
+      options.query = { name, length: true }
       const state = await rest.getState(contract, options)
-      assert.isDefined(state[options.stateQuery.name])
+      assert.isDefined(state[options.query.name])
       assert.equal(state.array, SIZE, 'array size')
     }
     {
-      options.stateQuery = { name, length: true }
+      options.query = { name, length: true }
       const state = await rest.getState(contract, options)
-      const length = state[options.stateQuery.name]
+      const length = state[options.query.name]
       const all = []
       for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
-        options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+        options.query = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
         const state = await rest.getState(contract, options)
-        all.push(...state[options.stateQuery.name])
+        all.push(...state[options.query.name])
       }
       assert.equal(all.length, length, 'array size')
       const mismatch = all.filter((entry, index) => { return entry != index })
@@ -188,7 +188,7 @@ describe('user', () => {
 
   it('get all users', async () => {
     const args = {}
-    const result = await rest.getUsers(args, options)
+    const result = await rest.getUsers(options)
     assert.equal(Array.isArray(result), true, 'return value is an array')
   })
 
@@ -197,12 +197,11 @@ describe('user', () => {
     const username = `user_${uid}`
     const args = { username, password }
     const options = { config }
-    const { address, user } = await rest.createUser(args, options)
-    const isAddress = util.isAddress(address)
+    const createdUser = await rest.createUser(args, options)
+    const isAddress = util.isAddress(createdUser.address)
     assert.equal(isAddress, true, 'user is valid eth address')
-    assert.equal(user.username, args.username, 'username')
-    assert.equal(user.password, args.password, 'password')
-    assert.equal(user.address, address, 'address')
+    assert.equal(createdUser.username, args.username, 'username')
+    assert.equal(createdUser.password, args.password, 'password')
   })
 
   it('get user', async () => {
@@ -210,7 +209,7 @@ describe('user', () => {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
-    const { user } = await rest.createUser(args, options)
+    const user = await rest.createUser(args, options)
     // get the user
     const args2 = { username }
     const address = await rest.getUser(args2, options)

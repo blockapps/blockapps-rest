@@ -8,8 +8,8 @@ function isTxSuccess(txResult) {
 // TODO: remove old user and tx endpoints after STRATO switched to oauth
 
 // /users
-async function getUsers(args, options) {
-  const users = await api.getUsers(args, options)
+async function getUsers(options) {
+  const users = await api.getUsers(options)
   return users
 }
 
@@ -22,14 +22,14 @@ async function getUser(args, options) {
 // /users/:username
 async function createUser(user, options) {
   const address = await api.createUser(user, options)
-  const user = Object.assign(user, { address })
+  const newUser = Object.assign(user, { address })
   // async creation
   if (options.isAsync) {
-    return { address, user: user }
+    return newUser
   }
   // otherwise - block for faucet fill call
   const txResult = await fill(user, options)
-  return { address, user: user } // TODO flow user object
+  return newUser // TODO flow user object
 }
 
 async function fill(user, options) {
@@ -159,7 +159,7 @@ async function getArray(contract, name, options) {
   const length = state[name]
   const result = []
   for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
-    options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+    options.query = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
     const state = await getState(contract, options)
     result.push(...state[options.query.name])
   }
@@ -229,7 +229,7 @@ export default  {
   createContract,
   createKey,
   getKey,
-  createOrGetKey
+  createOrGetKey,
   getState,
   getArray,
 }
