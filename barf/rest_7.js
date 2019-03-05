@@ -59,6 +59,27 @@ async function createContract(user, contract, options) {
   return { name: result.data.contents.name, address: result.data.contents.address }
 }
 
+async function getKey(user, options) {
+  const response = await api.getKey(user, options);
+  return response.address;
+}
+
+async function createKey(user, options) {
+  const response = await api.createKey(user, options);
+  return response.address;
+}
+
+async function createOrGetKey(user, options) {
+  try {
+    const response = await api.getKey(user, options)
+    return response.address
+  } catch (err) {
+    const response = await api.createKey(user, options)
+    await fill({ address: response.address }, { isAsync: false, ...options })
+    return response.address
+  }
+}
+
 async function resolveResult(result, options) {
   return (await resolveResults([result], options))[0]
 }
@@ -144,4 +165,8 @@ module.exports = {
   call,
   //
   resolveResult,
+  //
+  getKey,
+  createKey,
+  createOrGetKey,
 }

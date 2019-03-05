@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-const { constructMetadata, constructEndpoint, post, getBlocUrl } = require('./api.util')
+const { constructMetadata, constructEndpoint, post, getBlocUrl, getNodeUrl, getHeaders } = require('./api.util')
 const ax = require('./axios-wrapper')
 
 const Endpoint = {
@@ -10,6 +10,8 @@ const Endpoint = {
   CALL: '/users/:username/:address/contract/:contractName/:contractAddress/call',
   STATE: '/contracts/:name/:address/state',
   TXRESULTS: '/transactions/results',
+  SEND: '/strato/v2.3/transaction',
+  KEY: '/strato/v2.3/key',
 }
 
 async function getUsers(args, options) {
@@ -95,6 +97,25 @@ async function call(user, contract, method, args, value, options) {
   return post(url, endpoint, body, options)
 }
 
+async function sendTransactions(user, body, options) {
+  const url = getNodeUrl(options)
+  const endpoint = constructEndpoint(Endpoint.SEND, options)
+  return ax.post(url, endpoint, body, getHeaders(user, options))
+}
+
+async function getKey(user, options) {
+  const url = getNodeUrl(options)
+  const endpoint = constructEndpoint(Endpoint.KEY, options)
+  return ax.get(url, endpoint, getHeaders(user, options))
+}
+
+async function createKey(user, options) {
+  const url = getNodeUrl(options)
+  const endpoint = constructEndpoint(Endpoint.KEY, options)
+  const body = {}
+  return ax.post(url, endpoint, body, getHeaders(user, options))
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -104,4 +125,7 @@ module.exports = {
   blocResults,
   getState,
   call,
+  sendTransactions,
+  getKey,
+  createKey
 }

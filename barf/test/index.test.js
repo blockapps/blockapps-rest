@@ -5,6 +5,10 @@ const util = require('../util')
 const fsUtil = require('../fsUtil')
 const factory = require('./factory')
 
+const dotenv = require('dotenv')
+const loadEnv = dotenv.config()
+assert.isUndefined(loadEnv.error)
+
 const { cwd, usc } = util
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)

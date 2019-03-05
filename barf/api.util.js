@@ -15,6 +15,7 @@ function constructQuery(options) {
   const queryObject = Object.assign(
     { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
     options.stateQuery,
+    options.query,
   )
   const query = `?${queryString.stringify(queryObject)}`
   return query
