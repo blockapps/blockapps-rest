@@ -1,10 +1,12 @@
 {
     "name": "blockapps-rest",
-    "version": "6.4.1",
+    "version": "7.0.0",
     "description": "BlockApps rest api",
     "main": "index.js",
     "scripts": {
-        "test": "mocha test/util.test.js"
+        "mocha": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
+        "build": "yarn webpack --config config/webpack.config.js --progress",
+        "test": "yarn mocha barf/test/*.test.js -b"
     },
     "keywords": [
         "BlockApps",
@@ -20,7 +22,7 @@
         "axios": "0.18.0",
         "bignumber.js": "2.4.0",
         "bluebird": "^3.4.6",
-        "chai": "^3.5.0",
+        "chai": "^4.2.0",
         "chai-bignumber": "^2.0.0",
         "commander": "^2.9.0",
         "dotenv": "^6.2.0",
@@ -53,5 +55,8 @@
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.10.0",
         "mocha": "^3.0.2"
+        "mocha-webpack": "^1.1.0",
+        "webpack": "3.0.0",
+        "webpack-node-externals": "^1.7.2"
     }
 }
