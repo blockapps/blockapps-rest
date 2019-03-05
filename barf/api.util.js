@@ -1,6 +1,25 @@
 const queryString = require('query-string')
 const ax = require('./axios-wrapper')
 
+function constructEndpoint(endpointTemplate, options = {}, params = {}) {
+  // expand template
+  const endpoint = Object.getOwnPropertyNames(params).reduce((acc, key) => {
+    return acc.replace(`:${key}`, encodeURIComponent(params[key]))
+  }, endpointTemplate)
+  // concat query patameters
+  const query = (options !== undefined) ? constructQuery(options) : ''
+  return endpoint + query
+}
+
+function constructQuery(options) {
+  const queryObject = Object.assign(
+    { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
+    options.stateQuery,
+  )
+  const query = `?${queryString.stringify(queryObject)}`
+  return query
+}
+
 /**
  * This function constructes metadata that can be used to control the history and index flags
  * @method{constructMetadata}
@@ -36,6 +55,40 @@ function constructMetadata(options, contractName) {
   return metadata
 }
 
+function getHeaders(user, options) {
+  return {
+    headers: {
+      ...options.header,
+      'Authorization': `Bearer ${user.token}`
+    }
+  }
+}
+
+function getApiUrl(options, apiSelector) {
+  const node = options.node || 0
+  const nodeUrls = options.config.nodes[node]
+  return nodeUrls[`${apiSelector}Url`]
+}
+
+function getStratoUrl(options) {
+  return getApiUrl(options, 'strato');
+}
+
+
+function getSearchUrl(options) {
+  return getApiUrl(options, 'search');
+}
+
+function getNodeUrl(options) {
+  return getApiUrl(options, 'node');
+}
+
+function getBlocUrl(options) {
+  const node = options.node || 0
+  const nodeUrls = options.config.nodes[node]
+  return nodeUrls.blocUrl
+}
+
 function createQuery(options) {
   const queryObject = Object.assign(
     { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
@@ -44,6 +97,7 @@ function createQuery(options) {
   const query = `?${queryString.stringify(queryObject)}`
   return query
 }
+
 
 async function post(url, endpoint, _body, options) {
   function createBody(_body, options) {
@@ -74,8 +128,13 @@ function getBlocUrl(options) {
 }
 
 module.exports = {
+  constructEndpoint,
   constructMetadata,
-  createQuery,
   getBlocUrl,
+  getHeaders,
+  getApiUrl,
+  getStratoUrl,
+  getSearchUrl,
+  getNodeUrl,
   post,
 }

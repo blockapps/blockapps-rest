@@ -1,39 +1,47 @@
 const BigNumber = require('bignumber.js')
-const { constructMetadata, createQuery, post, getBlocUrl } = require('./api.util')
+const { constructMetadata, constructEndpoint, post, getBlocUrl } = require('./api.util')
 const ax = require('./axios-wrapper')
+
+const Endpoint = {
+  USERS: '/users',
+  USER: '/users/:username',
+  FILL: '/users/:username/:address/fill',
+  CONTRACT: '/users/:username/:address/contract',
+  CALL: '/users/:username/:address/contract/:contractName/:contractAddress/call',
+  STATE: '/contracts/:name/:address/state',
+  TXRESULTS: '/transactions/results',
+}
 
 async function getUsers(args, options) {
   const url = getBlocUrl(options)
-  const endpoint = '/users'
+  const endpoint = constructEndpoint(Endpoint.USERS, options)
   return ax.get(url, endpoint, options)
 }
 
 async function getUser(args, options) {
   const url = getBlocUrl(options)
-  const username = encodeURIComponent(args.username)
-  const endpoint = ('/users/:username')
-    .replace(':username', username)
+  const endpoint = constructEndpoint(Endpoint.USER, options, {
+    username: args.username,
+  })
   return ax.get(url, endpoint, options)
 }
 
 async function createUser(args, options) {
   const url = getBlocUrl(options)
-  const username = encodeURIComponent(args.username)
   const data = { password: args.password }
-  const endpoint = ('/users/:username')
-    .replace(':username', username)
+  const endpoint = constructEndpoint(Endpoint.USER, options, {
+    username: args.username,
+  })
   return ax.postue(url, endpoint, data, options)
 }
 
 async function fill(user, options) {
   const body = {}
   const url = getBlocUrl(options)
-  const username = encodeURIComponent(user.username)
-  const query = createQuery(options)
-  const endpoint = ('/users/:username/:address/fill')
-    .replace(':username', username)
-    .replace(':address', user.address)
-    .concat(query)
+  const endpoint = constructEndpoint(Endpoint.FILL, options, {
+    username: user.username,
+    address: user.address,
+  })
   return ax.postue(url, endpoint, body, options)
 }
 
@@ -46,30 +54,25 @@ async function createContract(user, contract, options) {
     metadata: constructMetadata(options, contract.name),
   }
   const url = getBlocUrl(options)
-  const username = encodeURIComponent(user.username)
-  const query = createQuery(options)
-  const endpoint = ('/users/:username/:address/contract')
-    .replace(':username', username)
-    .replace(':address', user.address)
-    .concat(query)
+  const endpoint = constructEndpoint(Endpoint.CONTRACT, options, {
+    username: user.username,
+    address: user.address,
+  })
   return post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
-  const query = createQuery(options)
-  const endpoint = ('/transactions/results')
-    .concat(query)
+  const endpoint = constructEndpoint(Endpoint.TXRESULTS, options)
   return post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
   const url = getBlocUrl(options)
-  const query = createQuery(options)
-  const endpoint = ('/contracts/:name/:address/state')
-    .replace(':name', contract.name)
-    .replace(':address', contract.address)
-    .concat(query)
+  const endpoint = constructEndpoint(Endpoint.STATE, options, {
+    name: contract.name,
+    address: contract.address,
+  })
   return ax.get(url, endpoint, options)
 }
 
@@ -83,14 +86,12 @@ async function call(user, contract, method, args, value, options) {
     metadata: constructMetadata(options, contract.name),
   }
   const url = getBlocUrl(options)
-  const username = encodeURIComponent(user.username)
-  const query = createQuery(options)
-  const endpoint = ('/users/:username/:address/contract/:contractName/:contractAddress/call')
-    .replace(':username', username)
-    .replace(':address', user.address)
-    .replace(':contractName', contract.name)
-    .replace(':contractAddress', contract.address)
-    .concat(query)
+  const endpoint = constructEndpoint(Endpoint.CALL, options, {
+    username: user.username,
+    address: user.address,
+    contractName: contract.name,
+    contractAddress: contract.address,
+  })
   return post(url, endpoint, body, options)
 }
 
