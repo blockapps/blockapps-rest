@@ -130,7 +130,7 @@ async function callMethod(user, method, options) {
       txs: [
         {
           payload: {
-            ...methodArgs,
+            ...method,
             metadata: constructMetadata(options, method.contractName)
           },
           type: 'FUNCTION'
@@ -331,11 +331,6 @@ async function createChain(chain, contract, options) {
   }, options) 
   return result;
 }
-
-
-
-
-
 
 export default  {
   createChain,
