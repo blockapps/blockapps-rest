@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-const { constructMetadata, constructEndpoint, post, getBlocUrl, getNodeUrl, getHeaders } = require('./api.util')
+const { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } = require('./api.util')
 const ax = require('./axios-wrapper')
 
 const Endpoint = {
@@ -17,7 +17,7 @@ const Endpoint = {
 async function getUsers(args, options) {
   const url = getBlocUrl(options)
   const endpoint = constructEndpoint(Endpoint.USERS, options)
-  return ax.get(url, endpoint, options)
+  return get(url, endpoint, options)
 }
 
 async function getUser(args, options) {
@@ -25,7 +25,7 @@ async function getUser(args, options) {
   const endpoint = constructEndpoint(Endpoint.USER, options, {
     username: args.username,
   })
-  return ax.get(url, endpoint, options)
+  return get(url, endpoint, options)
 }
 
 async function createUser(args, options) {
@@ -75,7 +75,7 @@ async function getState(contract, options) {
     name: contract.name,
     address: contract.address,
   })
-  return ax.get(url, endpoint, options)
+  return get(url, endpoint, options)
 }
 
 async function call(user, contract, method, args, value, options) {
@@ -100,20 +100,20 @@ async function call(user, contract, method, args, value, options) {
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.SEND, options)
-  return ax.post(url, endpoint, body, getHeaders(user, options))
+  return post(url, endpoint, body, getHeaders(user, options))
 }
 
 async function getKey(user, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.KEY, options)
-  return ax.get(url, endpoint, getHeaders(user, options))
+  return get(url, endpoint, getHeaders(user, options))
 }
 
 async function createKey(user, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.KEY, options)
   const body = {}
-  return ax.post(url, endpoint, body, getHeaders(user, options))
+  return post(url, endpoint, body, getHeaders(user, options))
 }
 
 module.exports = {

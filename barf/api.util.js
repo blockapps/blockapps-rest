@@ -90,16 +90,6 @@ function getBlocUrl(options) {
   return nodeUrls.blocUrl
 }
 
-function createQuery(options) {
-  const queryObject = Object.assign(
-    { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
-    options.stateQuery,
-  )
-  const query = `?${queryString.stringify(queryObject)}`
-  return query
-}
-
-
 async function post(url, endpoint, _body, options) {
   function createBody(_body, options) {
     // array
@@ -118,14 +108,15 @@ async function post(url, endpoint, _body, options) {
   }
 
   const body = createBody(_body, options)
-
   return ax.post(url, endpoint, body, options)
 }
 
-function getBlocUrl(options) {
-  const node = options.node || 0
-  const nodeUrls = options.config.nodes[node]
-  return nodeUrls.blocUrl
+async function get(host, endpoint, options = {}) {
+  return ax.get(host, endpoint, options)
+}
+
+async function postue(host, endpoint, data, options) {
+  return ax.postue(host, endpoint, data, options)
 }
 
 module.exports = {
@@ -137,5 +128,7 @@ module.exports = {
   getStratoUrl,
   getSearchUrl,
   getNodeUrl,
+  get,
   post,
+  postue,
 }
