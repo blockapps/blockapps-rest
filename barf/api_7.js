@@ -34,19 +34,20 @@ async function createUser(user, options) {
 async function fill(user, options) {
   const body = {}
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.fill, user, options)
+  const endpoint = constructEndpoint(endpoints.fill, user, {resolve: !options.isAsync})
   return ax.postue(url, endpoint, body, options)
 }
 
 async function createContract(user, body, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.createContract, user, options)
+  const endpoint = constructEndpoint(endpoints.createContract, user, {resolve: true})
   return ax.post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.blocResults, {}, options)
+  const resolve = !options.isAsync
+  const endpoint = constructEndpoint(endpoints.blocResults, {}, {resolve})
   return ax.post(url, endpoint, hashes, options)
 }
 
@@ -70,7 +71,7 @@ async function sendTransactions(user, body, options) {
 
 async function getKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
   return ax.get(
     url,
     endpoint,
@@ -80,7 +81,7 @@ async function getKey(user, options) {
 
 async function createKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
   return ax.post(
     url,
     endpoint,
