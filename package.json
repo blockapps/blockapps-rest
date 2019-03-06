@@ -54,7 +54,7 @@
         "eslint-plugin-import": "^2.13.0",
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.10.0",
-        "mocha": "^3.0.2"
+        "mocha": "^3.0.2",
         "mocha-webpack": "^1.1.0",
         "webpack": "3.0.0",
         "webpack-node-externals": "^1.7.2"
