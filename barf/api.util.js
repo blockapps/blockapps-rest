@@ -87,7 +87,8 @@ const endpoints = {
   getState: '/contracts/:name/:address/state',
   sendTransactions: '/strato/v2.3/transaction',
   getKey:  '/strato/v2.3/key',
-  createKey: '/strato/v2.3/key'
+  createKey: '/strato/v2.3/key',
+  search: '/search/:name'
 }
 
 

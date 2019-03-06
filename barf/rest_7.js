@@ -293,7 +293,7 @@ async function search(contract, options) {
     const results = await api.search(contract, options)
     return results
   } catch(err) {
-    if(err.status && err.status === 404) {
+    if(err.response && err.response.status === 404) {
       return []
     }
   }

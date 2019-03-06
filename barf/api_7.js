@@ -7,6 +7,7 @@ const {
   getBlocUrl,
   getNodeUrl,
   constructEndpoint,
+  getSearchUrl,
   endpoints,
   getHeaders
 } = apiUtil
@@ -92,7 +93,7 @@ async function createKey(user, options) {
 
 async function search(contract, options) {
   const url = getSearchUrl(options);
-  const endpoint = constructEndpoint(endpoints.search, contract, options)
+  const endpoint = constructEndpoint(endpoints.search, contract, {})
   return ax.get(
     url,
     endpoint
