@@ -135,9 +135,7 @@ describe('rest_7', function () {
 
 describe('search', function () {
   this.timeout(config.timeout)
-  let admin;
   let contract;
-  let tokenUser;
   const options = { config }
 
   before(async () => {
@@ -147,13 +145,9 @@ describe('search', function () {
     const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN }, options);
     assert.isOk(util.isAddress(address))
 
-    admin = await factory.createAdmin(uid, options)
-    tokenUser = { token: process.env.USER_TOKEN }
+    let admin = await factory.createAdmin(uid, options)
 
-    const constructorArgs = { var1: 1 }
-    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
-    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
-
+    const contractArgs = await factory.createContractArgs(uid)
     contract = await rest.createContract(admin, contractArgs, options)
     assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
@@ -174,8 +168,8 @@ describe('search', function () {
     assert.lengthOf(result, 0, 'array has length of 0');
   })
 
-  it('searchUntil - get data on first call', async () => {
-    // predicate is created: To get result of search
+  it('searchUntil - get response on first call', async () => {
+    // predicate is created: to get response
     function predicate(data) {
       return data;
     }
@@ -186,8 +180,8 @@ describe('search', function () {
     assert.equal(result[0].address, contract.address, 'address');
   })
 
-  it('searchUntil - Throws an error', async () => {
-    // predicate is created: to wait until data is available. If not error has be thrown
+  it('searchUntil - throws an error', async () => {
+    // predicate is created: to wait until response is available otherwise throws the error
     function predicate() { }
 
     try {
@@ -197,8 +191,8 @@ describe('search', function () {
     }
   })
 
-  it('searchUntil - get data after few calls', async () => {
-    // predicate is created: to wait until data is available.
+  it('searchUntil - get response after five calls', async () => {
+    // predicate is created: get response after five calls
     let i = 0;
     function predicate(data) {
       if (i === 5) {
