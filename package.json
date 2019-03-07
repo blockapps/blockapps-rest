@@ -4,7 +4,7 @@
   "description": "BlockApps rest api",
   "main": "index.js",
   "scripts": {
-    "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
+    "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js barf/test/index.test.js",
     "build": "yarn webpack --config config/webpack.config.js --progress",
     "test": "yarn mocha-webpack barf/test/index.test.js -b"
   },
@@ -46,6 +46,7 @@
     "@babel/core": "7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
     "chai": "^3.5.0",
     "co-mocha": "^1.2.1",

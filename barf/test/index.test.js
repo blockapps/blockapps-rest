@@ -22,7 +22,7 @@ describe('contracts', function() {
     admin = await factory.createAdmin(uid, options)
   })
 
-  it('create contract - async', async () => {
+  it.only('create contract - async', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
