@@ -1,4 +1,4 @@
-const path = require('path')
+import path from 'path'
 
 // odds
 const cwd = path.resolve(process.cwd())
@@ -76,7 +76,7 @@ async function sleep(milli) {
   })
 }
 
-module.exports = {
+export {
   cwd,
   isAddress,
   isHash,

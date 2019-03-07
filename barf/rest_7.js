@@ -1,5 +1,6 @@
-const api = require('./api_7')
-const constants = require('./constants')
+import api from './api_7'
+import apiUtil from './api.util'
+import * as constants from './constants'
 
 function isTxSuccess(txResult) {
   return txResult.status === 'Success'
@@ -155,7 +156,7 @@ function promiseTimeout(timeout) {
   })
 }
 
-module.exports = {
+export default  {
   getUsers,
   getUser,
   createUser,

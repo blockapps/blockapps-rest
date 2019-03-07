@@ -1,16 +1,15 @@
-const RestStatus = require('http-status-codes')
-const { rest } = require('../index')
-const { assert } = require('./assert')
-const util = require('../util')
-const fsUtil = require('../fsUtil')
-const factory = require('./factory')
+import RestStatus from 'http-status-codes'
+import dotenv from 'dotenv'
+import rest from '../rest_7'
+import assert from './assert'
+import * as util from '../util'
+import fsUtil from '../fsUtil'
+import factory from './factory'
 
-const dotenv = require('dotenv')
-const loadEnv = dotenv.config()
+const loadEnv = dotenv.config();
 assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
-
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
 describe('contracts', function() {

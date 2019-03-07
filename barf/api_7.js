@@ -1,6 +1,6 @@
-const BigNumber = require('bignumber.js')
-const { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } = require('./api.util')
-const ax = require('./axios-wrapper')
+import ax from './axios-wrapper'
+import { BigNumber } from './index'
+import { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } from './api.util'
 
 const Endpoint = {
   USERS: '/users',
@@ -116,7 +116,7 @@ async function createKey(user, options) {
   return post(url, endpoint, body, getHeaders(user, options))
 }
 
-module.exports = {
+export default {
   getUsers,
   getUser,
   createUser,
@@ -127,5 +127,5 @@ module.exports = {
   call,
   sendTransactions,
   getKey,
-  createKey
+  createKey,
 }

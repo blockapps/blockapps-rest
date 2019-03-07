@@ -1,5 +1,5 @@
-const fs = require('fs');
-const nodepath = require('path');
+import fs from 'fs'
+import nodepath from 'path'
 const cwd = nodepath.resolve(process.cwd());
 
 let nameStore = [];
@@ -118,6 +118,6 @@ function combine(filename) {
   });
 }
 
-module.exports = {
+export default {
   combine,
 }

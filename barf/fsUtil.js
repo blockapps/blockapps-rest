@@ -1,5 +1,5 @@
-const fs = require('fs');
-const yaml = require('js-yaml');
+import fs from 'fs'
+import yaml from 'js-yaml';
 
 function get(filename) {
   const content = fs.readFileSync(filename, 'utf8')
@@ -16,7 +16,7 @@ function getJson(filename, options) {
   return JSON.parse(content)
 }
 
-module.exports = {
+export default {
   get,
   getYaml,
   getJson,

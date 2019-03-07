@@ -1,9 +1,7 @@
-const BigNumber = require('bignumber.js');
-const rest = require('./rest_7.js')
+import BigNumber from 'bignumber.js'
+import rest from './rest_7'
 
-// TODO add functionality to assert HERE
-
-module.exports = {
+export {
   BigNumber,
   rest,
 }

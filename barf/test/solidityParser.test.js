@@ -1,7 +1,7 @@
-const solidityParser = require('../solidityParser')
-const { assert } = require('./assert')
-const { cwd } = require('../util')
-const fsUtil = require('../fsUtil')
+import solidityParser from '../solidityParser'
+import assert  from './assert'
+import util from '../util'
+import fsUtil from '../fsUtil'
 
 describe('solidity parser', () => {
 

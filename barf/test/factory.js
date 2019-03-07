@@ -1,6 +1,6 @@
-const { rest } = require('../index')
-const { usc } = require('../util')
-const fsUtil = require('../fsUtil')
+import rest from '../rest_7'
+import { usc } from '../util'
+import fsUtil from '../fsUtil'
 
 /*
   users
@@ -43,8 +43,7 @@ async function createContractFromFile(filename, uid, constructorArgs) {
   return { name, source, args: usc(constructorArgs) } // TODO flow contractArgs object
 }
 
-
-module.exports = {
+export default {
   createAdmin,
   createContractArgs,
   createContractSyntaxErrorArgs,

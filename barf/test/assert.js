@@ -1,4 +1,4 @@
-const { assert } = require('chai')
+import { assert } from 'chai'
 
 assert.restStatus = async (func, expectedRestStatus, regex) => {
   let result
@@ -15,6 +15,4 @@ assert.restStatus = async (func, expectedRestStatus, regex) => {
   assert.isUndefined(result, `REST call completed instead of REST error ${expectedRestStatus}`)
 }
 
-module.exports = {
-  assert,
-}
+export default assert

@@ -1,4 +1,4 @@
-const parser = require('solidity-parser-antlr')
+import parser from 'solidity-parser-antlr'
 
 async function parse(input) {
   return parser.parse(input)
@@ -11,12 +11,12 @@ async function parseEnum(input) {
     acc[member.name] = index
     acc[index] = member.name
     return acc
-  }, {});
+  }, {})
 
   return myEnum
 }
 
-module.exports = {
+export default {
   parse,
   parseEnum,
 }

@@ -1,11 +1,10 @@
-const importer = require('../importer')
-const { rest } = require('../index')
-const { assert } = require('./assert')
-const util = require('../util')
-const { cwd } = require('../util')
-const factory = require('./factory')
+import importer from '../importer'
+import rest from '../rest_7'
+import assert from './assert'
+import util from '../util'
+import factory from './factory'
+import fsUtil from '../fsUtil'
 
-const fsUtil = require('../fsUtil')
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 
 describe('imports', () => {

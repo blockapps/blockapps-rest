@@ -1,5 +1,5 @@
-const queryString = require('query-string')
-const ax = require('./axios-wrapper')
+import queryString from 'query-string'
+import ax from './axios-wrapper'
 
 function constructEndpoint(endpointTemplate, options = {}, params = {}) {
   // expand template
@@ -119,7 +119,7 @@ async function postue(host, endpoint, data, options) {
   return ax.postue(host, endpoint, data, options)
 }
 
-module.exports = {
+export {
   constructEndpoint,
   constructMetadata,
   getBlocUrl,
