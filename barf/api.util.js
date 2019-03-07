@@ -70,7 +70,7 @@ function getBlocUrl(options) {
 }
 
 function constructEndpoint(endpoint, params = {}, queryParams = {}) {
-  const url = Object.getOwnPropertyNames(params).reduce((acc, key) =>  {
+  const url = Object.getOwnPropertyNames(params).reduce((acc, key) => {
     return acc.replace(`:${key}`, encodeURIComponent(params[key]))
   }, endpoint)
   return `${url}?${qs.stringify(queryParams)}`;
@@ -86,7 +86,7 @@ const endpoints = {
   blocResults: '/transactions/results',
   getState: '/contracts/:name/:address/state',
   sendTransactions: '/strato/v2.3/transaction',
-  getKey:  '/strato/v2.3/key',
+  getKey: '/strato/v2.3/key',
   createKey: '/strato/v2.3/key'
 }
 
@@ -95,12 +95,11 @@ async function until(predicate, action, options, timeout = 60000) {
   const phi = 10
   let dt = 500
   let totalSleep = 0
-  while(totalSleep < timeout) {
+  while (totalSleep < timeout) {
     const result = await action(options)
-    if(predicate(result)) {
+    if (predicate(result)) {
       return result
-    }
-    else {
+    } else {
       await promiseTimeout(dt)
       totalSleep += dt
       dt += phi
@@ -110,8 +109,8 @@ async function until(predicate, action, options, timeout = 60000) {
 }
 
 function promiseTimeout(timeout) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
       resolve()
     }, timeout)
   })

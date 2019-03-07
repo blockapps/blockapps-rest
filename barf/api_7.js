@@ -2,8 +2,8 @@ import ax from './axios-wrapper'
 import qs from 'query-string'
 import apiUtil from './api.util'
 
-const { 
-  constructMetadata, 
+const {
+  constructMetadata,
   getBlocUrl,
   getNodeUrl,
   constructEndpoint,
@@ -26,7 +26,9 @@ async function getUser(user, options) {
 
 async function createUser(user, options) {
   const url = getBlocUrl(options)
-  const data = { password: user.password }
+  const data = {
+    password: user.password
+  }
   const endpoint = constructEndpoint(endpoints.createUser, user)
   return ax.postue(url, endpoint, data, options)
 }
@@ -34,20 +36,28 @@ async function createUser(user, options) {
 async function fill(user, options) {
   const body = {}
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.fill, user, {resolve: !options.isAsync})
+  const endpoint = constructEndpoint(endpoints.fill, user, {
+    resolve: !options.isAsync,
+    ...options.query
+  })
   return ax.postue(url, endpoint, body, options)
 }
 
 async function createContract(user, body, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.createContract, user, {resolve: true})
+  const endpoint = constructEndpoint(endpoints.createContract, user, {
+    resolve: !options.isAsync,
+    ...options.query
+  })
   return ax.post(url, endpoint, body, options)
 }
 
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
   const resolve = !options.isAsync
-  const endpoint = constructEndpoint(endpoints.blocResults, {}, {resolve})
+  const endpoint = constructEndpoint(endpoints.blocResults, {}, {
+    resolve
+  })
   return ax.post(url, endpoint, hashes, options)
 }
 
@@ -60,18 +70,18 @@ async function getState(contract, options) {
 
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options);
-  const endpoint = constructEndpoint(endpoints.sendTransactions, {}, options) 
+  const endpoint = constructEndpoint(endpoints.sendTransactions, {}, options)
   return ax.post(
-    url, 
-    endpoint, 
-    body, 
+    url,
+    endpoint,
+    body,
     getHeaders(user, options)
-  ) 
+  )
 }
 
 async function getKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query)
   return ax.get(
     url,
     endpoint,
@@ -81,11 +91,10 @@ async function getKey(user, options) {
 
 async function createKey(user, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query) 
+  const endpoint = constructEndpoint(endpoints.getKey, {}, options.query)
   return ax.post(
     url,
-    endpoint,
-    {},
+    endpoint, {},
     getHeaders(user, options)
   )
 }
@@ -101,7 +110,7 @@ async function search(contract, options) {
 // TODO: check options.params and options.headers in axoos wrapper.
 async function getChains(chainIds, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.getChain, {}. options)
+  const endpoint = constructEndpoint(endpoints.getChain, {}.options)
   return ax.get(
     url,
     endpoint
