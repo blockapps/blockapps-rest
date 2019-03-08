@@ -26,13 +26,15 @@ async function getUser(args, options) {
   createUser
  */
 async function createUser(args, options) {
-  return (args.token) ? createUserAuth(args, options) : createUserBloc(args, options)
+  return (args.token)
+    ? createUserAuth(args, options)
+    : createUserBloc(args, options)
 }
 
 async function createUserBloc(args, options) {
   const address = await api.createUser(args, options)
   const user = Object.assign(args, { address })
-  // async creation
+  // async - do not resolve
   if (options.isAsync) {
     return user
   }
@@ -66,44 +68,35 @@ async function createContract(user, contract, options) {
 
 async function createContractBloc(user, contract, options) {
   const pendingTxResult = await api.createContractBloc(user, contract, options)
-  if (options.isAsync) {
-    return pendingTxResult
-  }
-
-  const resolvedTxResult = await resolveResult(pendingTxResult, options)
-
-  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
-
-  if (isTxFailure(result)) {
-    throw new Error(result.txResult.message) // TODO throw RestError
-  }
-  // options.isDetailed - return all the data
-  if (options.isDetailed) {
-    return result.data.contents
-  }
-  // return basic contract object
-  return { name: result.data.contents.name, address: result.data.contents.address }
+  return createContractResolve(pendingTxResult, options)
 }
 
 async function createContractAuth(user, contract, options) {
   const [pendingTxResult] = await api.createContractAuth(user, contract, options)
+  return createContractResolve(pendingTxResult, options)
+}
+
+async function createContractResolve(pendingTxResult, options) {
+  // throw if FAILURE
+  if (isTxFailure(pendingTxResult)) {
+    throw new Error(pendingTxResult.txResult.message) // TODO throw RestError
+  }
+  // async - do not resolve
   if (options.isAsync) {
     return pendingTxResult
   }
-
+  // resolve - wait until not pending
   const resolvedTxResult = await resolveResult(pendingTxResult, options)
-
-  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
-
-  if (isTxFailure(result)) {
-    throw new Error(result.txResult.message) // TODO throw RestError
+  // throw if FAILURE
+  if (isTxFailure(resolvedTxResult)) {
+    throw new Error(resolvedTxResult.txResult.message) // TODO throw RestError
   }
   // options.isDetailed - return all the data
   if (options.isDetailed) {
-    return result.data.contents
+    return resolvedTxResult.data.contents
   }
   // return basic contract object
-  return { name: result.data.contents.name, address: result.data.contents.address }
+  return { name: resolvedTxResult.data.contents.name, address: resolvedTxResult.data.contents.address }
 }
 
 async function getKey(user, options) {
@@ -119,7 +112,6 @@ async function createKey(user, options) {
 async function createOrGetKey(user, options) {
   try {
     const response = await api.getKey(user, options)
-    await fill({ address: response.address }, { isAsync: false, ...options })
     return response.address
   } catch (err) {
     const response = await api.createKey(user, options)
@@ -129,15 +121,14 @@ async function createOrGetKey(user, options) {
 }
 
 async function resolveResult(pendingTxResult, options) {
-  const resolvedTxResult = (await resolveResults([pendingTxResult], options))[0]
-  return resolvedTxResult
+  return (await resolveResults([pendingTxResult], options))[0]
 }
 
 async function resolveResults(pendingResults, _options = {}) {
   const options = Object.assign({ isAsync: true }, _options)
 
-  // wait until there no no more PENDING results
-  const predicate = (results) => results.filter(r => r.status === constants.PENDING ).length == 0
+  // wait until there are no more PENDING results
+  const predicate = (results) => results.filter(r => r.status === constants.PENDING).length === 0
   const action = async () => getBlocResults(pendingResults.map(r => r.hash), options)
   const resolvedResults = await until(predicate, action, options)
   return resolvedResults
@@ -167,14 +158,12 @@ async function until(predicate, action, options, timeout = 60000) {
 
 
 
-async function getBlocResults(hashes, options = {}) {
-  const result = await api.blocResults(hashes, options)
-  return result
+async function getBlocResults(hashes, options) {
+  return api.blocResults(hashes, options)
 }
 
 async function getState(contract, options) {
-  const result = await api.getState(contract, options)
-  return result
+  return api.getState(contract, options)
 }
 
 async function getArray(contract, name, options) {
