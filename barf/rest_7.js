@@ -18,12 +18,11 @@ async function getUser(args, options) {
   return address
 }
 
-// /users/:username
+/*
+  createUser
+ */
 async function createUser(args, options) {
-  if (args.token) {
-    return createUserAuth(args, options)
-  }
-  return createUserBloc(args, options)
+  return (args.token) ? createUserAuth(args, options) : createUserBloc(args, options)
 }
 
 async function createUserBloc(args, options) {
@@ -38,6 +37,12 @@ async function createUserBloc(args, options) {
   return user // TODO flow user object
 }
 
+async function createUserAuth(args, options) {
+  const address = await createOrGetKey(args, options)
+  const user = Object.assign({}, args, { address })
+  return user
+}
+
 async function fill(user, options) {
   const txResult = await api.fill(user, options)
   if (!isTxSuccess(txResult)) {
@@ -46,7 +51,14 @@ async function fill(user, options) {
   return txResult
 }
 
+/*
+  createContracts
+ */
 async function createContract(user, contract, options) {
+  return (user.token) ? createContractAuth(user, contract, options) : createContractBloc(user, contract, options)
+}
+
+async function createContractBloc(user, contract, options) {
   const pendingTxResult = await api.createContract(user, contract, options)
   if (options.isAsync) {
     return pendingTxResult
@@ -67,6 +79,80 @@ async function createContract(user, contract, options) {
   return { name: result.data.contents.name, address: result.data.contents.address }
 }
 
+
+function constructMetadata(options, contractName) {
+  const metadata = {}
+  if (options === {}) return metadata
+
+  // history flag (default: off)
+  if (options.enableHistory) {
+    metadata.history = contractName
+  }
+  if (options.hasOwnProperty('history')) {
+    const newContracts = options.history.filter(contract => contract !== contractName).join()
+    metadata.history = `${options.history},${newContracts}`
+  }
+
+  // index flag (default: on)
+  if (options.hasOwnProperty('enableIndex') && !options.enableIndex) {
+    metadata.noindex = contractName
+  }
+  if (options.hasOwnProperty('noindex')) {
+    const newContracts = options.noindex.filter(contract => contract !== contractName).join()
+    metadata.noindex = `${options.noindex},${newContracts}`
+  }
+
+  // TODO: construct the "nohistory" and "index" fields for metadata if needed
+  // The current implementation only constructs "history" and "noindex"
+
+  return metadata
+}
+
+
+async function createContractAuth(user, contract, options) {
+  const txParams = options.txParams || {} // TODO generalize txParams
+  const body = {
+    contract: contract.name,
+    src: contract.source,
+    args: contract.args,
+    metadata: constructMetadata(options, contract.name),
+  }
+
+  let contractTxResult = await api.sendTransactions(
+    user,
+    {
+      txs: [
+        {
+          payload: body,
+          type: 'CONTRACT',
+        }],
+      txParams,
+    },
+    options,
+  )
+
+  if (options.isAsync) {
+    return contractTxResult[0]
+  }
+
+  const resolvedTxResult = await resolveResult(contractTxResult, options)
+
+  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
+
+  if (result.status === constants.FAILURE) {
+    throw new Error(result.txResult.message) // TODO throw RestError
+  }
+  // TODO: Recommend removing isDetailed, since the platform is returning
+  // this data anyway
+  // options.isDetailed - return all the data
+  if (options.isDetailed) {
+    return result.data.contents
+  }
+  // return basic contract object
+  return { name: result.data.contents.name, address: result.data.contents.address }
+}
+
+
 async function getKey(user, options) {
   const response = await api.getKey(user, options);
   return response.address;
@@ -80,6 +166,7 @@ async function createKey(user, options) {
 async function createOrGetKey(user, options) {
   try {
     const response = await api.getKey(user, options)
+    await fill({ address: response.address }, { isAsync: false, ...options })
     return response.address
   } catch (err) {
     const response = await api.createKey(user, options)
