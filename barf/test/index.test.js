@@ -166,7 +166,8 @@ describe('call', function() {
 
   before(async () => {
     const uid = util.uid()
-    admin = await factory.createAdmin(uid, options)
+    const userArgs = (testAuth) ? { token: process.env.USER_TOKEN } : { uid }
+    admin = await factory.createAdmin(userArgs, options)
   })
 
   it('call method', async () => {

@@ -172,7 +172,35 @@ async function getArray(contract, name, options) {
 }
 
 async function call(user, contract, method, args, value, options) {
-  const callTxResult = await api.call(user, contract, method, args, value, options)
+  return (user.token)
+    ? callAuth(user, contract, method, args, value, options)
+    : callBloc(user, contract, method, args, value, options)
+}
+
+async function callBloc(user, contract, method, args, value, options) {
+  const callTxResult = await api.callBloc(user, contract, method, args, value, options)
+
+  if (options.isAsync) {
+    return callTxResult
+  }
+
+  const resolvedTxResult = await resolveResult(callTxResult, options)
+
+  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
+
+  if (result.status === constants.FAILURE) {
+    throw new Error(result.txResult.message) // TODO throw RestError
+  }
+  // options.isDetailed - return all the data
+  if (options.isDetailed) {
+    return result
+  }
+  // return basic contract object
+  return result.data.contents
+}
+
+async function callAuth(user, contract, method, args, value, options) {
+  const callTxResult = await api.callAuth(user, contract, method, args, value, options)
 
   if (options.isAsync) {
     return callTxResult

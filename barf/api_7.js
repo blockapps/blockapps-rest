@@ -1,6 +1,7 @@
 import ax from './axios-wrapper'
 import { BigNumber } from './index'
 import { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } from './api.util'
+import * as constants from './constants'
 
 const Endpoint = {
   USERS: '/users',
@@ -96,7 +97,7 @@ async function getState(contract, options) {
   return get(url, endpoint, options)
 }
 
-async function call(user, contract, method, args, value, options) {
+async function callBloc(user, contract, method, args, value, options) {
   const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
   const body = {
     password: user.password,
@@ -113,6 +114,28 @@ async function call(user, contract, method, args, value, options) {
     contractAddress: contract.address,
   })
   return post(url, endpoint, body, options)
+}
+
+async function callAuth(user, contract, method, args, value, options) {
+  const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
+
+  const payload = {
+    contractName: contract.name,
+    contractAddress: contract.address,
+    value: valueFixed,
+    method,
+    args,
+    metadata: constructMetadata(options, contract.name)
+  }
+  const body = {
+    txs: [
+      {
+        payload,
+        type: 'FUNCTION', // TODO enum
+      }],
+  }
+  const contractTxResult = await sendTransactions(user, body, options)
+  return contractTxResult
 }
 
 async function sendTransactions(user, body, options) {
@@ -143,7 +166,8 @@ export default {
   fill,
   blocResults,
   getState,
-  call,
+  callBloc,
+  callAuth,
   sendTransactions,
   getKey,
   createKey,

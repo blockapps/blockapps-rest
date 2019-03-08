@@ -1,5 +1,6 @@
 import queryString from 'query-string'
 import ax from './axios-wrapper'
+import * as constants from './constants'
 
 function constructEndpoint(endpointTemplate, options = {}, params = {}) {
   // expand template
