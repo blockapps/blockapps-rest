@@ -11,12 +11,12 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
+const testAuth = true
 
 describe('contracts', function() {
   this.timeout(config.timeout)
   let admin
   const options = { config }
-  const testAuth = true
 
   before(async () => {
     const uid = util.uid()
@@ -88,7 +88,8 @@ describe('state', function() {
 
   before(async () => {
     const uid = util.uid()
-    admin = await factory.createAdmin(uid, options)
+    const userArgs = (testAuth) ? { token: process.env.USER_TOKEN } : { uid }
+    admin = await factory.createAdmin(userArgs, options)
   })
 
   it('get state', async () => {
