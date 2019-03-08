@@ -6,7 +6,7 @@ import * as util from '../util'
 import fsUtil from '../fsUtil'
 import factory from './factory'
 
-const loadEnv = dotenv.config();
+const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
@@ -19,10 +19,10 @@ describe('contracts', function() {
 
   before(async () => {
     const uid = util.uid()
-    admin = await factory.createAdmin(uid, options)
+    admin = await factory.createAdmin({ uid }, options)
   })
 
-  it.only('create contract - async', async () => {
+  it('create contract - async', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
@@ -182,18 +182,18 @@ describe('call', function() {
   })
 })
 
-describe('user', function() {
+describe('bloc user', function() {
   this.timeout(config.timeout)
   const options = { config }
   const password = '1234'
 
-  it('get all users', async () => {
+  it('get all bloc users', async () => {
     const args = {}
     const result = await rest.getUsers(args, options)
     assert.equal(Array.isArray(result), true, 'return value is an array')
   })
 
-  it('create user', async () => {
+  it('create bloc user', async () => {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
@@ -215,5 +215,48 @@ describe('user', function() {
     const args2 = { username }
     const address = await rest.getUser(args2, options)
     assert.equal(address, user.address, 'user is valid eth address')
+  })
+})
+
+describe('auth user', function () {
+  this.timeout(config.timeout)
+  const options = { config }
+  const user = { token: process.env.USER_TOKEN }
+
+  it('getKey', async () => {
+    const address = await rest.getKey(user, options)
+    const isAddress = util.isAddress(address)
+    assert.equal(isAddress, true, 'user is valid eth address')
+  })
+
+  it('getKey - unknown token - FORBIDDEN', async () => {
+    const badUser = { token: '1234' }
+    await assert.restStatus(async () => {
+      return rest.getKey(badUser, options)
+    }, RestStatus.FORBIDDEN, /invalid jwt/)
+  })
+
+  // note - this can only be tested after a fresh install/wipe of strato
+  it('createKey', async () => {
+    try {
+      await rest.getKey(user, options)
+    } catch (err) {
+      const address = await rest.createKey(user, options)
+      const isAddress = util.isAddress(address)
+      assert.equal(isAddress, true, 'user is valid eth address')
+    }
+  })
+
+  it('createKey - unknown token - FORBIDDEN', async () => {
+    const badUser = { token: '1234' }
+    await assert.restStatus(async () => {
+      return rest.createKey(badUser, options)
+    }, RestStatus.FORBIDDEN, /invalid jwt/)
+  })
+
+  it('createOrGetKey', async () => {
+    const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN }, options)
+    const isAddress = util.isAddress(address)
+    assert.equal(isAddress, true, 'user is valid eth address')
   })
 })

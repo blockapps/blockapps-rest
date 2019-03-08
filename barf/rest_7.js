@@ -20,6 +20,13 @@ async function getUser(args, options) {
 
 // /users/:username
 async function createUser(args, options) {
+  if (args.token) {
+    return createUserAuth(args, options)
+  }
+  return createUserBloc(args, options)
+}
+
+async function createUserBloc(args, options) {
   const address = await api.createUser(args, options)
   const user = Object.assign(args, { address })
   // async creation

@@ -5,9 +5,14 @@ import fsUtil from '../fsUtil'
 /*
   users
  */
-async function createAdmin(uid, options, password = '1234') {
-  const username = `admin_${uid}`
-  const args = { username, password }
+async function createAdmin(_args, options) {
+  // OAuth
+  if (_args.token !== undefined) {
+    return rest.createUser(_args, options)
+  }
+  // Bloc
+  const username = `admin_${_args.uid}`
+  const args = { username, password: _args.password || '1234' }
   const user = await rest.createUser(args, options)
   return user
 }
