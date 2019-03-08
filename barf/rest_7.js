@@ -132,22 +132,39 @@ async function resolveResult(result, options) {
   return (await resolveResults([result], options))[0]
 }
 
-async function resolveResults(results, _options = {}) {
+async function resolveResults(pendingResults, _options = {}) {
   const options = Object.assign({ isAsync: true }, _options)
-  let count = 0
-  var res = results
-  while (count < 60 && res.filter(r => {return r.status === constants.PENDING}).length !== 0) {
-    res = await getBlocResults(res.map(r => {return r.hash}), options)
-    await promiseTimeout(1000)
-    count++
-  }
 
-  if (count >= 60) {
-    throw new Error('Transaction did not resolve')
-  }
-
-  return res
+  // wait until there no no more PENDING results
+  const predicate = (results) => results.filter(r => r.status === constants.PENDING ).length == 0
+  const action = async () => getBlocResults(pendingResults.map(r => r.hash), options)
+  const resolvedResults = await until(predicate, action, options)
+  return resolvedResults
 }
+
+async function until(predicate, action, options, timeout = 60000) {
+  const phi = 10
+  let dt = 500
+  let totalSleep = 0
+  while (totalSleep < timeout) {
+    const result = await action(options)
+    console.log( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', result)
+    if (predicate(result)) {
+      return result
+    }
+    else {
+      console.log( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SLEEPING',)
+      await promiseTimeout(dt)
+      totalSleep += dt
+      dt += phi
+    }
+  }
+  throw new Error(`until: timeout ${timeout} ms exceeded`)
+}
+
+
+
+
 
 async function getBlocResults(hashes, options = {}) {
   const result = await api.blocResults(hashes, options)
