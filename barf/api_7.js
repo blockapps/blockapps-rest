@@ -63,6 +63,24 @@ async function createContract(user, contract, options) {
   return post(url, endpoint, body, options)
 }
 
+async function createContractAuth(user, contract, options) {
+  const payload = {
+    contract: contract.name,
+    src: contract.source,
+    args: contract.args,
+    metadata: constructMetadata(options, contract.name),
+  }
+  const body = {
+    txs: [
+      {
+        payload,
+        type: 'CONTRACT', // TODO enum
+      }],
+  }
+  const contractTxResult = await sendTransactions(user, body, options)
+  return contractTxResult
+}
+
 async function blocResults(hashes, options) { // TODO untested code
   const url = getBlocUrl(options)
   const endpoint = constructEndpoint(Endpoint.TXRESULTS, options)
@@ -121,6 +139,7 @@ export default {
   getUser,
   createUser,
   createContract,
+  createContractAuth,
   fill,
   blocResults,
   getState,
