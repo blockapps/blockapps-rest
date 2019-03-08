@@ -11,7 +11,7 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const testAuth = false
+const testAuth = true
 
 describe('contracts', function() {
   this.timeout(config.timeout)

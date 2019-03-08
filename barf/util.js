@@ -76,6 +76,22 @@ async function sleep(milli) {
   })
 }
 
+async function until(predicate, action, options, timeout = 60000) {
+  const phi = 10
+  let dt = 500
+  let totalSleep = 0
+  while (totalSleep < timeout) {
+    const result = await action(options)
+    if (predicate(result)) {
+      return result
+    }
+    await sleep(dt)
+    totalSleep += dt
+    dt += phi
+  }
+  throw new Error(`until: timeout ${timeout} ms exceeded`)
+}
+
 export {
   cwd,
   isAddress,
@@ -83,4 +99,5 @@ export {
   uid,
   usc,
   sleep,
+  until,
 }

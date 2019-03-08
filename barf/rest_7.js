@@ -1,6 +1,6 @@
 import api from './api_7'
-import apiUtil from './api.util'
 import * as constants from './constants'
+import { until } from './util'
 
 function isTxSuccess(txResult) {
   return txResult.status === constants.SUCCESS
@@ -134,30 +134,6 @@ async function resolveResults(pendingResults, _options = {}) {
   return resolvedResults
 }
 
-async function until(predicate, action, options, timeout = 60000) {
-  const phi = 10
-  let dt = 500
-  let totalSleep = 0
-  while (totalSleep < timeout) {
-    const result = await action(options)
-    console.log( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', result)
-    if (predicate(result)) {
-      return result
-    }
-    else {
-      console.log( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SLEEPING',)
-      await promiseTimeout(dt)
-      totalSleep += dt
-      dt += phi
-    }
-  }
-  throw new Error(`until: timeout ${timeout} ms exceeded`)
-}
-
-
-
-
-
 async function getBlocResults(hashes, options) {
   return api.blocResults(hashes, options)
 }
@@ -217,14 +193,6 @@ async function callResolve(pendingTxResult, options) {
   }
   // return basic contract object
   return resolvedTxResult.data.contents
-}
-
-function promiseTimeout(timeout) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      resolve()
-    }, timeout)
-  })
 }
 
 export default  {
