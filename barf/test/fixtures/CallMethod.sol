@@ -9,4 +9,8 @@ contract TestContract {
   function multiply(uint _var2) returns(uint) {
     return (var1 * _var2);
   }
+
+  function multiplyPayable(uint _var2) payable returns(uint) {
+    return (var1 * _var2);
+  }
 }

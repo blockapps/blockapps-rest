@@ -59,11 +59,13 @@ async function fill(user, options) {
   createContracts
  */
 async function createContract(user, contract, options) {
-  return (user.token) ? createContractAuth(user, contract, options) : createContractBloc(user, contract, options)
+  return (user.token)
+    ? createContractAuth(user, contract, options)
+    : createContractBloc(user, contract, options)
 }
 
 async function createContractBloc(user, contract, options) {
-  const pendingTxResult = await api.createContract(user, contract, options)
+  const pendingTxResult = await api.createContractBloc(user, contract, options)
   if (options.isAsync) {
     return pendingTxResult
   }
@@ -178,13 +180,18 @@ async function call(user, contract, method, args, value, options) {
 }
 
 async function callBloc(user, contract, method, args, value, options) {
-  const callTxResult = await api.callBloc(user, contract, method, args, value, options)
-
+  // call
+  const pendingTxResult = await api.callBloc(user, contract, method, args, value, options)
+  // check return status
+  if (isTxFailure(pendingTxResult)) {
+    throw new Error(JSON.stringify(pendingTxResult.txResult)) // TODO throw RestError
+  }
+  // async - do not resolve
   if (options.isAsync) {
-    return callTxResult
+    return pendingTxResult
   }
 
-  const resolvedTxResult = await resolveResult(callTxResult, options)
+  const resolvedTxResult = await resolveResult(pendingTxResult, options)
 
   const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
 
@@ -200,13 +207,16 @@ async function callBloc(user, contract, method, args, value, options) {
 }
 
 async function callAuth(user, contract, method, args, value, options) {
-  const callTxResult = await api.callAuth(user, contract, method, args, value, options)
-
-  if (options.isAsync) {
-    return callTxResult
+  const pendingTxResult = await api.callAuth(user, contract, method, args, value, options)
+  if (isTxFailure(pendingTxResult)) {
+    throw new Error(JSON.stringify(pendingTxResult.txResult)) // TODO throw RestError
   }
 
-  const resolvedTxResult = await resolveResult(callTxResult, options)
+  if (options.isAsync) {
+    return pendingTxResult
+  }
+
+  const resolvedTxResult = await resolveResult(pendingTxResult, options)
 
   const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
 

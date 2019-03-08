@@ -11,7 +11,7 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const testAuth = true
+const testAuth = false
 
 describe('contracts', function() {
   this.timeout(config.timeout)
@@ -181,6 +181,22 @@ describe('call', function() {
     const callArgs = { var2: 5678 }
     const method = 'multiply'
     const [result] = await rest.call(admin, contract, method, usc(callArgs), 0, options)
+    const expected = constructorArgs.var1 * callArgs.var2
+    assert.equal(result, expected, 'method call results')
+  })
+
+  it('call method with value', async () => {
+    // create contract
+    const uid = util.uid()
+    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
+    const constructorArgs = { var1: 1234 }
+    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    // call method
+    const callArgs = { var2: 5678 }
+    const value = 1
+    const method = 'multiplyPayable'
+    const [result] = await rest.call(admin, contract, method, usc(callArgs), value, options)
     const expected = constructorArgs.var1 * callArgs.var2
     assert.equal(result, expected, 'method call results')
   })

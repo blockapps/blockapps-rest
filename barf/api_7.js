@@ -48,7 +48,7 @@ async function fill(user, options) {
   return ax.postue(url, endpoint, body, options)
 }
 
-async function createContract(user, contract, options) {
+async function createContractBloc(user, contract, options) {
   const body = {
     password: user.password,
     contract: contract.name,
@@ -161,7 +161,7 @@ export default {
   getUsers,
   getUser,
   createUser,
-  createContract,
+  createContractBloc,
   createContractAuth,
   fill,
   blocResults,
