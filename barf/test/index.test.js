@@ -44,7 +44,7 @@ describe('contracts', function() {
   it('create contract - sync', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
-    const contract = await rest.createContract(admin, contractArgs, options)
+    const contract = await rest.createContract(admin, contractArgs, {config})
     assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(util.isAddress(contract.address), 'address')
   })

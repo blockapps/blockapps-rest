@@ -7,9 +7,10 @@ import fsUtil from '../fsUtil'
 
 const config = fsUtil.getYaml(`${util.cwd}/barf/test/config.yaml`)
 
-describe('imports', () => {
+describe('imports', function (){
   let admin
   const options = { config }
+  this.timeout(config.timeout)
 
   before(async () => {
     const uid = util.uid()

@@ -29,7 +29,9 @@ async function getUser(args, options) {
 // /users/:username
 async function createUser(user, options) {
   const address = await api.createUser(user, options)
-  const newUser = Object.assign(user, { address })
+  const newUser = Object.assign(user, {
+    address
+  })
   // async creation
   if (options.isAsync) {
     return newUser
@@ -56,30 +58,30 @@ async function createContract(user, contract, options) {
     metadata: constructMetadata(options, contract.name),
   }
 
-  let contractTxResult = user.token 
-    ? await api.sendTransactions(
-        user, 
-        {
-          txs: [{
-            payload: body,
-            type: 'CONTRACT'
-          }],
-          txParams
-        },
-        options
-      )
-    : await api.createContract(
-        user, 
-        {
-          password: user.password,
-          ...body,
-          txParams
-        },
-        options
-      )
+  let contractTxResult = user.token ?
+    await api.sendTransactions(
+      user, {
+        txs: [{
+          payload: body,
+          type: 'CONTRACT'
+        }],
+        txParams
+      },
+      options
+    ) :
+    await api.createContract(
+      user, {
+        password: user.password,
+        ...body,
+        txParams
+      },
+      options
+    )
 
-  if(options.isAsync) {
-    return { hash: contractTxResult.hash }
+  if (options.isAsync) {
+    return {
+      hash: contractTxResult.hash
+    }
   }
 
   const resolvedTxResult = await resolveResult(contractTxResult, options)
@@ -96,13 +98,16 @@ async function createContract(user, contract, options) {
     return result.data.contents
   }
   // return basic contract object
-  return { name: result.data.contents.name, address: result.data.contents.address }
+
+  return {
+    name: result.data.contents.name,
+    address: result.data.contents.address
+  }
 }
 
 async function createContractMany(user, contracts, options) {
   const results = await api.sendTransactions(
-    user, 
-    {
+    user, {
       txs: contracts.map(contract => {
         return {
           payload: {
@@ -115,7 +120,7 @@ async function createContractMany(user, contracts, options) {
     },
     options
   )
-  if(options.isAsync) {
+  if (options.isAsync) {
     return results.map(r => r.hash)
   }
 
@@ -125,22 +130,19 @@ async function createContractMany(user, contracts, options) {
 
 async function callMethod(user, method, options) {
   const results = await api.sendTransactions(
-    user,
-    {
-      txs: [
-        {
-          payload: {
-            ...method,
-            metadata: constructMetadata(options, method.contractName)
-          },
-          type: 'FUNCTION'
-        }
-      ]
+    user, {
+      txs: [{
+        payload: {
+          ...method,
+          metadata: constructMetadata(options, method.contractName)
+        },
+        type: 'FUNCTION'
+      }]
     },
     options
   )
 
-  if(!options.isAsync) {
+  if (!options.isAsync) {
     return results[0].hash
   }
 
@@ -150,10 +152,9 @@ async function callMethod(user, method, options) {
 
 async function callMethodMany(user, methods, options) {
   const results = await api.sendTransactions(
-    user,
-    {
+    user, {
       txs: methods.map(method => {
-        return { 
+        return {
           payload: {
             ...method,
             metadata: constructMetadata(options, method.contractName)
@@ -165,7 +166,7 @@ async function callMethodMany(user, methods, options) {
     options
   )
 
-  if(!options.isAsync) {
+  if (!options.isAsync) {
     return results.map(r => r.hash)
   }
 
@@ -175,8 +176,7 @@ async function callMethodMany(user, methods, options) {
 
 async function send(user, sendTx, options) {
   const results = await api.sendTransactions(
-    user, 
-    {
+    user, {
       txs: [{
         payload: sendTx,
         type: 'TRANSFER'
@@ -185,7 +185,7 @@ async function send(user, sendTx, options) {
     options
   )
 
-  if(!options.isAsync) {
+  if (!options.isAsync) {
     return results[0].hash
   }
 
@@ -195,19 +195,18 @@ async function send(user, sendTx, options) {
 
 async function sendMany(user, sendTxs, options) {
   const results = await api.sendTransactions(
-    user, 
-    {
+    user, {
       txs: sendTxs.map(tx => {
         return {
           payload: tx,
           type: 'TRANSFER'
-        }   
+        }
       })
     },
     options
   )
 
-  if(!options.isAsync) {
+  if (!options.isAsync) {
     return results.map(r => r.hash)
   }
 
@@ -232,12 +231,12 @@ async function createOrGetKey(user, options) {
     response = await api.getKey(user, options)
   } catch (err) {
     response = await api.createKey(user, options)
-    await fill(
-      {
-        address: response.address
-      }, 
-      { isAsync: false, ...options}
-    )
+    await fill({
+      address: response.address
+    }, {
+      isAsync: false,
+      ...options
+    })
   }
   return response.address
 }
@@ -248,19 +247,11 @@ async function resolveResult(result, options) {
 
 
 async function resolveResults(results, options = {}) {
-  options.doNotResolve = true
   var count = 0
   var res = results
-  while (count < 60 && res.filter(r => {return r.status === constants.PENDING}).length !== 0) {
-    res = await getBlocResults(res.map(r => {return r.hash}), options)
-    await promiseTimeout(1000)
-    count++
-  }
-
-  if (count >= 60) {
-    throw new Error('Transaction did not resolve')
-  }
-
+  res = await getBlocResults(res.map(r => {
+    return r.hash
+  }), { isAsync: false, ...options })
   return res
 }
 
@@ -276,12 +267,19 @@ async function getState(contract, options) {
 
 async function getArray(contract, name, options) {
   const MAX_SEGMENT_SIZE = 100
-  options.query = { name, length: true }
+  options.query = {
+    name,
+    length: true
+  }
   const state = await getState(contract, options)
   const length = state[name]
   const result = []
   for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
-    options.query = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
+    options.query = {
+      name,
+      offset: segment * MAX_SEGMENT_SIZE,
+      count: MAX_SEGMENT_SIZE
+    }
     const state = await getState(contract, options)
     result.push(...state[options.query.name])
   }
@@ -300,7 +298,7 @@ async function search(contract, options) {
 }
 
 async function searchUntil(contract, predicate, options) {
-  const action = async function(o) {
+  const action = async function (o) {
     return await search(contract, o)
   }
   const results = await until(
@@ -318,7 +316,7 @@ async function getChain(chainId, options) {
 
 async function getChains(chainIds, options) {
   const results = await api.getChains(chainIds, options)
-  return results 
+  return results
 }
 
 async function createChain(chain, contract, options) {
@@ -328,11 +326,11 @@ async function createChain(chain, contract, options) {
     args: contract.args,
     contract: contract.name,
     metadata: constructMetadata(options, contract.name)
-  }, options) 
+  }, options)
   return result;
 }
 
-export default  {
+export default {
   createChain,
   getChain,
   getChains,
