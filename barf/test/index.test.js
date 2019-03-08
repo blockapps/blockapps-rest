@@ -203,6 +203,8 @@ describe('call', function() {
 })
 
 describe('bloc user', function() {
+  if (testAuth) return
+
   this.timeout(config.timeout)
   const options = { config }
   const password = '1234'
@@ -239,6 +241,8 @@ describe('bloc user', function() {
 })
 
 describe('auth user', function () {
+  if (!testAuth) return
+
   this.timeout(config.timeout)
   const options = { config }
   const user = { token: process.env.USER_TOKEN }

@@ -86,9 +86,9 @@ async function createContractBloc(user, contract, options) {
 }
 
 async function createContractAuth(user, contract, options) {
-  const pendingTxResult = await api.createContractAuth(user, contract, options)
+  const [pendingTxResult] = await api.createContractAuth(user, contract, options)
   if (options.isAsync) {
-    return pendingTxResult[0]
+    return pendingTxResult
   }
 
   const resolvedTxResult = await resolveResult(pendingTxResult, options)
@@ -128,8 +128,9 @@ async function createOrGetKey(user, options) {
   }
 }
 
-async function resolveResult(result, options) {
-  return (await resolveResults([result], options))[0]
+async function resolveResult(pendingTxResult, options) {
+  const resolvedTxResult = (await resolveResults([pendingTxResult], options))[0]
+  return resolvedTxResult
 }
 
 async function resolveResults(pendingResults, _options = {}) {
@@ -196,10 +197,18 @@ async function call(user, contract, method, args, value, options) {
     : callBloc(user, contract, method, args, value, options)
 }
 
+async function callAuth(user, contract, method, args, value, options) {
+  const [pendingTxResult] = await api.callAuth(user, contract, method, args, value, options)
+  return callResolve(pendingTxResult, options)
+}
+
 async function callBloc(user, contract, method, args, value, options) {
-  // call
   const pendingTxResult = await api.callBloc(user, contract, method, args, value, options)
-  // check return status
+  return callResolve(pendingTxResult, options)
+}
+
+async function callResolve(pendingTxResult, options) {
+  // throw if FAILURE
   if (isTxFailure(pendingTxResult)) {
     throw new Error(JSON.stringify(pendingTxResult.txResult)) // TODO throw RestError
   }
@@ -207,45 +216,18 @@ async function callBloc(user, contract, method, args, value, options) {
   if (options.isAsync) {
     return pendingTxResult
   }
-
+  // resolve - wait until not pending
   const resolvedTxResult = await resolveResult(pendingTxResult, options)
-
-  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
-
-  if (result.status === constants.FAILURE) {
-    throw new Error(result.txResult.message) // TODO throw RestError
+  // throw if FAILURE
+  if (isTxFailure(resolvedTxResult)) {
+    throw new Error(JSON.stringify(resolvedTxResult.txResult)) // TODO throw RestError
   }
   // options.isDetailed - return all the data
   if (options.isDetailed) {
-    return result
+    return resolvedTxResult
   }
   // return basic contract object
-  return result.data.contents
-}
-
-async function callAuth(user, contract, method, args, value, options) {
-  const pendingTxResult = await api.callAuth(user, contract, method, args, value, options)
-  if (isTxFailure(pendingTxResult)) {
-    throw new Error(JSON.stringify(pendingTxResult.txResult)) // TODO throw RestError
-  }
-
-  if (options.isAsync) {
-    return pendingTxResult
-  }
-
-  const resolvedTxResult = await resolveResult(pendingTxResult, options)
-
-  const result = (resolvedTxResult.length) ? resolvedTxResult[0] : resolvedTxResult
-
-  if (result.status === constants.FAILURE) {
-    throw new Error(result.txResult.message) // TODO throw RestError
-  }
-  // options.isDetailed - return all the data
-  if (options.isDetailed) {
-    return result
-  }
-  // return basic contract object
-  return result.data.contents
+  return resolvedTxResult.data.contents
 }
 
 function promiseTimeout(timeout) {
