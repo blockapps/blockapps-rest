@@ -1,3 +1,4 @@
+import RestStatus from 'http-status-codes'
 import api from './api_7'
 import * as constants from './constants'
 import { until } from './util'
@@ -26,8 +27,23 @@ function isTxFailure(txResult) {
 
 function assertTxResult(txResult) {
   if (isTxFailure(txResult)) {
-    throw new RestError(400, txResult.txResult.message, txResult.txResult)
+    throw new RestError(RestStatus.BAD_REQUEST, txResult.txResult.message, txResult.txResult)
   }
+  return txResult
+}
+
+async function resolveResult(pendingTxResult, options) {
+  return (await resolveResults([pendingTxResult], options))[0]
+}
+
+async function resolveResults(pendingResults, _options = {}) {
+  const options = Object.assign({ isAsync: true }, _options)
+
+  // wait until there are no more PENDING results
+  const predicate = (results) => results.filter(r => r.status === constants.PENDING).length === 0
+  const action = async () => getBlocResults(pendingResults.map(r => r.hash), options)
+  const resolvedResults = await until(predicate, action, options)
+  return resolvedResults
 }
 
 // =====================================================================
@@ -44,9 +60,6 @@ async function getUser(args, options) {
   return address
 }
 
-/*
-  createUser
- */
 async function createUser(args, options) {
   return (args.token)
     ? createUserAuth(args, options)
@@ -57,9 +70,7 @@ async function createUserBloc(args, options) {
   const address = await api.createUser(args, options)
   const user = Object.assign(args, { address })
   // async - do not resolve
-  if (options.isAsync) {
-    return user
-  }
+  if (options.isAsync) return user
   // otherwise - block for faucet fill call
   const txResult = await fill(user, options)
   return user // TODO flow user object
@@ -73,10 +84,7 @@ async function createUserAuth(args, options) {
 
 async function fill(user, options) {
   const txResult = await api.fill(user, options)
-  if (!isTxSuccess(txResult)) {
-    throw new Error(JSON.stringify(txResult)) // TODO make a RestError
-  }
-  return txResult
+  return assertTxResult(txResult)
 }
 
 // =====================================================================
@@ -101,26 +109,22 @@ async function createContractAuth(user, contract, options) {
 
 async function createContractResolve(pendingTxResult, options) {
   // throw if FAILURE
-  if (isTxFailure(pendingTxResult)) {
-    throw new Error(pendingTxResult.txResult.message) // TODO throw RestError
-  }
+  assertTxResult(pendingTxResult)
   // async - do not resolve
-  if (options.isAsync) {
-    return pendingTxResult
-  }
+  if (options.isAsync) return pendingTxResult
   // resolve - wait until not pending
   const resolvedTxResult = await resolveResult(pendingTxResult, options)
   // throw if FAILURE
-  if (isTxFailure(resolvedTxResult)) {
-    throw new Error(resolvedTxResult.txResult.message) // TODO throw RestError
-  }
+  assertTxResult(pendingTxResult)
   // options.isDetailed - return all the data
-  if (options.isDetailed) {
-    return resolvedTxResult.data.contents
-  }
+  if (options.isDetailed) return resolvedTxResult.data.contents
   // return basic contract object
   return { name: resolvedTxResult.data.contents.name, address: resolvedTxResult.data.contents.address }
 }
+
+// =====================================================================
+//   key
+// =====================================================================
 
 async function getKey(user, options) {
   const response = await api.getKey(user, options);
@@ -143,19 +147,9 @@ async function createOrGetKey(user, options) {
   }
 }
 
-async function resolveResult(pendingTxResult, options) {
-  return (await resolveResults([pendingTxResult], options))[0]
-}
-
-async function resolveResults(pendingResults, _options = {}) {
-  const options = Object.assign({ isAsync: true }, _options)
-
-  // wait until there are no more PENDING results
-  const predicate = (results) => results.filter(r => r.status === constants.PENDING).length === 0
-  const action = async () => getBlocResults(pendingResults.map(r => r.hash), options)
-  const resolvedResults = await until(predicate, action, options)
-  return resolvedResults
-}
+// =====================================================================
+//   state
+// =====================================================================
 
 async function getBlocResults(hashes, options) {
   return api.blocResults(hashes, options)
@@ -174,7 +168,7 @@ async function getArray(contract, name, options) {
   for (let segment = 0; segment < length / MAX_SEGMENT_SIZE; segment++) {
     options.stateQuery = { name, offset: segment * MAX_SEGMENT_SIZE, count: MAX_SEGMENT_SIZE }
     const state = await getState(contract, options)
-    result.push(...state[options.stateQuery.name])
+    result.push(...state[name])
   }
   return result
 }
