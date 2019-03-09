@@ -5,6 +5,7 @@ import assert from './assert'
 import * as util from '../util'
 import fsUtil from '../fsUtil'
 import factory from './factory'
+import { BigNumber } from '../index'
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -194,7 +195,7 @@ describe('call', function() {
     const contract = await rest.createContract(admin, contractArgs, options)
     // call method
     const callArgs = { var2: 5678 }
-    const value = 1
+    const value = 10 // new BigNumber(Math.pow(10, 25));
     const method = 'multiplyPayable'
     const [result] = await rest.call(admin, contract, method, usc(callArgs), value, options)
     const expected = constructorArgs.var1 * callArgs.var2

@@ -2,6 +2,20 @@ import api from './api_7'
 import * as constants from './constants'
 import { until } from './util'
 
+// =====================================================================
+//   util
+// =====================================================================
+
+class RestError extends Error {
+  constructor(status, statusText, data) {
+    super(`${status} ${statusText}: ${JSON.stringify(data)}`)
+    this.name = 'RestError'
+    this.status = status
+    this.statusText = statusText
+    this.data = data
+  }
+}
+
 function isTxSuccess(txResult) {
   return txResult.status === constants.SUCCESS
 }
@@ -10,13 +24,21 @@ function isTxFailure(txResult) {
   return txResult.status === constants.FAILURE
 }
 
-// /users
+function assertTxResult(txResult) {
+  if (isTxFailure(txResult)) {
+    throw new RestError(400, txResult.txResult.message, txResult.txResult)
+  }
+}
+
+// =====================================================================
+//   user
+// =====================================================================
+
 async function getUsers(args, options) {
   const users = await api.getUsers(args, options)
   return users
 }
 
-// /users/:username
 async function getUser(args, options) {
   const [address] = await api.getUser(args, options)
   return address
@@ -57,9 +79,10 @@ async function fill(user, options) {
   return txResult
 }
 
-/*
-  createContracts
- */
+// =====================================================================
+//   contract
+// =====================================================================
+
 async function createContract(user, contract, options) {
   return (user.token)
     ? createContractAuth(user, contract, options)
@@ -156,6 +179,10 @@ async function getArray(contract, name, options) {
   return result
 }
 
+// =====================================================================
+//   call
+// =====================================================================
+
 async function call(user, contract, method, args, value, options) {
   return (user.token)
     ? callAuth(user, contract, method, args, value, options)
@@ -174,23 +201,15 @@ async function callBloc(user, contract, method, args, value, options) {
 
 async function callResolve(pendingTxResult, options) {
   // throw if FAILURE
-  if (isTxFailure(pendingTxResult)) {
-    throw new Error(JSON.stringify(pendingTxResult.txResult)) // TODO throw RestError
-  }
+  assertTxResult(pendingTxResult)
   // async - do not resolve
-  if (options.isAsync) {
-    return pendingTxResult
-  }
+  if (options.isAsync) return pendingTxResult
   // resolve - wait until not pending
   const resolvedTxResult = await resolveResult(pendingTxResult, options)
   // throw if FAILURE
-  if (isTxFailure(resolvedTxResult)) {
-    throw new Error(JSON.stringify(resolvedTxResult.txResult)) // TODO throw RestError
-  }
+  assertTxResult(pendingTxResult)
   // options.isDetailed - return all the data
-  if (options.isDetailed) {
-    return resolvedTxResult
-  }
+  if (options.isDetailed) return resolvedTxResult
   // return basic contract object
   return resolvedTxResult.data.contents
 }
