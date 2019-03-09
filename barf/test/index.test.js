@@ -14,10 +14,12 @@ const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 const testAuth = true
 
+const logger = console
+
 describe('contracts', function() {
   this.timeout(config.timeout)
   let admin
-  const options = { config }
+  const options = { config, logger }
 
   before(async () => {
     const uid = util.uid()
@@ -85,7 +87,7 @@ describe('contracts', function() {
 describe('state', function() {
   this.timeout(config.timeout)
   let admin
-  const options = { config }
+  const options = { config, logger }
 
   before(async () => {
     const uid = util.uid()
@@ -163,7 +165,7 @@ describe('state', function() {
 describe('call', function() {
   this.timeout(config.timeout)
   let admin
-  const options = { config }
+  const options = { config, logger }
 
   before(async () => {
     const uid = util.uid()
@@ -212,7 +214,7 @@ describe('call', function() {
     const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
     const callArgs = { var2: 5678 }
-    const value = new BigNumber(Math.pow(10, 25));
+    const value = new BigNumber(10 ** 25);
     const method = 'multiplyPayable'
     await assert.restStatus(async () => {
       return rest.call(admin, contract, method, usc(callArgs), value, options)
@@ -224,7 +226,7 @@ describe('bloc user', function() {
   if (testAuth) return
 
   this.timeout(config.timeout)
-  const options = { config }
+  const options = { config, logger }
   const password = '1234'
 
   it('get all bloc users', async () => {
@@ -237,7 +239,7 @@ describe('bloc user', function() {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
-    const options = { config }
+    const options = { config, logger }
     const user = await rest.createUser(args, options)
     const isAddress = util.isAddress(user.address)
     assert.equal(isAddress, true, 'user is valid eth address')
@@ -262,7 +264,7 @@ describe('auth user', function () {
   if (!testAuth) return
 
   this.timeout(config.timeout)
-  const options = { config }
+  const options = { config, logger }
   const user = { token: process.env.USER_TOKEN }
 
   it('getKey', async () => {

@@ -3,6 +3,7 @@ import axios from 'axios'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const urlencodedHeaders = { 'Content-Type': 'application/x-www-form-urlencoded' }
+const nullLogger = { info: () => {}, debug: () => {}, error: () => {} }
 
 function toJson(string) {
   try {
@@ -18,6 +19,7 @@ function transformRequest(requestJson) {
 }
 
 async function get(host, endpoint, options = {}) {
+  const logger = options.logger || nullLogger
   const url = host + endpoint
   const request = {
     method: 'GET',
@@ -27,18 +29,19 @@ async function get(host, endpoint, options = {}) {
     transformResponse: [toJson],
   }
   try {
+    logger.debug(request)
     const response = await axios(request)
+    logger.debug(response.data)
     return response.data
   } catch (err) {
-    // TODO log error
-    console.log(err)
+    logger.debug(err.response.data)
     throw err
   }
 }
 
 async function post(host, endpoint, body, options) {
+  const logger = options.logger || nullLogger
   const url = host + endpoint
-
   const request = {
     url,
     method: 'POST',
@@ -47,24 +50,32 @@ async function post(host, endpoint, body, options) {
     transformResponse: [toJson],
   }
   try {
+    logger.debug(request)
     const response = await axios(request)
+    logger.debug(response.data)
     return response.data
   } catch (err) {
-    // TODO log error
-    console.log(err)
+    logger.debug(err.response.data)
     throw err
   }
 }
 
 async function postue(host, endpoint, data, options) {
+  const logger = options.logger || nullLogger
   const url = host + endpoint
-
-  const response = await axios.post(
-    url,
-    transformRequest(data),
-    { headers: urlencodedHeaders },
-  )
-  return response.data
+  try {
+    const response = await axios.post(
+      url,
+      transformRequest(data),
+      { headers: urlencodedHeaders },
+    )
+    logger.debug(url)
+    return response.data
+    logger.debug(response.data)
+  } catch (err) {
+    logger.debug(err.response.data)
+    throw err
+  }
 }
 
 export default {
