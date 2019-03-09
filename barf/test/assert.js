@@ -8,7 +8,8 @@ assert.restStatus = async (func, expectedRestStatus, regex) => {
     const restStatus = err.response.status
     assert.equal(restStatus, expectedRestStatus, 'expected rest status error')
     if (regex !== undefined) {
-      assert.isOk(regex.test(err.response.data), regex)
+      const dataString = JSON.stringify(err.response.data)
+      assert.isOk(regex.test(dataString), `${regex} not found in ${dataString}`)
     }
     return
   }

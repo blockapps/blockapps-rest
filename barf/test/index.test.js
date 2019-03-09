@@ -12,7 +12,7 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const testAuth = false
+const testAuth = true
 
 describe('contracts', function() {
   this.timeout(config.timeout)
@@ -171,13 +171,18 @@ describe('call', function() {
     admin = await factory.createAdmin(userArgs, options)
   })
 
+  async function createContract(uid, admin, constructorArgs, options) {
+    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
+    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
+    const contract = await rest.createContract(admin, contractArgs, options)
+    return contract
+  }
+
   it('call method', async () => {
     // create contract
     const uid = util.uid()
-    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
     const constructorArgs = { var1: 1234 }
-    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
-    const contract = await rest.createContract(admin, contractArgs, options)
+    const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
     const callArgs = { var2: 5678 }
     const method = 'multiply'
@@ -189,17 +194,29 @@ describe('call', function() {
   it('call method with value', async () => {
     // create contract
     const uid = util.uid()
-    const filename = `${cwd}/barf/test/fixtures/CallMethod.sol`
     const constructorArgs = { var1: 1234 }
-    const contractArgs = await factory.createContractFromFile(filename, uid, constructorArgs)
-    const contract = await rest.createContract(admin, contractArgs, options)
+    const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
     const callArgs = { var2: 5678 }
-    const value = 10 // new BigNumber(Math.pow(10, 25));
+    const value = 10
     const method = 'multiplyPayable'
     const [result] = await rest.call(admin, contract, method, usc(callArgs), value, options)
     const expected = constructorArgs.var1 * callArgs.var2
     assert.equal(result, expected, 'method call results')
+  })
+
+  it('call method with value - BAD_REQUEST - low account balance', async () => {
+    // create contract
+    const uid = util.uid()
+    const constructorArgs = { var1: 1234 }
+    const contract = await createContract(uid, admin, constructorArgs, options)
+    // call method
+    const callArgs = { var2: 5678 }
+    const value = new BigNumber(Math.pow(10, 25));
+    const method = 'multiplyPayable'
+    await assert.restStatus(async () => {
+      return rest.call(admin, contract, method, usc(callArgs), value, options)
+    }, RestStatus.BAD_REQUEST, /low account balance/)
   })
 })
 

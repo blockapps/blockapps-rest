@@ -11,9 +11,7 @@ class RestError extends Error {
   constructor(status, statusText, data) {
     super(`${status} ${statusText}: ${JSON.stringify(data)}`)
     this.name = 'RestError'
-    this.status = status
-    this.statusText = statusText
-    this.data = data
+    this.response = { status, statusText, data }
   }
 }
 
