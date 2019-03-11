@@ -121,6 +121,47 @@ async function postue(host, endpoint, data, options) {
   return ax.postue(host, endpoint, data, options)
 }
 
+// TODO:  remove endpoints form here
+const endpoints = {
+  getUsers: '/users',
+  getUser: '/users/:username',
+  createUser: '/users/:username',
+  fill: '/users/:username/:address/fill',
+  createContract: '/users/:username/:address/contract',
+  blocResults: '/transactions/results',
+  getState: '/contracts/:name/:address/state',
+  sendTransactions: '/strato/v2.3/transaction',
+  getKey:  '/strato/v2.3/key',
+  createKey: '/strato/v2.3/key'
+}
+
+
+async function until(predicate, action, options, timeout = 60000) {
+  const phi = 10
+  let dt = 500
+  let totalSleep = 0
+  while(totalSleep < timeout) {
+    const result = await action(options)
+    if(predicate(result)) {
+      return result
+    }
+    else {
+      await promiseTimeout(dt)
+      totalSleep += dt
+      dt += phi
+    }
+  }
+  throw new Error(`until: timeout ${timeout} ms exceeded`)
+}
+
+function promiseTimeout(timeout) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      resolve()
+    }, timeout)
+  })
+}
+
 export {
   constructEndpoint,
   constructMetadata,
@@ -133,4 +174,7 @@ export {
   get,
   post,
   postue,
+  endpoints,
+  until,
+  promiseTimeout
 }

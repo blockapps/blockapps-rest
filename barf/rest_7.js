@@ -2,6 +2,7 @@ import RestStatus from 'http-status-codes'
 import api from './api_7'
 import * as constants from './constants'
 import { until } from './util'
+import { constructMetadata } from './api.util'
 
 // =====================================================================
 //   util
@@ -120,6 +121,30 @@ async function createContractResolve(pendingTxResult, options) {
   return { name: resolvedTxResult.data.contents.name, address: resolvedTxResult.data.contents.address }
 }
 
+async function createContractMany(user, contracts, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: contracts.map(contract => {
+        return {
+          payload: {
+            ...contract,
+            metadata: constructMetadata(options, contract.name)
+          },
+          type: 'CONTRACT'
+        }
+      })
+    },
+    options
+  )
+  if(options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolveResults.map(r => r.data.contents)
+}
+
 // =====================================================================
 //   key
 // =====================================================================
@@ -206,11 +231,165 @@ async function callResolve(pendingTxResult, options) {
   return resolvedTxResult.data.contents
 }
 
+// =====================================================================
+//   send
+// =====================================================================
+
+async function send(user, sendTx, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: [{
+        payload: sendTx,
+        type: 'TRANSFER'
+      }]
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results[0].hash
+  }
+
+  const resolvedResult = await resolveResult(results[0], options)
+  return resolvedResult.data.contents
+}
+
+async function sendMany(user, sendTxs, options) {
+  const results = await api.sendTransactions(
+    user, 
+    {
+      txs: sendTxs.map(tx => {
+        return {
+          payload: tx,
+          type: 'TRANSFER'
+        }   
+      })
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolvedResults.map(r => r.data.contents)
+}
+
+// =====================================================================
+//   search
+// =====================================================================
+
+async function search(contract, options) {
+  try {
+    const results = await api.search(contract, options)
+    return results
+  } catch(err) {
+    if(err.status && err.status === 404) {
+      return []
+    }
+  }
+}
+
+async function searchUntil(contract, predicate, options) {
+  const action = async function(o) {
+    return await search(contract, o)
+  }
+  const results = await until(
+    predicate,
+    action,
+    options
+  )
+  return results
+}
+
+// =====================================================================
+//   Call Method
+// =====================================================================
+
+async function callMethod(user, method, options) {
+  const results = await api.sendTransactions(
+    user,
+    {
+      txs: [
+        {
+          payload: {
+            ...methodArgs,
+            metadata: constructMetadata(options, method.contractName)
+          },
+          type: 'FUNCTION'
+        }
+      ]
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results[0].hash
+  }
+
+  const resolvedResult = await resolveResult(results[0], options)
+  return resolvedResult
+}
+
+async function callMethodMany(user, methods, options) {
+  const results = await api.sendTransactions(
+    user,
+    {
+      txs: methods.map(method => {
+        return { 
+          payload: {
+            ...method,
+            metadata: constructMetadata(options, method.contractName)
+          },
+          type: 'FUNCTION'
+        }
+      })
+    },
+    options
+  )
+
+  if(!options.isAsync) {
+    return results.map(r => r.hash)
+  }
+
+  const resolvedResults = await resolveResults(results, options)
+  return resolvedResults.map(r => r.data.contents)
+}
+
+// =====================================================================
+//   Chains
+// =====================================================================
+
+async function getChain(chainId, options) {
+  const results = await api.getChains([chainId], options)
+  return results && results.length > 0 ? results[0] : {}
+}
+
+async function getChains(chainIds, options) {
+  const results = await api.getChains(chainIds, options)
+  return results 
+}
+
+async function createChain(chain, contract, options) {
+  const result = await api.createChain({
+    ...chain,
+    src: contract.src,
+    args: contract.args,
+    contract: contract.name,
+    metadata: constructMetadata(options, contract.name)
+  }, options) 
+  return result;
+}
+
+
 export default  {
   getUsers,
   getUser,
   createUser,
   createContract,
+  createContractMany,
   getState,
   getArray,
   call,
@@ -220,4 +399,17 @@ export default  {
   getKey,
   createKey,
   createOrGetKey,
+  // 
+  send,
+  sendMany,
+  //
+  search,
+  searchUntil,
+  //
+  callMethod,
+  callMethodMany,
+  // 
+  createChain,
+  getChain,
+  getChains,
 }
