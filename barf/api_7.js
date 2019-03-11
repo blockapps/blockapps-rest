@@ -1,7 +1,7 @@
 import ax from './axios-wrapper'
 import { BigNumber } from './index'
-import { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders, getSearchUrl } from './api.util'
-import * as constants from './constants'
+import { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } from './api.util'
+import { TxPayloadType } from './constants'
 
 const Endpoint = {
   USERS: '/users',
@@ -76,7 +76,7 @@ async function createContractAuth(user, contract, options) {
     txs: [
       {
         payload,
-        type: 'CONTRACT', // TODO enum
+        type: TxPayloadType.CONTRACT,
       }],
   }
   const contractTxResult = await sendTransactions(user, body, options)
@@ -132,7 +132,7 @@ async function callAuth(user, contract, method, args, value, options) {
     txs: [
       {
         payload,
-        type: 'FUNCTION', // TODO enum
+        type: TxPayloadType.FUNCTION,
       }],
   }
   const contractTxResult = await sendTransactions(user, body, options)
@@ -160,18 +160,15 @@ async function createKey(user, options) {
 
 async function search(contract, options) {
   const url = getSearchUrl(options);
-  const endpoint = constructEndpoint(Endpoint.SEARCH, {}, contract)
-  return get(
-    url,
-    endpoint
-  )
+  const endpoint = constructEndpoint(endpoints.search, contract, options)
+  return get(url, endpoint, options)
 }
 
 // TODO: check options.params and options.headers in axoos wrapper.
 async function getChains(chainIds, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.getChain, {}, options)
-  return get(
+  const endpoint = constructEndpoint(endpoints.getChain, {}. options)
+  return ax.get(
     url,
     endpoint
   )
@@ -180,13 +177,12 @@ async function getChains(chainIds, options) {
 async function createChain(body, options) {
   const url = getBlocUrl(options)
   const endpoint = constructEndpoint(endpoints.createChain, {}, options)
-  await post(
+  await ax.post(
     url,
     endpoint,
     body
   )
 }
-
 
 export default {
   getUsers,

@@ -1,6 +1,6 @@
 import RestStatus from 'http-status-codes'
 import api from './api_7'
-import * as constants from './constants'
+import { TxResultStatus } from './constants'
 import { until } from './util'
 import { constructMetadata } from './api.util'
 
@@ -17,11 +17,11 @@ class RestError extends Error {
 }
 
 function isTxSuccess(txResult) {
-  return txResult.status === constants.SUCCESS
+  return txResult.status === TxResultStatus.SUCCESS
 }
 
 function isTxFailure(txResult) {
-  return txResult.status === constants.FAILURE
+  return txResult.status === TxResultStatus.FAILURE
 }
 
 function assertTxResult(txResult) {
@@ -39,7 +39,7 @@ async function resolveResults(pendingResults, _options = {}) {
   const options = Object.assign({ isAsync: true }, _options)
 
   // wait until there are no more PENDING results
-  const predicate = (results) => results.filter(r => r.status === constants.PENDING).length === 0
+  const predicate = (results) => results.filter(r => r.status === TxResultStatus.PENDING).length === 0
   const action = async () => getBlocResults(pendingResults.map(r => r.hash), options)
   const resolvedResults = await until(predicate, action, options)
   return resolvedResults
