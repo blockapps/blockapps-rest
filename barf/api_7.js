@@ -13,6 +13,7 @@ const Endpoint = {
   TXRESULTS: '/transactions/results',
   SEND: '/strato/v2.3/transaction',
   KEY: '/strato/v2.3/key',
+  SEARCH: '/search/:name'
 }
 
 async function getUsers(args, options) {
@@ -159,7 +160,7 @@ async function createKey(user, options) {
 
 async function search(contract, options) {
   const url = getSearchUrl(options);
-  const endpoint = constructEndpoint(endpoints.search, contract, options)
+  const endpoint = constructEndpoint(Endpoint.SEARCH, {}, contract)
   return get(
     url,
     endpoint
@@ -169,7 +170,7 @@ async function search(contract, options) {
 // TODO: check options.params and options.headers in axoos wrapper.
 async function getChains(chainIds, options) {
   const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.getChain, {}.options)
+  const endpoint = constructEndpoint(endpoints.getChain, {}, options)
   return get(
     url,
     endpoint
@@ -205,8 +206,3 @@ export default {
   getChains,
   createChain,
 }
-
-// TODO: check createContract
-// export default {
-//   createContract
-// }

@@ -8,7 +8,7 @@ function constructEndpoint(endpointTemplate, options = {}, params = {}) {
     return acc.replace(`:${key}`, encodeURIComponent(params[key]))
   }, endpointTemplate)
   // concat query patameters
-  const query = (options !== undefined) ? constructQuery(options) : ''
+  const query = Object.keys(options).length ? constructQuery(options) : ''
   return endpoint + query
 }
 

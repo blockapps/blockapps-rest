@@ -123,5 +123,71 @@ describe('rest_7', function () {
     const result = await rest.sendMany(tokenUser, sendTxs, { config });
     assert.isOk(isHash(result), 'hash')
   })
+})
 
+describe('search', function () {
+  this.timeout(config.timeout)
+  let contract;
+  const options = { config }
+
+  before(async () => {
+    const randomId = uid();
+
+    assert.isDefined(process.env.USER_TOKEN)
+    const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN }, options);
+    assert.isOk(isAddress(address))
+
+    let admin = await factory.createAdmin(randomId, options)
+
+    const contractArgs = await factory.createContractArgs(randomId)
+    contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
+    assert.isOk(isAddress(contract.address), 'address')
+  })
+
+  it('search - contract exists', async () => {
+    const result = await rest.search(contract, { config });
+    assert.isArray(result, 'should be array')
+    assert.lengthOf(result, 1, 'array has length of 1');
+    assert.equal(result[0].address, contract.address, 'address');
+  })
+
+  it('searchUntil - get response on first call', async () => {
+    // predicate is created: to get response
+    function predicate(data) {
+      return data;
+    }
+
+    const result = await rest.searchUntil(contract, predicate, { config });
+    assert.isArray(result, 'should be array')
+    assert.lengthOf(result, 1, 'array has length of 1');
+    assert.equal(result[0].address, contract.address, 'address');
+  })
+
+  it('searchUntil - throws an error', async () => {
+    // predicate is created: to wait until response is available otherwise throws the error
+    function predicate() { }
+
+    try {
+      await rest.searchUntil(contract, predicate, { config });
+    } catch (err) {
+      assert.equal(err.message, 'until: timeout 60000 ms exceeded', 'error message should be timeout');
+    }
+  })
+
+  it('searchUntil - get response after five calls', async () => {
+    // predicate is created: get response after five calls
+    let i = 0;
+    function predicate(data) {
+      if (i === 5) {
+        return data;
+      }
+      i++;
+    }
+
+    const result = await rest.searchUntil(contract, predicate, { config });
+    assert.isArray(result, 'should be array')
+    assert.lengthOf(result, 1, 'array has length of 1');
+    assert.equal(result[0].address, contract.address, 'address');
+  })
 })
