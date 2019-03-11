@@ -33,13 +33,15 @@ export function formatWei(wei) {
 }
 exports.formatWei = formatWei;
 
-export const PENDING = 'Pending'
-export const SUCCESS = 'Success'
-export const FAILURE = 'Failure'
-
 export const FAUCET_REWARD = (new BigNumber(1000)).mul(ETHER)
 
 export const TxPayloadType = {
   FUNCTION: 'FUNCTION',
   CONTRACT: 'CONTRACT',
+}
+
+export const TxResultStatus = {
+  PENDING: 'Pending',
+  SUCCESS: 'Success',
+  FAILURE: 'Failure',
 }
