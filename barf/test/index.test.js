@@ -37,7 +37,7 @@ describe('contracts', function() {
     await rest.resolveResult(pendingTxResult, options)
   })
 
-  it('create contract - sync', async () => {
+  it('create contract', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const contract = await rest.createContract(admin, contractArgs, options)
@@ -45,7 +45,7 @@ describe('contracts', function() {
     assert.isOk(util.isAddress(contract.address), 'address')
   })
 
-  it('create contract - sync - detailed', async () => {
+  it('create contract - detailed', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     options.isDetailed = true
@@ -58,7 +58,7 @@ describe('contracts', function() {
     assert.isDefined(contract.chainId, 'chainId')
   })
 
-  it('create contract - sync - BAD_REQUEST', async () => {
+  it('create contract - BAD_REQUEST', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractSyntaxErrorArgs(uid)
     await assert.restStatus(async () => {

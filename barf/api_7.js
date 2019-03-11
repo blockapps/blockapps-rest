@@ -157,31 +157,6 @@ async function createKey(user, options) {
   return post(url, endpoint, body, getHeaders(user, options))
 }
 
-async function search(contract, options) {
-  const url = getSearchUrl(options);
-  const endpoint = constructEndpoint(endpoints.search, contract, options)
-  return get(url, endpoint, options)
-}
-// TODO: check options.params and options.headers in axoos wrapper.
-async function getChains(chainIds, options) {
-  const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.getChain, {}. options)
-  return ax.get(
-    url,
-    endpoint
-  )
-}
-
-async function createChain(body, options) {
-  const url = getBlocUrl(options)
-  const endpoint = constructEndpoint(endpoints.createChain, {}, options)
-  await ax.post(
-    url,
-    endpoint,
-    body
-  )
-}
-
 export default {
   getUsers,
   getUser,
