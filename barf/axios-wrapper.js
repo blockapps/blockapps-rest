@@ -1,4 +1,5 @@
 import axios from 'axios'
+import queryString from 'query-string'
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
@@ -11,11 +12,6 @@ function toJson(string) {
   } catch (err) {
     return string
   }
-}
-
-function transformRequest(requestJson) {
-  const params = Object.keys(requestJson).map(key => `${key}=${requestJson[key]}`)
-  return params.join('&')
 }
 
 async function get(host, endpoint, options = {}) {
@@ -63,15 +59,16 @@ async function post(host, endpoint, body, options) {
 async function postue(host, endpoint, data, options) {
   const logger = options.logger || nullLogger
   const url = host + endpoint
+  const headers = Object.assign({}, options.headers, urlencodedHeaders)
   try {
+    logger.debug(url, data)
     const response = await axios.post(
       url,
-      transformRequest(data),
-      { headers: urlencodedHeaders },
+      queryString.stringify(data),
+      { headers },
     )
-    logger.debug(url)
-    return response.data
     logger.debug(response.data)
+    return response.data
   } catch (err) {
     logger.debug(err.response.data)
     throw err

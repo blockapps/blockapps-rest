@@ -239,7 +239,6 @@ describe('bloc user', function() {
     const uid = util.uid()
     const username = `user_${uid}`
     const args = { username, password }
-    const options = { config, logger }
     const user = await rest.createUser(args, options)
     const isAddress = util.isAddress(user.address)
     assert.equal(isAddress, true, 'user is valid eth address')
