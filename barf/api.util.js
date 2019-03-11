@@ -66,29 +66,13 @@ function getHeaders(user, options) {
   }
 }
 
-function getApiUrl(options, apiSelector) {
-  const node = options.node || 0
-  const nodeUrls = options.config.nodes[node]
-  return nodeUrls[`${apiSelector}Url`]
-}
-
-function getStratoUrl(options) {
-  return getApiUrl(options, 'strato');
-}
-
-
-function getSearchUrl(options) {
-  return getApiUrl(options, 'search');
-}
-
+/*
+  get the url for the node by node id#
+ */
 function getNodeUrl(options) {
-  return getApiUrl(options, 'node');
-}
-
-function getBlocUrl(options) {
-  const node = options.node || 0
-  const nodeUrls = options.config.nodes[node]
-  return nodeUrls.blocUrl
+  const nodeId = options.node || 0
+  const nodeObject = options.config.nodes[nodeId]
+  return nodeObject.url
 }
 
 async function post(url, endpoint, _body, options) {
@@ -124,11 +108,7 @@ async function postue(host, endpoint, data, options) {
 export {
   constructEndpoint,
   constructMetadata,
-  getBlocUrl,
   getHeaders,
-  getApiUrl,
-  getStratoUrl,
-  getSearchUrl,
   getNodeUrl,
   get,
   post,

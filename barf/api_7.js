@@ -1,28 +1,28 @@
 import ax from './axios-wrapper'
 import { BigNumber } from './index'
-import { constructMetadata, constructEndpoint, get, post, postue, getBlocUrl, getNodeUrl, getHeaders } from './api.util'
+import { constructMetadata, constructEndpoint, get, post, postue, getNodeUrl, getHeaders } from './api.util'
 import { TxPayloadType } from './constants'
 
 const Endpoint = {
-  USERS: '/users',
-  USER: '/users/:username',
-  FILL: '/users/:username/:address/fill',
-  CONTRACT: '/users/:username/:address/contract',
-  CALL: '/users/:username/:address/contract/:contractName/:contractAddress/call',
-  STATE: '/contracts/:name/:address/state',
-  TXRESULTS: '/transactions/results',
+  USERS: '/bloc/v2.2/users',
+  USER: '/bloc/v2.2/users/:username',
+  FILL: '/bloc/v2.2/users/:username/:address/fill',
+  CONTRACT: '/bloc/v2.2/users/:username/:address/contract',
+  CALL: '/bloc/v2.2/users/:username/:address/contract/:contractName/:contractAddress/call',
+  STATE: '/bloc/v2.2/contracts/:name/:address/state',
+  TXRESULTS: '/bloc/v2.2/transactions/results',
   SEND: '/strato/v2.3/transaction',
   KEY: '/strato/v2.3/key',
 }
 
 async function getUsers(args, options) {
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.USERS, options)
   return get(url, endpoint, options)
 }
 
 async function getUser(args, options) {
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.USER, options, {
     username: args.username,
   })
@@ -30,22 +30,22 @@ async function getUser(args, options) {
 }
 
 async function createUser(args, options) {
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const data = { password: args.password }
   const endpoint = constructEndpoint(Endpoint.USER, options, {
     username: args.username,
   })
-  return ax.postue(url, endpoint, data, options)
+  return postue(url, endpoint, data, options)
 }
 
 async function fill(user, options) {
   const body = {}
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.FILL, options, {
     username: user.username,
     address: user.address,
   })
-  return ax.postue(url, endpoint, body, options)
+  return postue(url, endpoint, body, options)
 }
 
 async function createContractBloc(user, contract, options) {
@@ -56,7 +56,7 @@ async function createContractBloc(user, contract, options) {
     args: contract.args,
     metadata: constructMetadata(options, contract.name),
   }
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.CONTRACT, options, {
     username: user.username,
     address: user.address,
@@ -83,13 +83,13 @@ async function createContractAuth(user, contract, options) {
 }
 
 async function blocResults(hashes, options) { // TODO untested code
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.TXRESULTS, options)
   return post(url, endpoint, hashes, options)
 }
 
 async function getState(contract, options) {
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.STATE, options, {
     name: contract.name,
     address: contract.address,
@@ -106,7 +106,7 @@ async function callBloc(user, contract, method, args, value, options) {
     value: valueFixed,
     metadata: constructMetadata(options, contract.name),
   }
-  const url = getBlocUrl(options)
+  const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.CALL, options, {
     username: user.username,
     address: user.address,
