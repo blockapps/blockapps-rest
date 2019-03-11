@@ -38,3 +38,8 @@ export const SUCCESS = 'Success'
 export const FAILURE = 'Failure'
 
 export const FAUCET_REWARD = (new BigNumber(1000)).mul(ETHER)
+
+export const TxPayloadType = {
+  FUNCTION: 'FUNCTION',
+  CONTRACT: 'CONTRACT',
+}
