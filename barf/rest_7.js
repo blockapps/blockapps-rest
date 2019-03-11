@@ -128,7 +128,9 @@ async function createContractMany(user, contracts, options) {
       txs: contracts.map(contract => {
         return {
           payload: {
-            ...contract,
+            contract: contract.name,
+            src: contract.source,
+            args: contract.args,
             metadata: constructMetadata(options, contract.name)
           },
           type: 'CONTRACT'
@@ -137,12 +139,14 @@ async function createContractMany(user, contracts, options) {
     },
     options
   )
+
+  console.log(results);
   if(options.isAsync) {
-    return results.map(r => r.hash)
+    return results
   }
 
   const resolvedResults = await resolveResults(results, options)
-  return resolveResults.map(r => r.data.contents)
+  return resolvedResults.map(r => r.data.contents)
 }
 
 // =====================================================================
@@ -395,6 +399,7 @@ export default  {
   call,
   //
   resolveResult,
+  resolveResults,
   //
   getKey,
   createKey,

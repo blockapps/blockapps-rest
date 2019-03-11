@@ -6,6 +6,7 @@ import * as util from '../util'
 import fsUtil from '../fsUtil'
 import factory from './factory'
 import { BigNumber } from '../index'
+import { TxResultStatus } from '../constants';
 
 const loadEnv = dotenv.config()
 assert.isUndefined(loadEnv.error)
@@ -13,6 +14,7 @@ assert.isUndefined(loadEnv.error)
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 const testAuth = true
+const manyLength = 5;
 
 const logger = console
 
@@ -27,7 +29,7 @@ describe('contracts', function() {
     admin = await factory.createAdmin(userArgs, options)
   })
 
-  it('create contract - async', async () => {
+  it.only('create contract - async', async () => {
     const uid = util.uid()
     const contractArgs = factory.createContractArgs(uid)
     const asyncOptions = { config, isAsync: true }
@@ -82,6 +84,34 @@ describe('contracts', function() {
       return rest.createContract(admin, contractArgs, options)
     }, RestStatus.BAD_REQUEST, /argument names don't match:/)
   })
+
+  // Skipped because of platform issue. https://blockapps.atlassian.net/browse/STRATO-1331
+  it.skip('create many contracts - async', async () => {
+    const contracts = [...Array(manyLength).keys()].map((a) => {
+      const uid = util.uid()
+      const contract = factory.createContractArgs(uid);
+      return contract
+    }) 
+    const pendingResults = await rest.createContractMany(admin, contracts, { config, isAsync: true })
+    const verifyHashes = pendingResults.reduce((a,r) => a && util.isHash(r.hash), true)
+    assert.isOk(verifyHashes, 'hash')
+    const results = await rest.resolveResults(pendingResults, options);
+    const verifyStatus = results.reduce((a,r) => a && r.status !== TxResultStatus.PENDING, true)
+    assert.isOk(verifyStatus, 'results') 
+  })
+
+  // Skipped because of platform issue. https://blockapps.atlassian.net/browse/STRATO-1331
+  it.skip('create many contracts - sync', async () => {
+    const contracts = [...Array(manyLength).keys()].map((a) => {
+      const uid = util.uid()
+      const contract = factory.createContractArgs(uid);
+      return contract
+    }) 
+    const results = await rest.createContractMany(admin, contracts, { config })
+    const verifyContracts = results.reduce((a,r,i) => a && util.isAddress(r.address) && r.name === contracts[i].name, true)
+    assert.isOk(verifyContracts, 'contracts') 
+  })
+
 })
 
 describe('state', function() {

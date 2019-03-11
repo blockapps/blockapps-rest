@@ -142,6 +142,7 @@ async function callAuth(user, contract, method, args, value, options) {
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.SEND, options)
+  console.log(JSON.stringify(body,null,2));
   return post(url, endpoint, body, getHeaders(user, options))
 }
 
