@@ -23,28 +23,31 @@ async function getUsers(args, options) {
 
 async function getUser(args, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.USER, options, {
+  const urlParams = {
     username: args.username,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.USER, options, urlParams)
   return get(url, endpoint, options)
 }
 
 async function createUser(args, options) {
   const url = getNodeUrl(options)
   const data = { password: args.password }
-  const endpoint = constructEndpoint(Endpoint.USER, options, {
+  const urlParams = {
     username: args.username,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.USER, options, urlParams)
   return postue(url, endpoint, data, options)
 }
 
 async function fill(user, options) {
   const body = {}
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.FILL, options, {
+  const urlParams = {
     username: user.username,
     address: user.address,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.FILL, options, urlParams)
   return postue(url, endpoint, body, options)
 }
 
@@ -57,10 +60,11 @@ async function createContractBloc(user, contract, options) {
     metadata: constructMetadata(options, contract.name),
   }
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.CONTRACT, options, {
+  const urlParams = {
     username: user.username,
     address: user.address,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.CONTRACT, options, urlParams)
   return post(url, endpoint, body, options)
 }
 
@@ -90,10 +94,11 @@ async function blocResults(hashes, options) { // TODO untested code
 
 async function getState(contract, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.STATE, options, {
+  const urlParams = {
     name: contract.name,
     address: contract.address,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.STATE, options, urlParams)
   return get(url, endpoint, options)
 }
 
@@ -107,12 +112,13 @@ async function callBloc(user, contract, method, args, value, options) {
     metadata: constructMetadata(options, contract.name),
   }
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.CALL, options, {
+  const urlParams = {
     username: user.username,
     address: user.address,
     contractName: contract.name,
     contractAddress: contract.address,
-  })
+  }
+  const endpoint = constructEndpoint(Endpoint.CALL, options, urlParams)
   return post(url, endpoint, body, options)
 }
 

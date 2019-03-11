@@ -12,7 +12,7 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const testAuth = true
+const testAuth = false
 
 const logger = console
 
