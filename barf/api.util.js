@@ -57,13 +57,10 @@ function constructMetadata(options, contractName) {
   return metadata
 }
 
-function getHeaders(user, options) {
-  return {
-    headers: {
-      ...options.header,
-      'Authorization': `Bearer ${user.token}`
-    }
-  }
+function setAuthHeaders(user, _options) {
+  const options = Object.assign({}, _options)
+  options.headers = Object.assign({}, _options.headers, { Authorization: `Bearer ${user.token}` })
+  return options
 }
 
 /*
@@ -108,7 +105,7 @@ async function postue(host, endpoint, data, options) {
 export {
   constructEndpoint,
   constructMetadata,
-  getHeaders,
+  setAuthHeaders,
   getNodeUrl,
   get,
   post,

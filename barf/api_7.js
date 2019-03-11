@@ -1,6 +1,6 @@
 import ax from './axios-wrapper'
 import { BigNumber } from './index'
-import { constructMetadata, constructEndpoint, get, post, postue, getNodeUrl, getHeaders } from './api.util'
+import { constructMetadata, constructEndpoint, get, post, postue, getNodeUrl, setAuthHeaders } from './api.util'
 import { TxPayloadType } from './constants'
 
 const Endpoint = {
@@ -141,20 +141,20 @@ async function callAuth(user, contract, method, args, value, options) {
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.SEND, options)
-  return post(url, endpoint, body, getHeaders(user, options))
+  return post(url, endpoint, body, setAuthHeaders(user, options))
 }
 
 async function getKey(user, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.KEY, options)
-  return get(url, endpoint, getHeaders(user, options))
+  return get(url, endpoint, setAuthHeaders(user, options))
 }
 
 async function createKey(user, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.KEY, options)
   const body = {}
-  return post(url, endpoint, body, getHeaders(user, options))
+  return post(url, endpoint, body, setAuthHeaders(user, options))
 }
 
 export default {
