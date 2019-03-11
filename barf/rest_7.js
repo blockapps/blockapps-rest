@@ -315,7 +315,7 @@ async function callMethod(user, method, options) {
       txs: [
         {
           payload: {
-            ...methodArgs,
+            ...method,
             metadata: constructMetadata(options, method.contractName)
           },
           type: 'FUNCTION'
