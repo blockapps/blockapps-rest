@@ -1,6 +1,6 @@
 import solidityParser from '../solidityParser'
 import assert  from './assert'
-import util from '../util'
+import {cwd} from '../util'
 import fsUtil from '../fsUtil'
 
 describe('solidity parser', () => {

@@ -201,7 +201,7 @@ describe('search', function () {
   })
 })
 
-describe.only('chain', function () {
+describe('chain', function () {
   this.timeout(config.timeout)
   let admin, chainId, chainArgs;
   const options = { config }
