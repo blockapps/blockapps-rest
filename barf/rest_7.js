@@ -336,6 +336,7 @@ async function searchUntil(contract, predicate, options) {
   const action = async (o) => {
     return search(contract, o)
   }
+  
   const results = await until(predicate, action, options)
   return results
 }

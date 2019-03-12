@@ -144,7 +144,7 @@ describe('rest_7', function () {
   })
 })
 
-describe('search', function () {
+describe.only('search', function () {
   this.timeout(config.timeout)
   const options = { config, logger }
   let admin, contract
@@ -165,7 +165,7 @@ describe('search', function () {
   it('searchUntil - get response on first call', async () => {
     // predicate is created: to get response
     function predicate(data) {
-      return data;
+      return data.length > 0;
     }
     const result = await rest.searchUntil(contract, predicate, options);
     assert.isArray(result, 'should be array')
@@ -173,7 +173,7 @@ describe('search', function () {
     assert.equal(result[0], contract.address, 'address');
   })
 
-  it('searchUntil - throws an error', async () => {
+  it('searchUntil - timeout error', async () => {
     // predicate is created: to wait until response is available otherwise throws the error
     function predicate() { }
 
