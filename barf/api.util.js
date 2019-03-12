@@ -9,7 +9,7 @@ function constructEndpoint(endpointTemplate, options = {}, params = {}) {
   }, endpointTemplate)
   // concat query patameters
   const query = (options !== undefined) ? constructQuery(options) : ''
-  return endpoint + query
+  return `${endpoint}${query}`
 }
 
 function constructQuery(options) {

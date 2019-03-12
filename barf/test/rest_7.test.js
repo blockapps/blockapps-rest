@@ -10,11 +10,12 @@ assert.isUndefined(loadEnv.error)
 
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
 const testAuth = true
+const logger = console
 
 describe('rest_7', function () {
   this.timeout(config.timeout)
   let admin
-  const options = { config }
+  const options = { config, logger }
 
   before(async () => {
     const uid = getUid()
@@ -59,6 +60,8 @@ describe('rest_7', function () {
       pendingTxResultList.forEach((pendingTxResult) => {
         assert.equal(pendingTxResult.status, 'Pending', 'single tx result')
       })
+
+      // TODO wait for txs to resolve
     });
 
     it('callMethodList - sync', async () => {
@@ -102,7 +105,7 @@ describe('rest_7', function () {
   })
 
 
-  it('send - async', async () => {
+  it('send - sync', async () => {
     const sendTxArgs = factory.createSendTxArgs(admin.address);
     const result = await rest.send(admin, sendTxArgs, { config });
 
@@ -110,13 +113,14 @@ describe('rest_7', function () {
     assert.equal(sendTxArgs.value, result.value, 'value')
   })
 
-  it('send - sync', async () => {
+  it('send - async', async () => {
     const sendTxArgs = factory.createSendTxArgs(admin.address);
     const result = await rest.send(admin, sendTxArgs, { config, isAsync: true });
     assert.isOk(isHash(result.hash), 'hash')
+    // TODO: wait for tx to resolve
   })
 
-  it('sendMany - async', async () => {
+  it('sendMany - sync', async () => {
     const sendTxs = factory.createSendTxArgsArr(admin.address);
     const results = await rest.sendMany(admin, sendTxs, { config });
 
@@ -127,7 +131,7 @@ describe('rest_7', function () {
     })
   })
 
-  it('sendMany - sync', async () => {
+  it('sendMany - async', async () => {
     const sendTxs = factory.createSendTxArgsArr(admin.address);
 
     const results = await rest.sendMany(admin, sendTxs, { config });
@@ -135,34 +139,32 @@ describe('rest_7', function () {
     results.forEach((result, index) => {
       assert.isOk(isHash(result.hash), 'hash')
     })
+
+    // TODO: wait for tx to resolve
   })
 })
 
-describe('search', function () {
+describe.only('search', function () {
   this.timeout(config.timeout)
-  let contract;
-  const options = { config }
+  const options = { config, logger }
+  let admin
 
   before(async () => {
-    const uid = getUid();
-
-    assert.isDefined(process.env.USER_TOKEN)
-    const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN }, options);
-    assert.isOk(isAddress(address))
-
-    let admin = await factory.createAdmin(uid, options)
-
-    const contractArgs = await factory.createContractArgs(uid)
-    contract = await rest.createContract(admin, contractArgs, options)
-    assert.equal(contract.name, contractArgs.name, 'name')
-    assert.isOk(isAddress(contract.address), 'address')
+    const uid = getUid()
+    const userArgs = (testAuth) ? { token: process.env.USER_TOKEN } : { uid }
+    admin = await factory.createAdmin(userArgs, options)
   })
 
   it('search - contract exists', async () => {
-    const result = await rest.search(contract, { config });
+    const contractArgs = await factory.createContractArgs(uid)
+    let contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
+    assert.isOk(isAddress(contract.address), 'address')
+    
+    const result = await rest.search(contract, options);
     assert.isArray(result, 'should be array')
-    assert.lengthOf(result, 1, 'array has length of 1');
-    assert.equal(result[0], contract.address, 'address');
+    assert.equal(result.length, 1, 'array has length of 1');
+    assert.equal(result[0].address, contract.address, 'address');
   })
 
   it('searchUntil - get response on first call', async () => {
@@ -171,18 +173,25 @@ describe('search', function () {
       return data;
     }
 
-    const result = await rest.searchUntil(contract, predicate, { config });
+    const contractArgs = await factory.createContractArgs(uid)
+    let contract = await rest.createContract(admin, contractArgs, options)
+    assert.equal(contract.name, contractArgs.name, 'name')
+    assert.isOk(isAddress(contract.address), 'address')
+   
+    const result = await rest.searchUntil(contract, predicate, options);
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
     assert.equal(result[0], contract.address, 'address');
   })
+
+  
 
   it('searchUntil - throws an error', async () => {
     // predicate is created: to wait until response is available otherwise throws the error
     function predicate() { }
 
     try {
-      await rest.searchUntil(contract, predicate, { config });
+      await rest.searchUntil(contract, predicate, options);
     } catch (err) {
       assert.equal(err.message, 'until: timeout 60000 ms exceeded', 'error message should be timeout');
     }
@@ -198,7 +207,7 @@ describe('search', function () {
       i++;
     }
 
-    const result = await rest.searchUntil(contract, predicate, { config });
+    const result = await rest.searchUntil(contract, predicate, options);
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
     assert.equal(result[0], contract.address, 'address');

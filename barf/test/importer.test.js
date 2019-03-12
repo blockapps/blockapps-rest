@@ -1,7 +1,7 @@
 import importer from '../importer'
 import rest from '../rest_7'
 import assert from './assert'
-import util from '../util'
+import { cwd, uid as getUid} from '../util'
 import factory from './factory'
 import fsUtil from '../fsUtil'
 
@@ -12,7 +12,7 @@ describe('imports', () => {
   const options = { config }
 
   before(async () => {
-    const uid = util.uid()
+    const uid = getUid()
     admin = await factory.createAdmin(uid, options)
   })
 

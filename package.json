@@ -4,9 +4,9 @@
   "description": "BlockApps rest api",
   "main": "index.js",
   "scripts": {
-    "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js barf/test/index.test.js",
+    "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
     "build": "yarn webpack --config config/webpack.config.js --progress",
-    "test": "yarn mocha-webpack barf/test/index.test.js -b"
+    "test": "yarn mocha-webpack barf/test/rest_7.test.js -b"
   },
   "keywords": [
     "BlockApps",
@@ -49,7 +49,6 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
-    "chai": "^3.5.0",
     "co-mocha": "^1.2.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
