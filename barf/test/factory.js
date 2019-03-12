@@ -48,10 +48,46 @@ async function createContractFromFile(filename, uid, constructorArgs) {
   return { name, source, args: usc(constructorArgs) } // TODO flow contractArgs object
 }
 
+function createSendTxArgs(toAddress, value = 10) {
+  return { value, toAddress }
+}
+
+function createSendTxArgsArr(toAddress, value = 10, count = 2) {
+  let sendTxs = [];
+
+  for (let i = 0; i < count; i++) {
+    sendTxs.push({ value: value + i, toAddress })
+  }
+
+  return sendTxs;
+}
+
+function createCallArgs(contract, args, method = 'multiply') {
+  return {
+    contract,
+    method,
+    args: usc(args),
+  }
+}
+
+function createCallListArgs(contract, args, method = 'multiply', count = 2) {
+  const callArgsList = []
+
+  for (let i = 0; i < count; i++) {
+    callArgsList.push(createCallArgs(contract, args, method))
+  }
+
+  return callArgsList;
+}
+
 export default {
   createAdmin,
   createContractArgs,
   createContractSyntaxErrorArgs,
   createContractConstructorArgs,
   createContractFromFile,
+  createSendTxArgs,
+  createSendTxArgsArr,
+  createCallArgs,
+  createCallListArgs,
 }

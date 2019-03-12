@@ -13,6 +13,8 @@ const Endpoint = {
   TXRESULTS: '/bloc/v2.2/transactions/results',
   SEND: '/strato/v2.3/transaction',
   KEY: '/strato/v2.3/key',
+  SEARCH: '/bloc/v2.2/search/:name',
+  CHAIN: '/bloc/v2.2/chain',
 }
 
 async function getUsers(args, options) {
@@ -102,7 +104,8 @@ async function getState(contract, options) {
   return get(url, endpoint, options)
 }
 
-async function callBloc(user, contract, method, args, value, options) {
+async function callBloc(user, callMethodArgs, options) {
+  const { contract, method, args, value } = callMethodArgs
   const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
   const body = {
     password: user.password,
@@ -122,9 +125,9 @@ async function callBloc(user, contract, method, args, value, options) {
   return post(url, endpoint, body, options)
 }
 
-async function callAuth(user, contract, method, args, value, options) {
+async function callAuth(user, callMethodArgs, options) {
+  const { contract, method, args, value } = callMethodArgs
   const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
-
   const payload = {
     contractName: contract.name,
     contractAddress: contract.address,
@@ -133,12 +136,37 @@ async function callAuth(user, contract, method, args, value, options) {
     args,
     metadata: constructMetadata(options, contract.name)
   }
+  const tx = {
+    payload,
+    type: TxPayloadType.FUNCTION,
+  }
   const body = {
-    txs: [
-      {
-        payload,
-        type: TxPayloadType.FUNCTION,
-      }],
+    txs: [tx],
+  }
+  const contractTxResult = await sendTransactions(user, body, options)
+  return contractTxResult
+}
+
+async function callListAuth(user, callListArgs, options) {
+  const txs = callListArgs.map(callArgs => {
+    const { contract, method, args, value } = callArgs
+    const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
+    const payload = {
+      contractName: contract.name,
+      contractAddress: contract.address,
+      value: valueFixed,
+      method,
+      args,
+      metadata: constructMetadata(options, contract.name)
+    }
+    const tx = {
+      payload,
+      type: TxPayloadType.FUNCTION,
+    }
+    return tx
+  })
+  const body = {
+    txs,
   }
   const contractTxResult = await sendTransactions(user, body, options)
   return contractTxResult
@@ -163,6 +191,28 @@ async function createKey(user, options) {
   return post(url, endpoint, body, setAuthHeaders(user, options))
 }
 
+async function search(contract, options) {
+  const url = getNodeUrl(options);
+  const urlParams = {
+    name: contract.name,
+  }
+  const endpoint = constructEndpoint(Endpoint.SEARCH, options, urlParams)
+  return get(url, endpoint, options)
+}
+
+// TODO: check options.params and options.headers in axoos wrapper.
+async function getChains(chainIds, options) {
+  const url = getNodeUrl(options)
+  const endpoint = constructEndpoint(Endpoint.CHAIN, options)
+  return get(url, endpoint, options)
+}
+
+async function createChain(body, options) {
+  const url = getNodeUrl(options)
+  const endpoint = constructEndpoint(Endpoint.CHAIN, options)
+  await post(url, endpoint, body, options)
+}
+
 export default {
   getUsers,
   getUser,
@@ -174,7 +224,11 @@ export default {
   getState,
   callBloc,
   callAuth,
+  callListAuth,
   sendTransactions,
   getKey,
   createKey,
+  search,
+  getChains,
+  createChain,
 }
