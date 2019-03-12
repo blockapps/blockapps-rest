@@ -12,7 +12,7 @@ assert.isUndefined(loadEnv.error)
 
 const { cwd, usc } = util
 const config = fsUtil.getYaml(`${cwd}/barf/test/config.yaml`)
-const testAuth = false
+const testAuth = true
 
 const logger = console
 
@@ -166,6 +166,8 @@ describe('call', function() {
   this.timeout(config.timeout)
   let admin
   const options = { config, logger }
+  const var1 = 1234
+  const var2 = 5678
 
   before(async () => {
     const uid = util.uid()
@@ -186,10 +188,11 @@ describe('call', function() {
     const constructorArgs = { var1: 1234 }
     const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
-    const callArgs = { var2: 5678 }
+    const methodArgs = { var2: 5678 }
     const method = 'multiply'
-    const [result] = await rest.call(admin, contract, method, usc(callArgs), 0, options)
-    const expected = constructorArgs.var1 * callArgs.var2
+    const callArgs = factory.createCallArgs(contract, methodArgs, method)
+    const [result] = await rest.call(admin, callArgs, options)
+    const expected = constructorArgs.var1 * methodArgs.var2
     assert.equal(result, expected, 'method call results')
   })
 
@@ -199,11 +202,12 @@ describe('call', function() {
     const constructorArgs = { var1: 1234 }
     const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
-    const callArgs = { var2: 5678 }
+    const methodArgs = { var2: 5678 }
     const value = 10
     const method = 'multiplyPayable'
-    const [result] = await rest.call(admin, contract, method, usc(callArgs), value, options)
-    const expected = constructorArgs.var1 * callArgs.var2
+    const callArgs = factory.createCallArgs(contract, methodArgs, method, value)
+    const [result] = await rest.call(admin, callArgs, options)
+    const expected = constructorArgs.var1 * methodArgs.var2
     assert.equal(result, expected, 'method call results')
   })
 
@@ -213,11 +217,12 @@ describe('call', function() {
     const constructorArgs = { var1: 1234 }
     const contract = await createContract(uid, admin, constructorArgs, options)
     // call method
-    const callArgs = { var2: 5678 }
+    const methodArgs = { var2: 5678 }
     const value = new BigNumber(10 ** 25);
     const method = 'multiplyPayable'
+    const callArgs = factory.createCallArgs(contract, methodArgs, method, value)
     await assert.restStatus(async () => {
-      return rest.call(admin, contract, method, usc(callArgs), value, options)
+      return rest.call(admin, callArgs, options)
     }, RestStatus.BAD_REQUEST, /low account balance/)
   })
 })

@@ -204,19 +204,19 @@ async function getArray(contract, name, options) {
 //   call
 // =====================================================================
 
-async function call(user, callMethodArgs, options) {
+async function call(user, callArgs, options) {
   return (user.token)
-    ? callAuth(user, callMethodArgs, options)
-    : callBloc(user, callMethodArgs, options)
+    ? callAuth(user, callArgs, options)
+    : callBloc(user, callArgs, options)
 }
 
-async function callAuth(user, callMethodArgs, options) {
-  const [pendingTxResult] = await api.callAuth(user, callMethodArgs, options)
+async function callAuth(user, callArgs, options) {
+  const [pendingTxResult] = await api.callAuth(user, callArgs, options)
   return callResolve(pendingTxResult, options)
 }
 
-async function callBloc(user, callMethodArgs, options) {
-  const pendingTxResult = await api.callBloc(user, callMethodArgs, options)
+async function callBloc(user, callArgs, options) {
+  const pendingTxResult = await api.callBloc(user, callArgs, options)
   return callResolve(pendingTxResult, options)
 }
 
@@ -250,7 +250,7 @@ async function callListAuth(user, callListArgs, options) {
   return callListResolve(pendingTxResultList, options)
 }
 
-async function callListBloc(user, callMethodArgs, options) {
+async function callListBloc(user, callListArgs, options) {
 }
 
 async function callListResolve(pendingTxResultList, options) {
@@ -438,9 +438,6 @@ export default  {
   //
   search,
   searchUntil,
-  //
-  callMethod,
-  callMethodMany,
   //
   createChain,
   getChain,

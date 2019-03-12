@@ -62,19 +62,20 @@ function createSendTxArgsArr(toAddress, value = 10, count = 2) {
   return sendTxs;
 }
 
-function createCallArgs(contract, args, method = 'multiply') {
+function createCallArgs(contract, args, method = 'multiply', value) {
   return {
     contract,
     method,
     args: usc(args),
+    value,
   }
 }
 
-function createCallListArgs(contract, args, method = 'multiply', count = 2) {
+function createCallListArgs(contract, args, method = 'multiply', value, count = 2) {
   const callArgsList = []
 
   for (let i = 0; i < count; i++) {
-    callArgsList.push(createCallArgs(contract, args, method))
+    callArgsList.push(createCallArgs(contract, args, method, value))
   }
 
   return callArgsList;
