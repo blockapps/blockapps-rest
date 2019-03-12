@@ -74,19 +74,37 @@ describe('rest_7', function () {
     })
   });
 
-  xit('createContractMany', async () => {
-    //  TODO: need some clarification
+  // Skipped because of platform issue. https://blockapps.atlassian.net/browse/STRATO-1331
+  it.skip('create many contracts - async', async () => {
+    const contracts = [...Array(manyLength).keys()].map((a) => {
+      const uid = util.uid()
+      const contract = factory.createContractArgs(uid);
+      return contract
+    })
+    const pendingResults = await rest.createContractMany(admin, contracts, { config, isAsync: true })
+    const verifyHashes = pendingResults.reduce((a, r) => a && util.isHash(r.hash), true)
+    assert.isOk(verifyHashes, 'hash')
+    const results = await rest.resolveResults(pendingResults, options);
+    const verifyStatus = results.reduce((a, r) => a && r.status !== TxResultStatus.PENDING, true)
+    assert.isOk(verifyStatus, 'results')
+  })
 
-    // Create multiple contract
-    const contracts = [factory.createContractArgs(uid()), factory.createContractArgs(uid())];
-
-    const result = await rest.createContractMany(tokenUser, contracts, { config, isAsync: false });
+  // Skipped because of platform issue. https://blockapps.atlassian.net/browse/STRATO-1331
+  it.skip('create many contracts - sync', async () => {
+    const contracts = [...Array(manyLength).keys()].map((a) => {
+      const uid = util.uid()
+      const contract = factory.createContractArgs(uid);
+      return contract
+    })
+    const results = await rest.createContractMany(admin, contracts, { config })
+    const verifyContracts = results.reduce((a, r, i) => a && util.isAddress(r.address) && r.name === contracts[i].name, true)
+    assert.isOk(verifyContracts, 'contracts')
   })
 
 
   it('send - async', async () => {
     const sendTxArgs = factory.createSendTxArgs(admin.address);
-    const result = await rest.send(tokenUser, sendTxArgs, { config, isAsync: true });
+    const result = await rest.send(admin, sendTxArgs, { config });
 
     assert.equal(sendTxArgs.toAddress, result.to, 'address')
     assert.equal(sendTxArgs.value, result.value, 'value')
@@ -94,13 +112,13 @@ describe('rest_7', function () {
 
   it('send - sync', async () => {
     const sendTxArgs = factory.createSendTxArgs(admin.address);
-    const result = await rest.send(tokenUser, sendTxArgs, { config });
-    assert.isOk(isHash(result), 'hash')
+    const result = await rest.send(admin, sendTxArgs, { config, isAsync: true });
+    assert.isOk(isHash(result.hash), 'hash')
   })
 
   it('sendMany - async', async () => {
     const sendTxs = factory.createSendTxArgsArr(admin.address);
-    const results = await rest.sendMany(tokenUser, sendTxs, { config, isAsync: true });
+    const results = await rest.sendMany(admin, sendTxs, { config });
 
     // Assert every value that was sent
     results.forEach((result, index) => {
@@ -112,8 +130,11 @@ describe('rest_7', function () {
   it('sendMany - sync', async () => {
     const sendTxs = factory.createSendTxArgsArr(admin.address);
 
-    const result = await rest.sendMany(tokenUser, sendTxs, { config });
-    assert.isOk(isHash(result), 'hash')
+    const results = await rest.sendMany(admin, sendTxs, { config });
+
+    results.forEach((result, index) => {
+      assert.isOk(isHash(result.hash), 'hash')
+    })
   })
 })
 
@@ -123,15 +144,15 @@ describe('search', function () {
   const options = { config }
 
   before(async () => {
-    const randomId = uid();
+    const uid = getUid();
 
     assert.isDefined(process.env.USER_TOKEN)
     const address = await rest.createOrGetKey({ token: process.env.USER_TOKEN }, options);
     assert.isOk(isAddress(address))
 
-    let admin = await factory.createAdmin(randomId, options)
+    let admin = await factory.createAdmin(uid, options)
 
-    const contractArgs = await factory.createContractArgs(randomId)
+    const contractArgs = await factory.createContractArgs(uid)
     contract = await rest.createContract(admin, contractArgs, options)
     assert.equal(contract.name, contractArgs.name, 'name')
     assert.isOk(isAddress(contract.address), 'address')
@@ -141,7 +162,7 @@ describe('search', function () {
     const result = await rest.search(contract, { config });
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
-    assert.equal(result[0].address, contract.address, 'address');
+    assert.equal(result[0], contract.address, 'address');
   })
 
   it('searchUntil - get response on first call', async () => {
@@ -153,7 +174,7 @@ describe('search', function () {
     const result = await rest.searchUntil(contract, predicate, { config });
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
-    assert.equal(result[0].address, contract.address, 'address');
+    assert.equal(result[0], contract.address, 'address');
   })
 
   it('searchUntil - throws an error', async () => {
@@ -180,6 +201,6 @@ describe('search', function () {
     const result = await rest.searchUntil(contract, predicate, { config });
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
-    assert.equal(result[0].address, contract.address, 'address');
+    assert.equal(result[0], contract.address, 'address');
   })
 })
