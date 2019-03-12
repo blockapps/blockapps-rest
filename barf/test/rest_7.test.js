@@ -144,7 +144,7 @@ describe('rest_7', function () {
   })
 })
 
-describe.only('search', function () {
+describe('search', function () {
   this.timeout(config.timeout)
   const options = { config, logger }
   let admin, contract
@@ -201,10 +201,19 @@ describe.only('search', function () {
   })
 })
 
-describe('chain', function () {
+describe.only('chain', function () {
   this.timeout(config.timeout)
-  let admin;
+  let admin, chainId, chainArgs;
   const options = { config }
+
+  async function createChain() {
+    const uid = getUid();
+    const { chain, contractName: name } = factory.createChainArgs(uid, [admin.address]);
+    const contract = {name}
+    chainArgs = chain
+    const result = await rest.createChain(chain, contract, options);
+    return result;
+  }
 
   before(async () => {
     const uid = getUid()
@@ -212,40 +221,48 @@ describe('chain', function () {
     admin = await factory.createAdmin(userArgs, options)
   })
 
-  it('create', async () => {
-    const uid = getUid();
-    const { chain, contractName: name } = factory.createChainArgs(uid, [admin.address]);
-    const contract = { name };
+  beforeEach(async() => {
+    chainId = await createChain()
+  })
 
-    const result = await rest.createChain(chain, contract, options);
-    assert.isOk(isHash(result), 'hash')
+  it('create', async () => {
+    assert.isOk(isHash(chainId), 'hash')
   })
 
   it('create and verify', async () => {
-    const uid = getUid()
-    
-    // Create chain and verify
-    const { chain, contractName: name } = factory.createChainArgs(uid, [admin.address]);
-    const contract = { name };
-    
-    let chainId = await rest.createChain(chain, contract, options);
     assert.isOk(isHash(chainId), 'hash')
     
     // This is to wait until data is available on the chain 
-    await timeout(5000);
+    await timeout(1000);
 
     // verify chain data
     const result = await rest.getChain(chainId, options);
-    assert.equal(result.info.label, chain.label, 'chain label');
+    assert.equal(result.info.label, chainArgs.label, 'chain label');
     assert.equal(result.id, chainId, 'chainId');
   })
 
   it('list of chains', async () => {
+    assert.isOk(isHash(chainId), 'hash')
+    
+    // This is to wait until data is available on the chain 
+    await timeout(1000);
     // get all chain
     const result = await rest.getChains([], options);
 
     assert.isArray(result, 'should be array')
-    assert.isAbove(result.length, 1, 'should be greater than 1');
+    assert.isAbove(result.length, 0, 'should be greater than 0');
+  })
+
+  it('list of chains', async () => {
+    assert.isOk(isHash(chainId), 'hash')
+    
+    // This is to wait until data is available on the chain 
+    await timeout(1000);
+    // get all chain
+    const result = await rest.getChains([chainId], options);
+
+    assert.isArray(result, 'should be array')
+    assert.equal(result.length, 1, 'should be 1');
   })
 
 }) 
