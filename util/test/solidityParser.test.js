@@ -1,6 +1,6 @@
+import { assert } from 'chai'
 import solidityParser from '../solidityParser'
-import assert  from './assert'
-import {cwd} from '../util'
+import { cwd } from '../../lib/util'
 import fsUtil from '../fsUtil'
 
 describe('solidity parser', () => {
@@ -43,7 +43,7 @@ contract ErrorCodes {
     const filename = `${cwd}/lib/test/fixtures/ErrorCodes.sol`
     const source = fsUtil.get(filename)
     const parsedEnum = await solidityParser.parseEnum(source)
-    for (let i = 0; i < parsedEnum.length/2; i++) {
+    for (let i = 0; i < parsedEnum.length / 2; i++) {
       assert.equal(parsedEnum[parsedEnum[i]], i, parsedEnum[i])
     }
   })

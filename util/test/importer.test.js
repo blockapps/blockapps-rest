@@ -1,11 +1,11 @@
+import { assert } from 'chai'
 import importer from '../importer'
-import rest from '../rest'
-import assert from './assert'
-import { cwd, uid as getUid} from '../util'
-import factory from './factory'
+import rest from '../../lib/rest'
+import { cwd, usc, uid as getUid } from '../../lib/util'
+import factory from '../../lib/test/factory'
 
 const config = factory.getTestConfig()
-const fixtures = factory.getTestFixtures()
+const fixtures = `${cwd}/util/test/fixtures/`
 
 describe('imports', () => {
   let admin
@@ -30,7 +30,8 @@ describe('imports', () => {
     const filename = `${fixtures}/importer/Main.sol`
     const source = await importer.combine(filename)
     const name = `Main`
-    const contractArgs = { name, source, args: {_size: 10} }
+    const args = usc({ size: 10 })
+    const contractArgs = { name, source, args }
     const contract = await rest.createContract(admin, contractArgs, options)
     const state = await rest.getState(contract, options)
     assert.isDefined(state.AA, 'A')
