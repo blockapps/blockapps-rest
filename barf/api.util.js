@@ -14,7 +14,7 @@ function constructEndpoint(endpointTemplate, options = {}, params = {}) {
 
 function constructQuery(options) {
   const queryObject = Object.assign(
-    { resolve: !options.isAsync, chainid: options.chainId },  // @samrit should we go to options.chainid ?
+    { resolve: !options.isAsync, chainid: options.chainIds },  // @samrit should we go to options.chainid ?
     options.stateQuery,
     options.query,
   )

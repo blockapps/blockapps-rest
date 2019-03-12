@@ -2,6 +2,7 @@ import RestStatus from 'http-status-codes'
 import api from './api_7'
 import {TxPayloadType, TxResultStatus} from './constants'
 import { until } from './util'
+import { constructMetadata } from './api.util';
 
 // =====================================================================
 //   util
@@ -410,8 +411,6 @@ async function getChains(chainIds, options) {
 async function createChain(chain, contract, options) {
   const result = await api.createChain({
     ...chain,
-    src: contract.src,
-    args: contract.args,
     contract: contract.name,
     metadata: constructMetadata(options, contract.name)
   }, options)

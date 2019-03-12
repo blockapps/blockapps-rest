@@ -235,14 +235,14 @@ async function search(contract, options) {
 // TODO: check options.params and options.headers in axoos wrapper.
 async function getChains(chainIds, options) {
   const url = getNodeUrl(options)
-  const endpoint = constructEndpoint(Endpoint.CHAIN, options)
+  const endpoint = constructEndpoint(Endpoint.CHAIN, { config: options.config, chainIds })
   return get(url, endpoint, options)
 }
 
 async function createChain(body, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.CHAIN, options)
-  await post(url, endpoint, body, options)
+  return await post(url, endpoint, body, options)
 }
 
 export default {

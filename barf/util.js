@@ -92,6 +92,10 @@ async function until(predicate, action, options, timeout = 60000) {
   throw new Error(`until: timeout ${timeout} ms exceeded`)
 }
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export {
   cwd,
   isAddress,
@@ -100,4 +104,5 @@ export {
   usc,
   sleep,
   until,
+  timeout
 }
