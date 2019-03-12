@@ -9,6 +9,7 @@ const Endpoint = {
   FILL: '/bloc/v2.2/users/:username/:address/fill',
   CONTRACT: '/bloc/v2.2/users/:username/:address/contract',
   CALL: '/bloc/v2.2/users/:username/:address/contract/:contractName/:contractAddress/call',
+  CALL_LIST: '/bloc/v2.2/users/:username/:address/callList',
   STATE: '/bloc/v2.2/contracts/:name/:address/state',
   TXRESULTS: '/bloc/v2.2/transactions/results',
   SEND: '/strato/v2.3/transaction',
@@ -172,6 +173,37 @@ async function callListAuth(user, callListArgs, options) {
   return contractTxResult
 }
 
+async function callListBloc(user, callListArgs, options) {
+  let nonce = 1
+  const txs = callListArgs.map(callArgs => {
+    const { contract, method, args, value } = callArgs
+    const valueFixed = (value instanceof BigNumber) ? value.toFixed(0) : value
+    const tx = {
+      contractName: contract.name,
+      contractAddress: contract.address,
+      methodName: method,
+      args,
+      value: valueFixed,
+      txParams: { nonce },
+      metadata: constructMetadata(options, contract.name),
+    }
+    nonce += 1
+    return tx
+  })
+  const body = {
+    password: user.password,
+    txs,
+    resolve: !options.isAsync,
+  }
+  const url = getNodeUrl(options)
+  const urlParams = {
+    username: user.username,
+    address: user.address,
+  }
+  const endpoint = constructEndpoint(Endpoint.CALL_LIST, options, urlParams)
+  return post(url, endpoint, body, options)
+}
+
 async function sendTransactions(user, body, options) {
   const url = getNodeUrl(options)
   const endpoint = constructEndpoint(Endpoint.SEND, options)
@@ -225,6 +257,7 @@ export default {
   callBloc,
   callAuth,
   callListAuth,
+  callListBloc,
   sendTransactions,
   getKey,
   createKey,

@@ -251,6 +251,8 @@ async function callListAuth(user, callListArgs, options) {
 }
 
 async function callListBloc(user, callListArgs, options) {
+  const pendingTxResultList = await api.callListBloc(user, callListArgs, options)
+  return callListResolve(pendingTxResultList, options)
 }
 
 async function callListResolve(pendingTxResultList, options) {

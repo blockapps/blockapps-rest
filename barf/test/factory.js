@@ -62,7 +62,7 @@ function createSendTxArgsArr(toAddress, value = 10, count = 2) {
   return sendTxs;
 }
 
-function createCallArgs(contract, args, method = 'multiply', value) {
+function createCallArgs(contract, args, method = 'multiply', value = 0) {
   return {
     contract,
     method,

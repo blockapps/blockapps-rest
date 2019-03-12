@@ -69,7 +69,7 @@ describe('rest_7', function () {
       assert.equal(callResultList.length, callListArgs.length)
       const expected = var1 * var2
       callResultList.forEach((callResult, index) => {
-        assert.equal(callResult, expected, `call result ${index}`)
+        assert.equal(callResult[0], expected, `call result ${index}`)
       })
     })
   });
