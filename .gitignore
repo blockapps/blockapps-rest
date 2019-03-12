@@ -42,3 +42,6 @@ jspm_packages
 
 # Build
 barf/build
+dist
+
+.vscode
