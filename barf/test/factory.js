@@ -51,7 +51,7 @@ contract ${name} {
   return { name, source, args: usc(args) } // TODO flow contractArgs object
 }
 
-async function createContractFromFile(filename, uid, constructorArgs) {
+async function createContractFromFile(filename, uid, constructorArgs = {}) {
   const name = `TestContract_${uid}`
   const source = fsUtil.get(filename).replace('TestContract', name)
   return { name, source, args: usc(constructorArgs) } // TODO flow contractArgs object

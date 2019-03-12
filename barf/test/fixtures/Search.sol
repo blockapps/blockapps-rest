@@ -1,0 +1,5 @@
+contract TestContract {
+
+  constructor () {
+  }
+}

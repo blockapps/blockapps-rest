@@ -144,10 +144,10 @@ describe('rest_7', function () {
   })
 })
 
-describe.only('search', function () {
+describe('search', function () {
   this.timeout(config.timeout)
   const options = { config, logger }
-  let admin
+  let admin, contract
 
   before(async () => {
     const uid = getUid()
@@ -155,16 +155,11 @@ describe.only('search', function () {
     admin = await factory.createAdmin(userArgs, options)
   })
 
-  it('search - contract exists', async () => {
-    const contractArgs = await factory.createContractArgs(uid)
-    let contract = await rest.createContract(admin, contractArgs, options)
-    assert.equal(contract.name, contractArgs.name, 'name')
-    assert.isOk(isAddress(contract.address), 'address')
-    
-    const result = await rest.search(contract, options);
-    assert.isArray(result, 'should be array')
-    assert.equal(result.length, 1, 'array has length of 1');
-    assert.equal(result[0].address, contract.address, 'address');
+  beforeEach(async () => {
+    const uid = getUid()
+    const filename = `${cwd}/barf/test/fixtures/Search.sol`
+    const contractArgs = await factory.createContractFromFile(filename, uid, {})
+    contract = await rest.createContract(admin, contractArgs, options)
   })
 
   it('searchUntil - get response on first call', async () => {
@@ -172,19 +167,11 @@ describe.only('search', function () {
     function predicate(data) {
       return data;
     }
-
-    const contractArgs = await factory.createContractArgs(uid)
-    let contract = await rest.createContract(admin, contractArgs, options)
-    assert.equal(contract.name, contractArgs.name, 'name')
-    assert.isOk(isAddress(contract.address), 'address')
-   
     const result = await rest.searchUntil(contract, predicate, options);
     assert.isArray(result, 'should be array')
     assert.lengthOf(result, 1, 'array has length of 1');
     assert.equal(result[0], contract.address, 'address');
   })
-
-  
 
   it('searchUntil - throws an error', async () => {
     // predicate is created: to wait until response is available otherwise throws the error
