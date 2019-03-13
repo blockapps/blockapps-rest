@@ -9,7 +9,7 @@ module.exports = {
   target: 'node',
 
   entry: {
-    main: `${rootPath}/barf/index.js`,
+    main: `${rootPath}/lib/index.js`,
   },
 
   node: {
