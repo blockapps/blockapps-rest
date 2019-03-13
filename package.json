@@ -2,7 +2,7 @@
   "name": "blockapps-rest",
   "version": "7.0.0",
   "description": "BlockApps rest api",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
     "build": "yarn webpack --config config/webpack.config.js --progress",
