@@ -18,7 +18,7 @@ module.exports = {
   },
 
   output: {
-    filename: '[name].[hash].js',
+    filename: 'index.js',
     path: `${rootPath}/dist`,
     devtoolModuleFilenameTemplate : '[absolute-resource-path]',
     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]',
