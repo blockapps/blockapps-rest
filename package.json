@@ -1,14 +1,15 @@
 {
   "name": "blockapps-rest",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "BlockApps rest api",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "mocha-webpack": "node_modules/.bin/mocha-webpack --webpack-config config/webpack.config.js",
-    "build": "yarn webpack --config config/webpack.config.js --progress",
+    "mocha-babel": "node_modules/.bin/mocha --require @babel/register",
+    "build": "babel lib --out-dir dist",
+    "prepublish": "yarn build",
     "test": "yarn test:lib && yarn test:util",
-    "test:lib": "yarn mocha-webpack lib/test/*.test.js -b",
-    "test:util": "yarn mocha-webpack util/test/*.test.js -b"
+    "test:lib": "yarn mocha-babel lib/test/*.test.js -b",
+    "test:util": "yarn mocha-babel util/test/*.test.js -b"
   },
   "keywords": [
     "BlockApps",
@@ -46,20 +47,16 @@
     "unix-time": "1.0.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "@babel/register": "^7.0.0",
-    "babel-loader": "^8.0.5",
-    "co-mocha": "^1.2.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.10.0",
-    "mocha": "^3.0.2",
-    "mocha-webpack": "^1.1.0",
-    "webpack": "3.0.0",
-    "webpack-node-externals": "^1.7.2"
+    "mocha": "^6.0.2"
   }
 }
