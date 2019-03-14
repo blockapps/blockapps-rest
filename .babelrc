@@ -1,7 +1,9 @@
 {
   "presets": [
     [ "@babel/preset-env"
-    , { "targets": { "node": true } }
+    , { "targets": { "node": true }
+      , "modules": "cjs"
+      }
     ]
   ],
   "plugins": [ "@babel/plugin-proposal-object-rest-spread"]
