@@ -1,0 +1,12 @@
+lib
+util
+config
+node_modules
+
+.idea
+.vscode
+.babelrc
+.editorconfig
+.eslintrc.json
+
+*.log
