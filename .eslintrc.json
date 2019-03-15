@@ -12,7 +12,8 @@
     "no-use-before-define": ["error", { "functions": false, "classes": true }],
     "no-await-in-loop": "off",
     "arrow-parens": "off",
-    "arrow-body-style": "off"
+    "arrow-body-style": "off",
+    "radix": "off"
   },
   "globals": {
     "it": false,
