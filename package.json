@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "mocha-babel": "node_modules/.bin/mocha --require @babel/register",
-    "build": "babel lib --out-dir dist",
+    "build": "node_modules/.bin/gulp",
     "prepublish": "yarn build",
     "test": "yarn test:lib && yarn test:util",
     "test:lib": "yarn mocha-babel lib/test/*.test.js -b",
@@ -47,7 +47,6 @@
     "unix-time": "1.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
     "@babel/core": "7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
@@ -57,6 +56,12 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.10.0",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-babel-minify": "^0.5.0",
+    "gulp-clean": "^0.4.0",
+    "gulp-cli": "^2.0.1",
+    "gulp-sourcemaps": "^2.6.5",
     "mocha": "^6.0.2"
   }
 }
