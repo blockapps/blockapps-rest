@@ -14,17 +14,8 @@ function clean() {
 }
 
 function build() {
-  return src('lib/*.js')
-    .pipe(babel({
-      presets: [
-        [ "@babel/preset-env"
-        , { targets: { "node": true }
-          , modules: "cjs"
-          }
-        ]
-      ],
-      plugins: [ "@babel/plugin-proposal-object-rest-spread"]
-    }))
+  return src(['lib/**/*.js', '!lib/test/'])
+    .pipe(babel())
     .pipe(sourcemaps.write('.'))
     .pipe(minify({
       mangle: {
