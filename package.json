@@ -2,7 +2,7 @@
   "name": "blockapps-rest",
   "version": "7.0.1",
   "description": "BlockApps rest api",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
     "mocha-babel": "node_modules/.bin/mocha --require @babel/register",
     "build": "babel lib --out-dir dist/lib && babel util --out-dir dist/util",
