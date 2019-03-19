@@ -9,7 +9,7 @@
     "prepublish": "yarn build",
     "test": "yarn test:lib && yarn test:util",
     "test:lib": "yarn mocha-babel lib/test/*.test.js -b",
-    "test:util": "yarn mocha-babel util/test/*.test.js -b"
+    "test:util": "yarn mocha-babel lib/util/test/*.test.js -b"
   },
   "keywords": [
     "BlockApps",
