@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "mocha-babel": "node_modules/.bin/mocha --require @babel/register",
-    "build": "babel lib --out-dir dist",
+    "build": "babel lib --out-dir dist/lib && babel util --out-dir dist/util",
     "prepublish": "yarn build",
     "test": "yarn test:lib && yarn test:util",
     "test:lib": "yarn mocha-babel lib/test/*.test.js -b",
