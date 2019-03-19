@@ -14,7 +14,7 @@ function clean() {
 }
 
 function build() {
-  return src(['lib/**/*.js', '!lib/test/'])
+  return src(['lib/**/*.js', '!**/test/', '!**/test/**'])
     .pipe(babel())
     .pipe(sourcemaps.write('.'))
     .pipe(minify({
