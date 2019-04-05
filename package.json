@@ -3,9 +3,6 @@
   "version": "7.2.0",
   "description": "BlockApps Rest API SDK",
   "main": "dist/index.js",
-  "bin": {
-    "token-getter": "node dist/util/oauth.client.js"
-  },
   "scripts": {
     "mocha-babel": "node_modules/.bin/mocha --require @babel/register",
     "build": "node_modules/.bin/gulp",
