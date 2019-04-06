@@ -1,5 +1,8 @@
 contract TestContract {
 
-  constructor () {
+  int public intValue;
+
+  constructor (int _intValue) {
+    intValue = _intValue;
   }
 }
