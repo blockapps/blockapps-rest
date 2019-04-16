@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 6.2.12
+* VM Selection is provided as well in config.yaml, with precedence given to `options`
+  parameter in the function call in `rest_6`. In `rest_5`, this is the sole way to select
+  vm. The two options are `EVM` and `SolidVM`.
+
 ###  Version 6.2.11
 * Support added to sending code to solidvm
 

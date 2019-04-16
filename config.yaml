@@ -1,6 +1,7 @@
 apiDebug: true
 password: '1234'
 timeout: 600000
+VM: 'EVM'
 
 # WARNING - extra strict syntax
 # DO NOT change the nodes order
