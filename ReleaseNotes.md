@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+### Version 6.2.13
+* Fix a resolution error introduced in 6.2.12
+
 ### Version 6.2.12
 * VM Selection is provided as well in config.yaml, with precedence given to `options`
   parameter in the function call in `rest_6`. In `rest_5`, this is the sole way to select
