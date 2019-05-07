@@ -11,6 +11,17 @@
 ### Version 6.3.0
 * rest6.getKey now has an option to return other user's account address
 
+### Version 6.2.13
+* Fix a resolution error introduced in 6.2.12
+
+### Version 6.2.12
+* VM Selection is provided as well in config.yaml, with precedence given to `options`
+  parameter in the function call in `rest_6`. In `rest_5`, this is the sole way to select
+  vm. The two options are `EVM` and `SolidVM`.
+
+###  Version 6.2.11
+* Support added to sending code to solidvm
+
 ###  Version 6.2.10
 * resolveResults() optimization introduced in 6.2.8 is reverted (causing hidden issues)
 
@@ -20,7 +31,7 @@
 ### Version 6.2.8
 * Optimized resolveResults() function in rest5 and rest6
 
-### Version 6.2.7   
+### Version 6.2.7
 * isTokenValid args list fix
 
 ### Version: 6.2.6
@@ -67,7 +78,7 @@
 * STRATO API v2.3 support with OAuth-enabled user management replacing the bloc users;
   - `createKey(accessToken)` - to create user on the STRATO blockchain
   - `getKey(accessToken)` - to get user's address
-  - `sendTransactions(..)` - the all-in-one function to make transactions of all types 
+  - `sendTransactions(..)` - the all-in-one function to make transactions of all types
   - accessToken argument added to all previously existing transaction helper functions
   - `oauth` section expected in the config to use new wrappers
 * OAuth flow helper functions;
