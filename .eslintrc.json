@@ -1,0 +1,25 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "object-curly-newline": "off",
+    "import/no-dynamic-require": "off",
+    "func-names": "off",
+    "max-len": "off",
+    "no-lone-blocks": "off",
+    "semi": "off",
+    "one-var": "off",
+    "one-var-declaration-per-line": "off",
+    "no-use-before-define": ["error", { "functions": false, "classes": true }],
+    "no-await-in-loop": "off",
+    "arrow-parens": "off",
+    "arrow-body-style": "off",
+    "radix": "off"
+  },
+  "globals": {
+    "it": false,
+    "describe": false,
+    "before": false,
+    "beforeEach": false,
+    "afterEach": false
+  }
+}
