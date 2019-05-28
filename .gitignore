@@ -39,3 +39,13 @@ jspm_packages
 # Intellij
 .idea
 *.iml
+
+# Build
+lib/build
+dist
+
+.vscode
+
+.env
+
+package-lock.json
