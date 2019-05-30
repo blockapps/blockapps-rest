@@ -1,6 +1,10 @@
 ## RELEASE NOTES
 
-### Version 7.4.3
+### Version 7.3.1
+
+-   Output the OAuth sign-in URL to command line when using oauth-client (token-getter)
+
+### Version 7.3.0
 
 -   Refactor ba-rest to use ES6
 -   Replace generators with async/await
