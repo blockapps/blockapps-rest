@@ -1,6 +1,6 @@
 {
   "name": "blockapps-rest",
-  "version": "7.3.0",
+  "version": "7.4.0",
   "description": "BlockApps Rest API SDK",
   "main": "dist/index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "bignumber.js": "2.4.0",
+    "bignumber.js": "^9.0.0",
     "bluebird": "^3.4.6",
     "chai": "^4.2.0",
     "chai-bignumber": "^2.0.0",

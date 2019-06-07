@@ -1,5 +1,5 @@
 apiDebug: true
-password: '1234'
+password: "1234"
 timeout: 600000
 
 # WARNING - extra strict syntax
@@ -19,3 +19,4 @@ nodes:
       openIdDiscoveryUrl: "PLACEHOLDER"
       redirectUri: "http://localhost/callback"
       logoutRedirectUri: "http://localhost"
+
