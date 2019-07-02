@@ -1,5 +1,11 @@
 ## RELEASE NOTES
 
+### Version 7.4.1
+
+-   Update token getter to display logout button and output env file
+-   Add pingOauth endpoint
+-   Disable google translate for token-getter
+
 ### Version 7.4
 
 -   Refactor ba-rest to only use oauth
