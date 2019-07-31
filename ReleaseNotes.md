@@ -1,5 +1,11 @@
 ## RELEASE NOTES
 
+### Version 7.4.3
+
+-   Implement flatted stringify to remove circular JSON warnings
+-   Turn on console logger based on config apiDebug flag
+-   Fixed npm vulnerabilities
+
 ### Version 7.4.2
 
 -   Update token getter to support https
