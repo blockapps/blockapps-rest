@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.4.4
+
+-   Make calls to solidity-parser library synchronous
+
 ### Version 7.4.3
 
 -   Implement flatted stringify to remove circular JSON warnings
