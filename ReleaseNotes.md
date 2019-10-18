@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 7.5.0
+
+-   Add support for resource-owner-password-credential grant flow
+-   Support overriding config client id and client secret for getAccessTokenByClientSecret
+
 ### Version 7.4.4
 
 -   Make calls to solidity-parser library synchronous
