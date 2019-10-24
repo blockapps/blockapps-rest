@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.5.2
+
+-   Bug fix for history metadata helper in api.util.js
+
 ### Version 7.5.1
 
 -   Add support for adding custom state in the authorization url
