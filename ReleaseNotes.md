@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.5.3
+
+-   Bug fix for chain ID helper for Cirrus queries in api.util.js
+
 ### Version 7.5.2
 
 -   Bug fix for history metadata helper in api.util.js
