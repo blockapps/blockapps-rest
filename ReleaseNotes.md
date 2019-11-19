@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.5.4
+
+-   Generate source maps in build
+
 ### Version 7.5.3
 
 -   Bug fix for chain ID helper for Cirrus queries in api.util.js

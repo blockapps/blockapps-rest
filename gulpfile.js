@@ -1,28 +1,20 @@
-const {
-  dest, 
-  series,
-  src
-} = require('gulp');
-const babel = require('gulp-babel');
-const gulpClean = require('gulp-clean');
-const minify = require('gulp-babel-minify');
-const sourcemaps = require('gulp-sourcemaps')
+const { dest, series, src } = require("gulp");
+const babel = require("gulp-babel");
+const gulpClean = require("gulp-clean");
+const sourcemaps = require("gulp-sourcemaps");
+const uglify = require("gulp-uglify");
 
 function clean() {
-  return src('dist', { read: false, allowEmpty: true })
-    .pipe(gulpClean());
+  return src("dist", { read: false, allowEmpty: true }).pipe(gulpClean());
 }
 
 function build() {
-  return src(['lib/**/*.js', '!**/test/', '!**/test/**'])
-    .pipe(babel())
-    .pipe(sourcemaps.write('.'))
-    .pipe(minify({
-      mangle: {
-        keepClassName: true
-      }
-    }))
-    .pipe(dest('dist'));
+  return src(["lib/**/*.js", "!**/test/", "!**/test/**"])
+    .pipe(sourcemaps.init())
+    .pipe(babel({ presets: ["@babel/preset-env"] }))
+    .pipe(uglify())
+    .pipe(sourcemaps.write("."))
+    .pipe(dest("dist"));
 }
 
 exports.clean = clean;
