@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.5.6
+
+-   Add batch contract state and chain creation functions, as well as expose get{Send,Create,Call}Args functions for generating transaction payloads
+
 ### Version 7.5.4
 
 -   Generate source maps in build
