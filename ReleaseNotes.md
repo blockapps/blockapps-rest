@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.5.8
+
+-   Pass chainid parameter through getCallArgs and getCreateArgs
+
 ### Version 7.5.7
 
 -   Hotfix for regeneratorRuntime error in oauth.util.js
