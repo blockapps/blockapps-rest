@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 7.6.0
+
+-   Token-getter updates: no separate config needed - fully mimics the app by following it's config
+-   Fix for @babel/polyfill dependency
+
 ### Version 7.5.8
 
 -   Pass chainid parameter through getCallArgs and getCreateArgs
