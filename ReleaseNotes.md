@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.6.1
+
+- Fix distributive
+
 ### Version 7.6.0
 
 -   Token-getter updates: no separate config needed - fully mimics the app by following it's config
