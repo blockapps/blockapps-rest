@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.6.2
+
+- Expose searchWithContentRange and searchWithContentRangeUntil
+
 ### Version 7.6.1
 
 - Fix distributive
