@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 7.6.3
+
+- Fix for util.uid() to always return string value for compatibility with STRATO 5.2+
+
 ### Version 7.6.2
 
 - Expose searchWithContentRange and searchWithContentRangeUntil
