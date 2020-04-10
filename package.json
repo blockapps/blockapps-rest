@@ -1,6 +1,6 @@
 {
   "name": "blockapps-rest",
-  "version": "7.6.4",
+  "version": "7.6.5",
   "description": "BlockApps Rest API SDK",
   "main": "dist/index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "keywords": [
     "BlockApps",
+    "STRATO",
     "rest",
     "api"
   ],
