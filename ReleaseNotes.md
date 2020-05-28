@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 7.6.6
+
+- Added /transaction/parallel endpoint
+- Bug fix for createContractList
+
 ### Version 7.6.5
 
 - Added Bloc /compile endpoint
