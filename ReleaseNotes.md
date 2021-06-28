@@ -1,31 +1,41 @@
 ## RELEASE NOTES
 
+### Version 7.7
+
+-   Fix issue with `getAccounts` and `resolve` flag
+-   Remove bloc account endpoints and interfaces
+-   Remove `getBatchStates` function call
+-   Update `fill` call to not require username
+-   Fixes for error handling in `compileContracts`
+-   Fixes for error handling in `getAccounts`
+-   Add js docs
+
 ### Version 7.6.6
 
-- Added /transaction/parallel endpoint
-- Bug fix for createContractList
+-   Added /transaction/parallel endpoint
+-   Bug fix for createContractList
 
 ### Version 7.6.5
 
-- Added Bloc /compile endpoint
-- Add getAccounts to get the account details
+-   Added Bloc /compile endpoint
+-   Add getAccounts to get the account details
 
 ### Version 7.6.4
 
-- Add source mappings for minified dist code
-- Add babel-preset-minify, remove gulp-uglify
+-   Add source mappings for minified dist code
+-   Add babel-preset-minify, remove gulp-uglify
 
 ### Version 7.6.3
 
-- Fix for util.uid() to always return string value for compatibility with STRATO 5.2+
+-   Fix for util.uid() to always return string value for compatibility with STRATO 5.2+
 
 ### Version 7.6.2
 
-- Expose searchWithContentRange and searchWithContentRangeUntil
+-   Expose searchWithContentRange and searchWithContentRangeUntil
 
 ### Version 7.6.1
 
-- Fix distributive
+-   Fix distributive
 
 ### Version 7.6.0
 
@@ -46,7 +56,7 @@
 -   Add external storage endpoints
 
 ### Version 7.5.5
-    
+
 -   Better debug logs formatting
 
 ### Version 7.5.4
