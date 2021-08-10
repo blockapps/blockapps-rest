@@ -1,5 +1,15 @@
 ## RELEASE NOTES
 
+
+### Version: 8.0.1
+
+- Added the access token lifetime reserve setting to token validity check
+
+### Version 8.0.0
+
+- Added basic typescript bindings
+- Added VM Debugger support
+
 ### Version 7.7
 
 -   Fix issue with `getAccounts` and `resolve` flag

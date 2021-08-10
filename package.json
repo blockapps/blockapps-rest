@@ -1,6 +1,6 @@
 {
   "name": "blockapps-rest",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "BlockApps Rest API SDK",
   "main": "dist/index.js",
   "scripts": {

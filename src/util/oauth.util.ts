@@ -19,6 +19,7 @@ interface OAuthConfig {
   serviceUsername?:any,
   servicePassword?:any,
   tokenField?:any,
+  tokenLifetimeReserveSeconds?: number,
   }
 
 /** Class representing the OAuth util. */
@@ -40,6 +41,7 @@ class OAuthUtil {
   logOutUrl : any;
   keys : any[];
   tokenField : any;
+  tokenLifetimeReserveSeconds: number;
   serviceUsername : any;
   servicePassword : any;
   tokenHost : any;
@@ -65,6 +67,9 @@ class OAuthUtil {
     this.tokenField = oauthConfig.tokenField
       ? oauthConfig.tokenField
       : "access_token"; //could use id_token
+    this.tokenLifetimeReserveSeconds = oauthConfig.tokenLifetimeReserveSeconds
+      ? oauthConfig.tokenLifetimeReserveSeconds
+      : 60;
     this.serviceUsername = oauthConfig.serviceUsername;
     this.servicePassword = oauthConfig.servicePassword;
     const url_split = this.openIdDiscoveryUrl.split("/");
@@ -271,7 +276,7 @@ class OAuthUtil {
   }
 
   /**
-   * This functions validates token expiry without validating signature
+   * This functions validates token expiry with token lifetime reserve, without validating signature
    * @method{isTokenExpired}
    * @param {String} accessToken
    * @param {Number} cookieExpiry
@@ -284,8 +289,7 @@ class OAuthUtil {
 
     const decodedToken = jwt.decode(accessToken);
     const expiry = decodedToken["exp"];
-    return expiry <= unixTime(new Date());
-    // FIX ME: Evaluate time zone issues
+    return expiry <= (unixTime(new Date()) + this.tokenLifetimeReserveSeconds);
   }
 
   /**
