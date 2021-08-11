@@ -283,13 +283,14 @@ class OAuthUtil {
    * @returns {Boolean}
    */
   isTokenExpired(accessToken, cookieExpiry) {
-    if (cookieExpiry) {
-      return cookieExpiry <= unixTime(new Date());
+    let expiryTimestamp
+    if (!cookieExpiry) {
+      const decodedToken = jwt.decode(accessToken);
+      expiryTimestamp = decodedToken["exp"];
+    } else {
+      expiryTimestamp = cookieExpiry
     }
-
-    const decodedToken = jwt.decode(accessToken);
-    const expiry = decodedToken["exp"];
-    return expiry <= (unixTime(new Date()) + this.tokenLifetimeReserveSeconds);
+    return expiryTimestamp <= (unixTime(new Date()) + this.tokenLifetimeReserveSeconds);
   }
 
   /**
