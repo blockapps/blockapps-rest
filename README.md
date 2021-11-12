@@ -1,3 +1,8 @@
+## Mirror Repository Warning
+This repository is a mirror of the development repository maintained by BlockApps. This repository contains a 
+code of the versions released to [npm](https://www.npmjs.com/package/blockapps-rest). 
+We do not accept or merge any pull requests in this repository.
+
 ## Introduction
 
 The Blockapps-Rest library is Node.js server-side SDK for BlockApps STRATO. It provides all the necessary abstractions and utility functions that can be used to interact with the STRATO platforms and perform the following operations:

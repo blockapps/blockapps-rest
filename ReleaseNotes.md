@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version: 8.0.3
+
+- Updated non-dev dependencies to address security vulnerabilities in production installation
+
 ### Version: 8.0.2
 
 - Hotfix for access token lifetime reserve setting introduced in 8.0.1
