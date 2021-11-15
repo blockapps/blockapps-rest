@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version: 8.0.4
+
+- Production dependencies cleanup
+
 ### Version: 8.0.3
 
 - Updated non-dev dependencies to address security vulnerabilities in production installation
