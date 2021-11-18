@@ -1,6 +1,6 @@
 {
   "name": "blockapps-rest",
-  "version": "8.0.4",
+  "version": "8.0.5",
   "description": "BlockApps Rest API SDK",
   "main": "dist/index.js",
   "scripts": {
@@ -28,6 +28,8 @@
     "axios": "^0.21.2",
     "bignumber.js": "^9.0.0",
     "bluebird": "^3.4.6",
+    "chai": "^4.2.0",
+    "chai-bignumber": "^3.0.0",
     "commander": "^5.1.0",
     "dotenv": "^6.2.0",
     "envfile": "^3.0.0",
@@ -58,8 +60,6 @@
     "@babel/register": "^7.8.4",
     "@types/mocha": "^8.0.3",
     "babel-preset-minify": "^0.5.1",
-    "chai": "^4.2.0",
-    "chai-bignumber": "^3.0.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
