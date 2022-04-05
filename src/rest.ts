@@ -748,6 +748,19 @@ async function getBlocResults(user:OAuthUser, hashes:string[], options:Options) 
 
 /**
  * @static
+ * This call gets the list of smart contract names on a particular chain
+ *
+ * @param {module:rest~User} user This must contain the token for the user
+ * @param chainId The chainId of the chain to query.
+ * @param {module:rest~Options} options This identifies the options and configurations for this call
+ * @returns {Object} Returns an object with all contract names on the chain as keys.
+ */
+async function getContracts(user:OAuthUser, chainId, options:Options) {
+  return api.getContracts(user, chainId, options);
+}
+
+/**
+ * @static
  * This call gets the state of a STRATO smart contract
  * @example
  *
@@ -1442,6 +1455,7 @@ async function createChains(user, chains, options:Options) {
 
 // =====================================================================
 //   External Storage
+//   Deprecated in STRATO 7.5 (#deprecate-7.5)
 // =====================================================================
 
 async function uploadExtStorage(user, args, options:Options) {
@@ -1598,6 +1612,21 @@ async function debugPostEval(user:OAuthUser, args, options:Options) {
   return response;
 }
 
+async function debugPostParse(user:OAuthUser, args, options:Options) {
+  const response = await api.debugPostParse(user, args, options);
+  return response;
+}
+
+async function debugPostAnalyze(user:OAuthUser, args, options:Options) {
+  const response = await api.debugPostAnalyze(user, args, options);
+  return response;
+}
+
+async function debugPostFuzz(user:OAuthUser, args, options:Options) {
+  const response = await api.debugPostFuzz(user, args, options);
+  return response;
+}
+
 // =====================================================================
 //   Common patterns used in applications
 // =====================================================================
@@ -1666,6 +1695,7 @@ export default {
   createContract,
   createContractList,
   getBlocResults,
+  getContracts,
   getState,
   getArray,
   call,
@@ -1717,6 +1747,9 @@ export default {
   debugDeleteWatches,
   debugClearWatches,
   debugPostEval,
+  debugPostParse,
+  debugPostAnalyze,
+  debugPostFuzz,
   //
   RestError,
   response,

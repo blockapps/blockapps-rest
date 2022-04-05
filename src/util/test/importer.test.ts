@@ -20,7 +20,7 @@ describe("imports", function() {
 
   it("combines to array", async () => {
     const filename = `${fixtures}/importer/Main.sol`;
-    const source = await importer.combine(filename, false);
+    const source = await importer.combine(filename, false, undefined);
     assert.equal(source.length, 5, "should have an array with all 5 files");
     let src = ''
     for (let i = 0; i < source.length; i++) {
@@ -35,7 +35,7 @@ describe("imports", function() {
 
   it("combines to object", async () => {
     const filename = `${fixtures}/importer/Main.sol`;
-    const source = await importer.combine(filename, true);
+    const source = await importer.combine(filename, true, undefined);
     assert.isAbove(source['Main.sol'].indexOf("contract Main"), 0);
     assert.isAbove(source['A.sol'].indexOf("contract A"), 0);
     assert.isAbove(source['B.sol'].indexOf("contract B"), 0);
@@ -45,7 +45,7 @@ describe("imports", function() {
 
   it("combines to array and uploads", async () => {
     const filename = `${fixtures}/importer/Main.sol`;
-    const source = await importer.combine(filename, false);
+    const source = await importer.combine(filename, false, undefined);
     const name = `Main`;
     const args = util.usc({ size: 10 });
     const contractArgs = { name, source, args };
@@ -59,7 +59,7 @@ describe("imports", function() {
 
   it("combines to object and uploads", async () => {
     const filename = `${fixtures}/importer/Main.sol`;
-    const source = await importer.combine(filename, true);
+    const source = await importer.combine(filename, true, undefined);
     const name = `Main`;
     const args = util.usc({ size: 10 });
     const contractArgs = { name, source, args };

@@ -101,7 +101,7 @@ describe("contracts", function() {
         return rest.createContract(admin, contractArgs, options);
       },
       RestStatus.BAD_REQUEST,
-      /argument names don't match:/
+      /Argument names don't match - Expected Arguments: /
     );
   });
 });
@@ -135,12 +135,11 @@ describe("state", function() {
       async () => {
         return rest.getState(admin, { name: uid, address: "0" }, options);
       },
-      RestStatus.BAD_REQUEST,
-      /Couldn't find/
+      RestStatus.BAD_REQUEST
     );
   });
 
-  it("get state - large array", async () => {
+  it.skip("get state - large array", async () => {
     const MAX_SEGMENT_SIZE = 100;
     const SIZE = MAX_SEGMENT_SIZE * 2 + 30;
     const name = "array";
@@ -185,7 +184,7 @@ describe("state", function() {
     }
   });
 
-  it("get state - getArray", async () => {
+  it.skip("get state - getArray", async () => {
     const SIZE = 230;
     const name = "array";
     const uid = util.uid();
@@ -361,17 +360,19 @@ describe("history", function() {
   });
 
   it("test history", async () => {
-    const filename = `${fixtures}/sampleDapp.sol`;
+    const filename = `${fixtures}/TestHistory.sol`;
+    const fst = Math.floor(Math.random() * 100)
+    const scd = Math.floor(Math.random() * 100)
     const contractArgs = {
-      name: "AdminInterface",
+      name: "TestHistory",
       source: fsUtil.get(filename),
       args: {
-        uid: Math.floor(Math.random() * 100)
+        _x: fst,
       }
     };
     const historyOptions:Options = {
       ...options,
-      history: ["Event", "Ticket", "Transaction"]
+      history: ["TestHistory"]
     };
 
     const contract = <Contract> await rest.createContract(
@@ -383,92 +384,31 @@ describe("history", function() {
     assert.equal(contract.name, contractArgs.name, "name");
     assert.isOk(util.isAddress(contract.address), "address");
 
-    // get state for Dapp
-    const state = await rest.getState(admin, contract, options);
+    // call a function
+    const methodArgs = { x: scd };
+    const method = "setX";
 
-    assert.isOk(util.isAddress(state.eventManager), "address");
-    assert.isOk(util.isAddress(state.ticketManager), "address");
-    assert.isOk(util.isAddress(state.transactionManager), "address");
-
-    // create event
-    const eMethodArgs = { someInt: contractArgs.args.uid, someString: "hello" };
-    const eMethod = "createEvent";
-
-    const eCallArgs = factory.createCallArgs(
-      { name: "EventManager", address: state.eventManager },
-      eMethod,
-      eMethodArgs
+    const callArgs = factory.createCallArgs(
+      { name: "TestHistory", address: contract.address },
+      method,
+      methodArgs
     );
-    const eResult = await rest.call(admin, eCallArgs, options);
-    console.log(eResult);
+    const result = await rest.call(admin, callArgs, options);
+    console.log(result);
 
-    // create ticket
-
-    const tMethodArgs = {
-      pnr: `${contractArgs.args.uid}5678`,
-      ticketNumber: `${contractArgs.args.uid}1234`
-    };
-    const tMethod = "createTicket";
-
-    const tCallArgs = factory.createCallArgs(
-      { name: "TicketManager", address: state.ticketManager },
-      tMethod,
-      tMethodArgs
-    );
-    const tResult = await rest.call(admin, tCallArgs, options);
-
-    // create transaction
-
-    const txMethodArgs = {
-      transactionId: `${contractArgs.args.uid}0000`
-    };
-    const txMethod = "createTransaction";
-
-    const txCallArgs = factory.createCallArgs(
-      { name: "TransactionManager", address: state.transactionManager },
-      txMethod,
-      txMethodArgs
-    );
-    const txResult = await rest.call(admin, txCallArgs, options);
-
-    const eventHistory = await rest.search(
+    const contractHistory = await rest.searchUntil(
       admin,
-      { name: `history@Event` },
+      { name: `history@TestHistory` },
+      (r) => r.length > 0,
       {
         ...options,
         query: {
-          someInt: `eq.${eMethodArgs.someInt}`
+          x: `eq.${fst}`,
+          address: `eq.${contract.address}`
         }
       }
     );
-    assert.isArray(eventHistory);
-    assert.equal(eventHistory.length, 1);
-
-    const ticketHistory = await rest.search(
-      admin,
-      { name: `history@Ticket` },
-      {
-        ...options,
-        query: {
-          pnr: `eq.${tMethodArgs.pnr}`,
-          ticketNumber: `eq.${tMethodArgs.ticketNumber}`
-        }
-      }
-    );
-    assert.isArray(ticketHistory);
-    assert.equal(ticketHistory.length, 1);
-
-    const txHistory = await rest.search(
-      admin,
-      { name: `history@Transaction` },
-      {
-        ...options,
-        query: {
-          transactionId: `eq.${txMethodArgs.transactionId}`
-        }
-      }
-    );
-    assert.isArray(txHistory);
-    assert.equal(txHistory.length, 1);
+    assert.isArray(contractHistory);
+    assert.equal(contractHistory.length, 1);
   });
 });

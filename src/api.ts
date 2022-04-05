@@ -6,6 +6,7 @@ import {
   get,
   put,
   post,
+  postRaw,
   postue,
   httpDelete,
   getNodeUrl,
@@ -47,10 +48,8 @@ async function fill(user, options:Options) {
 }
 
 function getCreateArgs(contract:ContractDefinition, options:Options) {
-  const src = options.config.VM === "EVM" ? {} : { src: contract.source };
-
   const payload = {
-    ...src,
+    src: contract.source,
     contract: contract.name,
     args: contract.args,
     chainid: contract.chainid,
@@ -132,7 +131,7 @@ async function getBalance(user:OAuthUser, bcuser:BlockChainUser | null, options:
     address = response.address;
   }
   else address = bcuser.address;
-  
+
   const accounts = await getAccounts(user, {
     ...options,
     // this endpoint does not accept the resolve flag
@@ -146,6 +145,15 @@ async function getBalance(user:OAuthUser, bcuser:BlockChainUser | null, options:
   }
 
   return new BigNumber(accounts[0].balance);
+}
+
+async function getContracts(user:OAuthUser, chainId, options:Options) {
+  const url = getNodeUrl(options);
+  const endpoint = constructEndpoint(Endpoint.CONTRACTS, {
+    ...options,
+    chainIds: [chainId]
+  });
+  return get(url, endpoint, setAuthHeaders(user, options));
 }
 
 async function getState(user:OAuthUser, contract, options:Options) {
@@ -300,18 +308,21 @@ async function createChains(body, options:Options) {
   return await post(url, endpoint, body, options);
 }
 
+//#deprecate-7.5
 async function uploadExtStorage(body, options:Options) {
   const url = getNodeUrl(options);
   const endpoint = constructEndpoint(Endpoint.EXT_UPLOAD, options);
   return await post(url, endpoint, body, options);
 }
 
+//#deprecate-7.5
 async function attestExtStorage(body, options:Options) {
   const url = getNodeUrl(options);
   const endpoint = constructEndpoint(Endpoint.EXT_ATTEST, options);
   return await post(url, endpoint, body, options);
 }
 
+//#deprecate-7.5
 async function verifyExtStorage(user:OAuthUser, contract, options:Options) {
   const url = getNodeUrl(options);
   const params = {
@@ -321,6 +332,7 @@ async function verifyExtStorage(user:OAuthUser, contract, options:Options) {
   return get(url, endpoint, setAuthHeaders(user, options));
 }
 
+//#deprecate-7.5
 async function downloadExtStorage(user:OAuthUser, contract, options:Options) {
   const url = getNodeUrl(options);
   const params = {
@@ -330,6 +342,7 @@ async function downloadExtStorage(user:OAuthUser, contract, options:Options) {
   return get(url, endpoint, setAuthHeaders(user, options));
 }
 
+//#deprecate-7.5
 async function listExtStorage(user:OAuthUser, args, options:Options) {
   const url = getNodeUrl(options);
   const { limit, offset } = args;
@@ -453,7 +466,25 @@ async function debugClearWatches(user:OAuthUser, options:Options) {
 async function debugPostEval(user:OAuthUser, args, options:Options) {
   const url = getNodeUrl(options);
   const endpoint = constructEndpoint(Endpoint.DEBUG_EVAL, options);
-  return post(url, endpoint, args, setAuthHeaders(user, options));
+  return postRaw(url, endpoint, args, setAuthHeaders(user, options));
+}
+
+async function debugPostParse(user:OAuthUser, args, options:Options) {
+  const url = getNodeUrl(options);
+  const endpoint = constructEndpoint(Endpoint.DEBUG_PARSE, options);
+  return postRaw(url, endpoint, args, setAuthHeaders(user, options));
+}
+
+async function debugPostAnalyze(user:OAuthUser, args, options:Options) {
+  const url = getNodeUrl(options);
+  const endpoint = constructEndpoint(Endpoint.DEBUG_ANALYZE, options);
+  return postRaw(url, endpoint, args, setAuthHeaders(user, options));
+}
+
+async function debugPostFuzz(user:OAuthUser, args, options:Options) {
+  const url = getNodeUrl(options);
+  const endpoint = constructEndpoint(Endpoint.DEBUG_FUZZ, options);
+  return postRaw(url, endpoint, args, setAuthHeaders(user, options));
 }
 
 export default {
@@ -469,6 +500,7 @@ export default {
   createContractList,
   fill,
   blocResults,
+  getContracts,
   getState,
   getCallArgs,
   call,
@@ -506,5 +538,8 @@ export default {
   debugPutWatches,
   debugDeleteWatches,
   debugClearWatches,
-  debugPostEval
+  debugPostEval,
+  debugPostParse,
+  debugPostAnalyze,
+  debugPostFuzz,
 };

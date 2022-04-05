@@ -118,48 +118,58 @@ function requestFormatter(_request) {
   if (request.headers && request.headers.Authorization) {
     const rhAuth = request.headers.Authorization
     if (rhAuth.startsWith('Bearer')) {
-      const headerString = rhAuth.substring(0, 15) + '...truncted...' + rhAuth.substring(rhAuth.length - 10)
+      const headerString = rhAuth.substring(0, 15) + '...truncated...' + rhAuth.substring(rhAuth.length - 10)
       request.headers.Authorization = headerString
     }
   }
+  let parsedRequest = request;
   // if this is a contract - remove the source from the debug
-  try {
-    request.data.txs[0].payload.src = 'source removed.'
-  } catch (e) {
+  if (request.hasOwnProperty('data')) {
+    if (request.data.hasOwnProperty('txs')) {
+      parsedRequest.data.txs = request.data.txs.map((tx) => {
+        return {
+          ...tx,
+          payload: {
+            ...tx.payload,
+            src: 'source removed.'
+          }
+        }
+      })
+    }
+    replaceKeyIfExists(parsedRequest.data, 'src', 'source removed.')
   }
-  try {
-    request.data.src = 'source removed.'
-  } catch (e) {
-  }
-  return JSON.stringify(request, null, 2)
+  return JSON.stringify(parsedRequest, null, 2)
 }
 
 function responseFormatter(response) {
   // if this is a contract - remove the source from the debug
-  try {
-    response.data[0].data.contents.src = 'source removed.'
-  } catch (e) {
+  let parsedResponse = response
+  const removedFields = ['src', 'bin', 'bin-runtime', 'xabi']
+  if (response.hasOwnProperty('data') && Array.isArray(response.data)) {
+    parsedResponse.data = response.data.map((el) => {
+      let newEl = el
+      if (el.hasOwnProperty('data') && el.data !== null && el.data !== undefined) {
+        if (el.data.hasOwnProperty('contents')) {
+          const contents = el.data.contents
+          removedFields.forEach((field) => replaceKeyIfExists(contents, field, `${field} removed.`))
+          newEl.data.contents = contents
+        }
+        replaceKeyIfExists(el.data, 'src', 'source removed.')
+      }
+      return newEl
+    })
   }
-  try {
-    response.data[0].data.contents.bin = 'bin removed.'
-  } catch (e) {
+  if (parsedResponse.data) {
+    return JSON.stringify(parsedResponse.data, null, 2)
   }
-  try {
-    response.data[0].data.contents['bin-runtime'] = 'bin-runtime removed.'
-  } catch (e) {
+  return JSON.stringify(parsedResponse, null, 2)
+}
+
+function replaceKeyIfExists(obj:object, key:string, rep:string) {
+  if (obj !== null && obj !== undefined && obj.hasOwnProperty(key)) {
+    obj[key] = rep
   }
-  try {
-    response.data[0].data.contents.xabi = 'xabi removed.'
-  } catch (e) {
-  }
-  try {
-    response.data[0].data.src = 'source removed.'
-  } catch (e) {
-  }
-  if (response.data) {
-    return JSON.stringify(response.data, null, 2)
-  }
-  return JSON.stringify(response, null, 2)
+  return obj
 }
 
 function errorFormatter(err) {

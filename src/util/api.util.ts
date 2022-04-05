@@ -19,6 +19,7 @@ const Endpoint = {
   VERSION: `${strato12Url}/version`,
   USER: `${blocUrl}/users/:username`,
   FILL: `${blocUrl}/users/user/:address/fill`,
+  CONTRACTS: `${blocUrl}/contracts`,
   STATE: `${blocUrl}/contracts/:name/:address/state`,
   TXRESULTS: `${blocUrl}/transactions/results`,
   SEND: `${strato23Url}/transaction`,
@@ -28,11 +29,11 @@ const Endpoint = {
   CHAIN: `${blocUrl}/chain`,
   CHAINS: `${blocUrl}/chains`,
   COMPILE: `${blocUrl}/contracts/compile`,
-  EXT_UPLOAD: `${externalStorageUrl}/upload`,
-  EXT_ATTEST: `${externalStorageUrl}/attest`,
-  EXT_VERIFY: `${externalStorageUrl}/verify`,
-  EXT_DOWNLOAD: `${externalStorageUrl}/download`,
-  EXT_LIST: `${externalStorageUrl}/list`,
+  EXT_UPLOAD: `${externalStorageUrl}/upload`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
+  EXT_ATTEST: `${externalStorageUrl}/attest`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
+  EXT_VERIFY: `${externalStorageUrl}/verify`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
+  EXT_DOWNLOAD: `${externalStorageUrl}/download`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
+  EXT_LIST: `${externalStorageUrl}/list`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
   DEBUG_STATUS: `${debugUrl}/status`,
   DEBUG_PAUSE: `${debugUrl}/pause`,
   DEBUG_RESUME: `${debugUrl}/resume`,
@@ -44,7 +45,10 @@ const Endpoint = {
   DEBUG_STACK_TRACE: `${debugUrl}/stack-trace`,
   DEBUG_VARIABLES: `${debugUrl}/variables`,
   DEBUG_WATCHES: `${debugUrl}/watches`,
-  DEBUG_EVAL: `${debugUrl}/eval`
+  DEBUG_EVAL: `${debugUrl}/eval`,
+  DEBUG_PARSE: `${debugUrl}/parse`,
+  DEBUG_ANALYZE: `${debugUrl}/analyze`,
+  DEBUG_FUZZ: `${debugUrl}/fuzz`,
 };
 
 function constructEndpoint(endpointTemplate, options:Options, params = {}) {
@@ -205,6 +209,10 @@ async function post(url, endpoint, _body, options:Options) {
   return ax.post(url, endpoint, body, options);
 }
 
+async function postRaw(url, endpoint, body, options:Options) {
+  return ax.post(url, endpoint, body, options);
+}
+
 async function get(host, endpoint, options:Options) {
   return ax.get(host, endpoint, options);
 }
@@ -232,6 +240,7 @@ export {
   getNodeUrl,
   put,
   post,
+  postRaw,
   postue,
   httpDelete,
   setAuthHeaders

@@ -1,5 +1,14 @@
 ## RELEASE NOTES
 
+### Version 8.1.0
+
+- Added "codePtr" to the typescript definition of `Chain` so that typescript users may now post new chains with code pointers and not receive a Typescript error.
+- Fixed API debug log output to show correct request and response details.
+- Upgraded the Solidity Parser library dependency to remove confusing warnings at runtime that were not in the user's control.  
+- Added the debugPostParse function to support compilation and static analysis tools
+- Added the debugPostAnalyze function to support static analysis tools
+- Removed yarn.lock file
+
 ### Version: 8.0.5
 
 - Hotfix for runtime failure due to chai dependency in prod installation

@@ -41,11 +41,15 @@ interface Balance {
 
 interface Chain {
   label:string,
-  src:string,
+  src?:string,
   args:any,
   members:Member[],
   balances:Balance[],
-  contractName?:string
+  contractName?:string,
+  codePtr?: {
+    name: string,
+    account: string
+  }
 }
 
 interface StratoUser {

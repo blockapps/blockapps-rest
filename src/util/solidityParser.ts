@@ -1,4 +1,4 @@
-import * as parser from 'solidity-parser-antlr'
+import * as parser from '@solidity-parser/parser'
 
 /**
  * This is the solidityParser interface
