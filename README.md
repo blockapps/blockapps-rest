@@ -15,6 +15,8 @@ The Blockapps-Rest library is Node.js server-side SDK for BlockApps STRATO. It p
 
 Blockapps-rest expects that the user will use an OAuth server to authenticate. Blockapps-rest cannot be used without a third party OAuth instance.
 
+The full JSDoc can be found on the [Blockapps Developer Documentation.](https://docs.blockapps.net/ba-rest/)
+
 ## Getting Started
 
 You can install the blockapps-rest node library using `yarn` or `npm`. Example:
@@ -36,7 +38,7 @@ npm install blockapps-rest
 import { rest, fsUtil, util, assert } from 'blockapps-rest';
 
 // read config. See section on configuration
-const config = fsUtil.fsUtil.getYaml(`config.yaml`);
+const config = fsUtil.getYaml(`config.yaml`);
 
 // create an options object (optional)
 const options = { config, logger: console };

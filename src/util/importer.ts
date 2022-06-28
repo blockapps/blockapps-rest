@@ -40,12 +40,13 @@ function getImportName(line) {
  * readFileLinesToObject() reads a root file and parse all imports recursively into a JSON object
  *
  * @method readFileLinesToObject
- * @param {Object} initial import map
- * @param {String} input name of file to be read
+ * @param {Object} initialFileMap
+ * @param {String} fullname
+ * @param {String} relativePath custom file path
  * @return {Object}
  */
 
-function readFileLinesToObject(initialFileMap, fullname, relativePath) {
+function readFileLinesToObject(initialFileMap, fullname, relativePath = undefined) {
   const array = fs.readFileSync(fullname).toString().split('\n');
   isImported(fullname);
   const { fileMap, buffer } = array.reduce((obj, line) => {
@@ -67,12 +68,13 @@ function readFileLinesToObject(initialFileMap, fullname, relativePath) {
  * readFileLinesToArray() reads a root file and parse all imports recursively into a JSON array
  *
  * @method readFileLinesToArray
- * @param {Array} initial import array
- * @param {String} input name of file to be read
+ * @param {Array} initialFileArray
+ * @param {String} fullname
+ * @param {String} relativePath custom file path
  * @return {Array}
  */
 
-function readFileLinesToArray(initialFileArray, fullname, relativePath) {
+function readFileLinesToArray(initialFileArray, fullname, relativePath = undefined) {
   const array = fs.readFileSync(fullname).toString().split('\n');
   isImported(fullname);
   const { fileArray, buffer } = array.reduce((obj, line) => {
@@ -94,11 +96,12 @@ function readFileLinesToArray(initialFileArray, fullname, relativePath) {
  * readFileLinesToString() reads a root file and parse all imports recursively into one string
  *
  * @method readFileLinesToString
- * @param {String} input name of file to be read
+ * @param {String} fullname
+ * @param {String} relativePath custom file path
  * @return {String}
  */
 
-function readFileLinesToString(fullname, relativePath) {
+function readFileLinesToString(fullname, relativePath = undefined) {
   let buffer = '';
   isImported(fullname);
   //buffer += '// --- start: ' + fullname + '\n';
@@ -242,16 +245,21 @@ function splitPath(fullname) {
   return path;
 }
 
-function combine(filename, toObject, relativePath):Promise<any> {
+/**
+ * Combine file lines into object or array
+ * @param {String} filename a name of file in the path (cwd or custom when provided)
+ * @param {boolean} toObject to combine into object rather than array
+ * @param {String} relativePath custom file path
+ */
+
+function combine(filename:string, toObject:boolean = false, relativePath:string|undefined = undefined):Promise<any> {
   nameStore = [];
   return new Promise(function(resolve, reject) {
-    let string = ''
-    if (toObject) {
-      string = readFileLinesToObject({}, filename, relativePath);
-    } else {
-      string = readFileLinesToArray([], filename, relativePath);
-    }
-    resolve(string);
+    let res: any = ''
+    res = toObject 
+      ? readFileLinesToObject({}, filename, relativePath) 
+      : readFileLinesToArray([], filename, relativePath)
+    resolve(res);
   });
 }
 

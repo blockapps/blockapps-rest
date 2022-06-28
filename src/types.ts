@@ -34,9 +34,13 @@ interface Node {
 }
 
 interface Member {
+  address: string,
+  enode: string
 }
 
 interface Balance {
+  address: string,
+  balance: number,
 }
 
 interface Chain {

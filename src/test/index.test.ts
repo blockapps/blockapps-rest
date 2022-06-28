@@ -362,7 +362,7 @@ describe("history", function() {
   it("test history", async () => {
     const filename = `${fixtures}/TestHistory.sol`;
     const fst = Math.floor(Math.random() * 100)
-    const scd = Math.floor(Math.random() * 100)
+    const scd = fst + 1
     const contractArgs = {
       name: "TestHistory",
       source: fsUtil.get(filename),
@@ -396,19 +396,34 @@ describe("history", function() {
     const result = await rest.call(admin, callArgs, options);
     console.log(result);
 
+      
     const contractHistory = await rest.searchUntil(
+      admin,
+      { name: `history@TestHistory` },
+      (r) => r.length > 1,
+      {
+        ...options,
+        query: {
+          address: `eq.${contract.address}`
+        }
+      }
+    );
+    assert.isArray(contractHistory);
+    assert.equal(contractHistory.length, 2);
+
+    const filteredContractHistory = await rest.searchUntil(
       admin,
       { name: `history@TestHistory` },
       (r) => r.length > 0,
       {
         ...options,
         query: {
-          x: `eq.${fst}`,
+          x: `eq.${scd}`,
           address: `eq.${contract.address}`
         }
       }
     );
-    assert.isArray(contractHistory);
-    assert.equal(contractHistory.length, 1);
+    assert.isArray(filteredContractHistory);
+    assert.equal(filteredContractHistory.length, 1);
   });
 });

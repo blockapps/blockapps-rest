@@ -99,9 +99,9 @@ import {
  * and `address`.
  * @property {String} method Name of the method to call
  * @property {Object} args Arguments for the method call
- * @property {Number} value: Optional. Number of tokens to send to the smart contract
- * @property {String} chainid: Optional chain id of the private chain if the contract is being called on a private chain
- * @property {module:rest~TxParams} txParams: Optional. Defines gas limit and gas price for transaction execution
+ * @property {Number} [value] Number of tokens to send to the smart contract
+ * @property {String} [chainid] Chain ID of the private chain if the contract is being called on a private chain
+ * @property {module:rest~TxParams} [txParams] Defines gas limit and gas price for transaction execution
  */
 
 
@@ -116,17 +116,17 @@ import {
  * @typedef {Object} Contract This object defines a STRATO smart contract
  * @property {String} name Name of the smart contract
  * @property {String} source Source code for the smart contract
- * @property {Object} args Optional arguments for the smart contract constructor
- * @property {String} codeHash: Contract code hash. Not required. Populated by the compileContract call.
- * @property {String} address: Contract address. Not required. Populated by uploading a contract to STRATO.
+ * @property {Object} [args] Arguments for the smart contract constructor
+ * @property {String} [codeHash] Contract code hash. Populated by the compileContract call.
+ * @property {String} [address] Contract address. Populated by uploading a contract to STRATO.
  */
 
  /**
   * @typedef {Object} SendArgs This object defines the shape of a request for transfer tokens
   * @property {String} toAddress Address of the receiver
-  * @property {Number} value amount of tokens to transfer in wei
-  * @property {module:rest~TxParams} txParams: Optional. Defines gas limit and gas price for transaction execution
-  * @property {String} chainid: Optional chain id of the private chain if the transfer is being executed on a private chain
+  * @property {Number} value Amount of tokens to transfer in wei
+  * @property {module:rest~TxParams} [txParams] Defines gas limit and gas price for transaction execution
+  * @property {String} [chainid] Chain ID of the private chain if the transfer is being executed on a private chain
   */
 
  /**
@@ -149,10 +149,10 @@ import {
  * @property {String} contractsDeleted Comma separated list of contract addresses that were deleted as a result of
  * executing this transaction
  * @property {String} gasUsed Amount of gas used by this transaction in hexadecimal
- * @property {String} stateDiff
- * @property {String} time Amount of time the VM took to execute this tramsaction
+ * @property {String} stateDiff The hash of the new state-diff from this transaction
+ * @property {String} time Amount of time the VM took to execute this transaction
  * @property {String} kind Type of VM used to execute this transaction. `SolidVM` or `EVM`
- * @property {String} chainid Chain id (present if transaction was executed on a private chain)
+ * @property {String} chainid Chain ID (present if transaction was executed on a private chain)
  * @property {String} response Raw output of executing transaction
  * @property {String} blockHash Block hash of the block in which this transaction was finalized
  * @property {String} transactionHash Transaction hash
@@ -176,30 +176,48 @@ import {
  * @property {String} name Name of the smart contract
  * @property {String} chainId Chain identifier if the smart contract is being uploaded to a private chain.
  * This property is `null` for main chain smart contracts
- * @property {String} address: Contract address. Not required. Populated by uploading a contract to STRATO.
- * @property {module:rest~CodeHash} codeHash: Describes the codehash and the VM used to generate the code hash
- * @property {String} bin: The compiled Solidity byte code
- * @property {Object} xabi: An object defining the contract metadata
+ * @property {String} [address] Contract address. Populated by uploading a contract to STRATO.
+ * @property {module:rest~CodeHash} codeHash Describes the codehash and the VM used to generate the code hash
+ * @property {String} bin The compiled Solidity byte code
+ * @property {Object} xabi An object defining the contract metadata
  */
 
  /**
+ * 
+ * @typedef {Object} Member The object containing the member info for a chain
+ * @property {String} address The address of a user
+ * @property {String} enode The 'enode' address of the user - This is their node's IP address and public key 
+ * concatenated an "@" sign  
+ */
+
+ /**
+ * 
+ * @typedef {Object} Balance The object containing the balance info for each member of a chain
+ * @property {String} address The address of a member
+ * @property {Number} balance The balance in wei of the member  
+ */
+
+/**
+  * 
+  * @typedef {Object} CodePtr The object containing information about a Code Pointer for a private chain's Governance contract
+  * @property {String} name The name of the contract being referenced
+  * @property {String} account The account address of the contract being referenced
+*/
+
+ /**
  * @typedef {Object} Chain The object containing arguments of a chain
- * @property {String} label The name of the chain
- * @property {String} src Source contract
- * @property {Array} memberList Array containing the members of the chain
- * @property {Array} balanceList Array containng the balances of each member of the chain
+ * @property {String} label The name of the chain 
+ * @property {String} [src] Source contract - Not included if using a Code Pointer
+ * @property {String} [contractName] The name of the contract - Not included if using a Code Pointer
+ * @property {Object} args The args for the source contract constructor
+ * @property {Array} members Array containing the members of the chain
+ * @property {Array} balances Array containng the balances of each member of the chain
+ * @property {module:rest~CodePtr} [codePtr] An object containing the contract name and account of the code poitner to be used for this chain
  */
 
  /**
  * @typedef {Object} ChainHash The hash of a chain
  * @property {String} hash The hash of a chain
- */
-
- /**
- * @typedef {Object} ChainInfo Info about a chain such as members/balances/etc.
- * @property {Array<Object>} balances Balances existing within the chain
- * @property {Array<Object>} members Members of the chain
- * @property {String} label Name of the chain
  */
 
 // =====================================================================

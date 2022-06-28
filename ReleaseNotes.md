@@ -1,5 +1,12 @@
 ## RELEASE NOTES
 
+### Version 8.1.1
+
+- Export type definitions so they are more easily available to TypeScript developers.
+- Added `Member` and `Balance` types.
+- Improved JSDoc types and documentation
+- Changed relativePath to be optional in the importer
+
 ### Version 8.1.0
 
 - Added "codePtr" to the typescript definition of `Chain` so that typescript users may now post new chains with code pointers and not receive a Typescript error.
