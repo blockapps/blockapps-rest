@@ -18,11 +18,11 @@ describe('OAuth Util', function() {
   let oauthUtilInstance
   const options:Options = { config, logger }
 
-  before(() => {
+  before(async () => {
     assert.isArray(config.nodes, 'config.nodes should be an array')
     assert.isAbove(config.nodes.length, 0, 'config.nodes should have atleast one node')
     assert.isDefined(config.nodes[0].oauth, 'Node oauth config should be defined')
-    oauthUtilInstance = oauthUtil.init(config.nodes[0].oauth)
+    oauthUtilInstance = await oauthUtil.init(config.nodes[0].oauth)
     assert.isDefined(oauthUtilInstance, `oauthUtilInstance should be defined`)
   })
 

@@ -141,7 +141,7 @@ const run = async function() {
     process.exit(4);
   }
 
-  const oauth = oauthUtil.init(config.nodes[0].oauth);
+  const oauth = await oauthUtil.init(config.nodes[0].oauth);
 
   const signinUri = oauth.getSigninURL();
   async function requestListener(req, res) {

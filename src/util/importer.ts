@@ -263,7 +263,23 @@ function combine(filename:string, toObject:boolean = false, relativePath:string|
   });
 }
 
+/**
+ * Combine file lines into one giant string
+ * @param {String} filename a name of file in the path (cwd or custom when provided)
+ * @param {String} relativePath custom file path
+ */
+
+function combineToString(filename:string, relativePath:string|undefined = undefined):Promise<any> {
+  nameStore = [];
+  return new Promise(function(resolve, reject) {
+    let res: any = ''
+    res = readFileLinesToString(filename, relativePath) 
+    resolve(res);
+  });
+}
+
 export default {
   combine,
+  combineToString,
   getShortName,
 }

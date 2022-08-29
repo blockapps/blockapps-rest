@@ -20,6 +20,7 @@ const Endpoint = {
   USER: `${blocUrl}/users/:username`,
   FILL: `${blocUrl}/users/user/:address/fill`,
   CONTRACTS: `${blocUrl}/contracts`,
+  CONTRACTS_CONTRACT: `${blocUrl}/contracts/:name/:address`,
   STATE: `${blocUrl}/contracts/:name/:address/state`,
   TXRESULTS: `${blocUrl}/transactions/results`,
   SEND: `${strato23Url}/transaction`,
@@ -29,6 +30,7 @@ const Endpoint = {
   CHAIN: `${blocUrl}/chain`,
   CHAINS: `${blocUrl}/chains`,
   COMPILE: `${blocUrl}/contracts/compile`,
+  XABI: `${blocUrl}/contracts/xabi`,
   EXT_UPLOAD: `${externalStorageUrl}/upload`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
   EXT_ATTEST: `${externalStorageUrl}/attest`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
   EXT_VERIFY: `${externalStorageUrl}/verify`, // Deprecated in STRATO 7.5 (#deprecate-7.5)

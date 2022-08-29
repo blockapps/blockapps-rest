@@ -529,6 +529,18 @@ async function compileContracts(user, contracts, options:Options) {
   }
 }
 
+async function postContractsXabi(user, src: string, options:Options) {
+  try {
+    return await api.postContractsXabi(user, src, options);
+  } catch (err) {
+    throw new RestError(
+      RestStatus.BAD_REQUEST,
+      err.response.statusText || err.response || err,
+      err.response.data || err.response || err
+    );
+  }
+}
+
 // =====================================================================
 //   contract
 // =====================================================================
@@ -662,7 +674,7 @@ async function createContractListResolve(user, pendingTxResultList, options:Opti
  * @example
  *
  * // Initialize ba-rest oaut-utility
- * const oauth = oauthUtil.init(globalConfig.nodes[0].oauth);
+ * const oauth = await oauthUtil.init(globalConfig.nodes[0].oauth);
  *
  * // Get token using client-credential flow
  * const tokenResponse = await oauth.getAccessTokenByClientSecret();
@@ -690,7 +702,7 @@ async function getKey(user, options:Options) {
  * @example
  *
  * // Initialize ba-rest oaut-utility
- * const oauth = oauthUtil.init(globalConfig.nodes[0].oauth);
+ * const oauth = await oauthUtil.init(globalConfig.nodes[0].oauth);
  *
  * // Get token using client-credential flow
  * const tokenResponse = await oauth.getAccessTokenByClientSecret();
@@ -717,7 +729,7 @@ async function createKey(user, options:Options) {
  * @example
  *
  * // Initialize ba-rest oaut-utility
- * const oauth = oauthUtil.init(globalConfig.nodes[0].oauth);
+ * const oauth = await oauthUtil.init(globalConfig.nodes[0].oauth);
  *
  * // Get token using client-credential flow
  * const tokenResponse = await oauth.getAccessTokenByClientSecret();
@@ -775,6 +787,21 @@ async function getBlocResults(user:OAuthUser, hashes:string[], options:Options) 
  */
 async function getContracts(user:OAuthUser, chainId, options:Options) {
   return api.getContracts(user, chainId, options);
+}
+
+/**
+ * @static
+ * This call gets the xabi for a particular deployed contract
+ *
+ * @param {module:rest~User} user This must contain the token for the user
+ * @param name The name of the contract to query.
+ * @param addresss The address of the contract to query.
+ * @param chainId The chainId of the contract to query.
+ * @param {module:rest~Options} options This identifies the options and configurations for this call
+ * @returns {Object} Returns an object with the contract source, code pointer info, and xabi
+ */
+async function getContractsContract(user:OAuthUser, name, address, chainId, options:Options) {
+  return api.getContractsContract(user, name, address, chainId, options);
 }
 
 /**
@@ -1710,10 +1737,12 @@ export default {
   getVersion,
   createUser,
   compileContracts,
+  postContractsXabi,
   createContract,
   createContractList,
   getBlocResults,
   getContracts,
+  getContractsContract,
   getState,
   getArray,
   call,

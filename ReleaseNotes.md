@@ -1,5 +1,13 @@
 ## RELEASE NOTES
 
+### Version 8.2.0
+
+- Removed sync-request dependency in favor of axios
+- Made oauthUtil.init an async function
+- Expose getContractsContract endpoint
+- Expose postContractsXabi endpoint
+- Peg typescript version to avoid unexpected issues cause by the module minor updates
+
 ### Version 8.1.1
 
 - Export type definitions so they are more easily available to TypeScript developers.
