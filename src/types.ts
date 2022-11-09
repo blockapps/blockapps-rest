@@ -34,8 +34,10 @@ interface Node {
 }
 
 interface Member {
-  address: string,
-  enode: string
+  access?:boolean,
+  orgName?:string,
+  orgUnit?:string,
+  commonName?:string
 }
 
 interface Balance {

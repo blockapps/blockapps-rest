@@ -1,5 +1,9 @@
 ## RELEASE NOTES
 
+### Version 8.3.0
+
+- Updated chain member types
+
 ### Version 8.2.0
 
 - Removed sync-request dependency in favor of axios
