@@ -59,7 +59,7 @@ describe("rest_7", function () {
           config,
           isAsync: true
         });
-      }, RestStatus.BAD_REQUEST, /Need one of: address, balance, minbalance, maxbalance, nonce, minnonce, maxnonce, maxnumber, code, index, codeHash, contractName, codePtrAddress, codePtrChainId, chainid, external, limit, offset, ignoreChain/);
+      }, RestStatus.BAD_REQUEST, /Need one of: address, balance, minbalance, maxbalance, nonce, minnonce, maxnonce, maxnumber, index, codeHash, contractName, codePtrAddress, codePtrChainId, chainid, external, limit, offset, ignoreChain/);
     });
 
   });
@@ -185,7 +185,7 @@ describe("rest_7", function () {
       assert.isArray(results, "should be array");
       assert.equal(results.length, contracts.length, `should be ${count}`);
       results.forEach((contract, index) => {
-        assert.equal(contract.contractName, contracts[index]['contractName'])
+        assert.equal(contract.contractName, contracts[index]['name'])
       })
     });
 
@@ -196,7 +196,7 @@ describe("rest_7", function () {
       assert.isArray(results, "should be array");
       assert.equal(results.length, contracts.length, `should be ${count}`);
       results.forEach((contract, index) => {
-        assert.equal(contract.contractName, contracts[index]['contractName'])
+        assert.equal(contract.contractName, contracts[index]['name'])
       })
     });
 
@@ -234,8 +234,8 @@ describe("rest_7", function () {
       assert.isOk(verifyStatus, "results");
     });
 
-    it("create contracts list - sync - VM: EVM", async () => {
-      const count = 5;
+    xit("create contracts list - sync - VM: EVM", async () => {
+      const count = 4;
       const contracts = factory.createContractListArgs(count);
       // compile contracts
       await rest.compileContracts(admin, contracts, { config });

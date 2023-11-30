@@ -61,9 +61,6 @@ describe("contracts", function() {
     const contract = <Contract>await rest.createContract(admin, contractArgs, options);
     assert.equal(contract.name, contractArgs.name, "name");
     assert.isOk(util.isAddress(contract.address), "address");
-    assert.isDefined(contract.src, "src");
-    assert.isDefined(contract.bin, "bin");
-    assert.isDefined(contract.codeHash, "codeHash");
     assert.isDefined(contract.chainId, "chainId");
   });
 

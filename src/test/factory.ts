@@ -42,10 +42,10 @@ function createCompileContractsArgs(count) {
   const uid = util.uid();
   const contracts = Array.from(Array(count).keys()).map(index => {
     const contractUid = parseInt(uid) * 1000 + index;
-    const contractName = `TestContract_${contractUid}`;
-    const source = `contract ${contractName} { }`;
+    const name = `TestContract_${contractUid}`;
+    const source = `contract ${name} { }`;
 
-    return { contractName, source };
+    return { name, source };
   })
 
   return contracts;
@@ -135,7 +135,7 @@ const createChainArgs = (uid, members) => {
 
   const chain:Chain = {
     label: `airline-${uid}`,
-    src: `contract ${contractName} { }`,
+    src: `contract ${contractName} { constructor(){} }`,
     args: {},
     members: memberList,
     balances: balanceList,

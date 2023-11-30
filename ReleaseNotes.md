@@ -1,5 +1,11 @@
 ## RELEASE NOTES
 
+### Version 8.3.1
+
+- Fixed the build issue caused by a third-party library
+- Fixed the importer submodule
+- Made minor fixes to tests
+
 ### Version 8.3.0
 
 - Updated chain member types
