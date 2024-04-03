@@ -15,7 +15,7 @@ describe("imports", function() {
 
   before(async () => {
     const userArgs = { token: process.env.USER_TOKEN };
-    admin = await factory.createAdmin(userArgs, options);
+    admin = await factory.createAdmin(userArgs, options);;
   });
 
   it("combines to array", async () => {
@@ -50,7 +50,7 @@ describe("imports", function() {
     const args = util.usc({ size: 10 });
     const contractArgs = { name, source, args };
     const contract = <Contract> await rest.createContract(admin, contractArgs, options);
-    const state = await rest.getState(admin, contract, options);
+    const state = await rest.waitForAddressState(admin, contract, options);
     assert.isDefined(state.AA, "A");
     assert.isDefined(state.BB, "B");
     assert.isDefined(state.CC, "C");
@@ -64,7 +64,7 @@ describe("imports", function() {
     const args = util.usc({ size: 10 });
     const contractArgs = { name, source, args };
     const contract = <Contract> await rest.createContract(admin, contractArgs, options);
-    const state = await rest.getState(admin, contract, options);
+    const state = await rest.waitForAddressState(admin, contract, options);
     assert.isDefined(state.AA, "A");
     assert.isDefined(state.BB, "B");
     assert.isDefined(state.CC, "C");

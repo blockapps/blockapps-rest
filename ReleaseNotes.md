@@ -1,5 +1,10 @@
 ## RELEASE NOTES
 
+### Version 8.4.0
+- remove following obsolete endpoints and references to them: `/users/user/:address/fill` and `/version`
+
+- remove refereneces to the following non-existenting endpoints: `/users/:username` and all ext storage endpoints (begin with `apex-api/bloc/file/`)
+
 ### Version 8.3.1
 
 - Fixed the build issue caused by a third-party library

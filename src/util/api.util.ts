@@ -9,18 +9,15 @@ const blocUrl = "/bloc/v2.2";
 const strato12Url = "/strato-api/eth/v1.2";
 const strato23Url = "/strato/v2.3";
 const cirrusUrl = "/cirrus/search";
-const externalStorageUrl = "/apex-api/bloc/file";
 const debugUrl = "/vm-debug";
 
 const Endpoint = {
   HEALTH: `/health`,
   STATUS: `${apexUrl}/status`,
   ACCOUNT: `${strato12Url}/account`,
-  VERSION: `${strato12Url}/version`,
-  USER: `${blocUrl}/users/:username`,
-  FILL: `${blocUrl}/users/user/:address/fill`,
   CONTRACTS: `${blocUrl}/contracts`,
   CONTRACTS_CONTRACT: `${blocUrl}/contracts/:name/:address`,
+  CONTRACTS_CONTRACT_DETAILS: `${blocUrl}/contracts/contract/:address/details`,
   STATE: `${blocUrl}/contracts/:name/:address/state`,
   TXRESULTS: `${blocUrl}/transactions/results`,
   SEND: `${strato23Url}/transaction`,
@@ -31,11 +28,6 @@ const Endpoint = {
   CHAINS: `${blocUrl}/chains`,
   COMPILE: `${blocUrl}/contracts/compile`,
   XABI: `${blocUrl}/contracts/xabi`,
-  EXT_UPLOAD: `${externalStorageUrl}/upload`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
-  EXT_ATTEST: `${externalStorageUrl}/attest`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
-  EXT_VERIFY: `${externalStorageUrl}/verify`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
-  EXT_DOWNLOAD: `${externalStorageUrl}/download`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
-  EXT_LIST: `${externalStorageUrl}/list`, // Deprecated in STRATO 7.5 (#deprecate-7.5)
   DEBUG_STATUS: `${debugUrl}/status`,
   DEBUG_PAUSE: `${debugUrl}/pause`,
   DEBUG_RESUME: `${debugUrl}/resume`,

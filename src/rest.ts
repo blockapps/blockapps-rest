@@ -1,14 +1,11 @@
-import { BigNumber } from "bignumber.js";
 import * as RestStatus from "http-status-codes";
 import api from "./api";
 import { TxResultStatus } from "./constants";
 import util from "./util/util";
 import { constructMetadata, setAuthHeaders } from "./util/api.util";
 import { RestError, response } from "./util/rest.util";
-import jwt from "jsonwebtoken";
 import {
   Options,
-  StratoUser,
   OAuthUser,
   BlockChainUser,
   Contract,
@@ -452,17 +449,6 @@ async function getStatus(user:OAuthUser, options:Options) {
   }
 }
 
-async function getVersion(user:OAuthUser, options:Options) {
-  try {
-    return await api.getVersion(user, { ...options, isAsync: true });
-  } catch (err) {
-    throw new RestError(
-      RestStatus.BAD_REQUEST,
-      err.response.statusText || err.response || err,
-      err.response.data || err.response || err
-    );
-  }
-}
 // =====================================================================
 //   user
 // =====================================================================
@@ -485,11 +471,6 @@ async function getVersion(user:OAuthUser, options:Options) {
 async function createUser(ouser:OAuthUser, options:Options):Promise<BlockChainUser> {
   const address = await createOrGetKey(ouser, options);
   return Object.assign({}, ouser, { address });
-}
-
-async function fill(user, options:Options) {
-  const txResult = await api.fill(user, options);
-  return assertTxResult(txResult);
 }
 
 // =====================================================================
@@ -749,9 +730,6 @@ async function createOrGetKey(user, options:Options) {
     const getKeyResponse = await api.getKey(user, options);
 
     const balance = await api.getBalance(user, getKeyResponse, options);
-    if (balance.isEqualTo(0)) {
-      await fill({ ...user, ...getKeyResponse }, { isAsync: false, ...options });
-    }
 
     if (getKeyResponse.address) return getKeyResponse.address;
   }
@@ -759,7 +737,6 @@ async function createOrGetKey(user, options:Options) {
   
     if (e.response && e.response.status==400) { //user doesn't already exist, create user
       const createKeyResponse = await api.createKey(user, options);
-      await fill({ ...user, ...createKeyResponse }, { isAsync: false, ...options });
       return createKeyResponse.address;
     }
 
@@ -802,6 +779,19 @@ async function getContracts(user:OAuthUser, chainId, options:Options) {
  */
 async function getContractsContract(user:OAuthUser, name, address, chainId, options:Options) {
   return api.getContractsContract(user, name, address, chainId, options);
+}
+
+/**
+ * @static
+ * This call gets the xabi for a particular deployed contract
+ *
+ * @param {module:rest~User} user This must contain the token for the user
+ * @param addresss The address of the contract to query.
+ * @param {module:rest~Options} options This identifies the options and configurations for this call
+ * @returns {Object} Returns an object with the contract source, code pointer info, and xabi
+ */
+async function getContractsDetails(user:OAuthUser, address, options:Options) {
+  return api.getContractsDetails(user, address, options);
 }
 
 /**
@@ -1499,42 +1489,6 @@ async function createChains(user, chains, options:Options) {
 }
 
 // =====================================================================
-//   External Storage
-//   Deprecated in STRATO 7.5 (#deprecate-7.5)
-// =====================================================================
-
-async function uploadExtStorage(user, args, options:Options) {
-  const result = await api.uploadExtStorage(
-    args,
-    setAuthHeaders(user, options)
-  );
-  return result;
-}
-
-async function attestExtStorage(user, args, options:Options) {
-  const result = await api.attestExtStorage(
-    args,
-    setAuthHeaders(user, options)
-  );
-  return result;
-}
-
-async function verifyExtStorage(user, contract, options:Options) {
-  const result = await api.verifyExtStorage(user, contract, options);
-  return result;
-}
-
-async function downloadExtStorage(user, contract, options:Options) {
-  const result = await api.downloadExtStorage(user, contract, options);
-  return result;
-}
-
-async function listExtStorage(user, args, options:Options) {
-  const result = await api.listExtStorage(user, args, options);
-  return result;
-}
-
-// =====================================================================
 //   OAuth
 // =====================================================================
 
@@ -1729,13 +1683,32 @@ async function waitForAddress(user, contract, _options:Options) {
   return results[0];
 }
 
+async function waitForAddressState(admin, contract, options:Options) {
+  const state = await util.until(
+    (res) => {
+      if (res) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async (opts) => {
+      try {
+        const res = await getState(admin, contract, opts);
+        return res;
+      } catch(e) {
+        return undefined;
+      }
+    },
+    options
+  );
+  return state;
+}
+
 export default {
-  fill,
   getAccounts,
   getHealth,
   getStatus,
-  getVersion,
-  createUser,
   compileContracts,
   postContractsXabi,
   createContract,
@@ -1743,6 +1716,7 @@ export default {
   getBlocResults,
   getContracts,
   getContractsContract,
+  getContractsDetails,
   getState,
   getArray,
   call,
@@ -1768,13 +1742,9 @@ export default {
   getChain,
   getChains,
   //
-  uploadExtStorage,
-  attestExtStorage,
-  verifyExtStorage,
-  downloadExtStorage,
-  listExtStorage,
-  //
   pingOauth,
+  //
+  createUser,
   //
   debugStatus,
   debugPause,
@@ -1801,5 +1771,6 @@ export default {
   RestError,
   response,
   //
-  waitForAddress
+  waitForAddress,
+  waitForAddressState
 };

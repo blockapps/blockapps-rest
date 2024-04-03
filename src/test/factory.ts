@@ -34,9 +34,9 @@ function getTestFixtures() {
 /*
   users
  */
-async function createAdmin(_args, options:Options) {
-  return rest.createUser(_args, options);
-}
+  async function createAdmin(_args, options:Options) {
+    return rest.createUser(_args, options);
+  }
 
 function createCompileContractsArgs(count) {
   const uid = util.uid();
@@ -146,7 +146,6 @@ const createChainArgs = (uid, members) => {
 };
 
 export default {
-  createAdmin,
   createContractArgs,
   createContractListArgs,
   createContractSyntaxErrorArgs,
@@ -157,6 +156,7 @@ export default {
   createCallArgs,
   createCallListArgs,
   createChainArgs,
+  createAdmin,
   createCompileContractsArgs,
   getTestConfig,
   getTestFixtures

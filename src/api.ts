@@ -15,7 +15,6 @@ import {
 import { TxPayloadType } from "./constants";
 import {
   Options,
-  StratoUser,
   OAuthUser,
   BlockChainUser,
   Contract,
@@ -24,28 +23,6 @@ import {
   SendTx
 } from "./types";
 
-
-async function createUser(user:StratoUser, options:Options) {
-  const url = getNodeUrl(options);
-  const data = {
-    password: user.password
-  };
-  const urlParams = {
-    username: user.username
-  };
-  const endpoint = constructEndpoint(Endpoint.USER, options, urlParams);
-  return postue(url, endpoint, data, options);
-}
-
-async function fill(user, options:Options) {
-  const body = {};
-  const url = getNodeUrl(options);
-  const urlParams = {
-    address: user.address
-  };
-  const endpoint = constructEndpoint(Endpoint.FILL, options, urlParams);
-  return postue(url, endpoint, body, setAuthHeaders(user, options));
-}
 
 function getCreateArgs(contract:ContractDefinition, options:Options) {
   const payload = {
@@ -124,12 +101,6 @@ async function getStatus(user:OAuthUser, options:Options) {
   return get(url, endpoint, setAuthHeaders(user, options));
 }
 
-async function getVersion(user:OAuthUser, options:Options) {
-  const url = getNodeUrl(options);
-  const endpoint = constructEndpoint(Endpoint.VERSION, options);
-  return get(url, endpoint, setAuthHeaders(user, options));
-}
-
 async function getBalance(user:OAuthUser, bcuser:BlockChainUser | null, options:Options) {
   let address;
   if (!bcuser) {
@@ -167,6 +138,15 @@ async function getContractsContract(user:OAuthUser, name, address, chainId, opti
   const urlParams = { name, address };
   const xabiOptions = { ...options, chainIds: [chainId] };
   const endpoint = constructEndpoint(Endpoint.CONTRACTS_CONTRACT, xabiOptions, urlParams);
+  return get(url, endpoint, setAuthHeaders(user, options));
+}
+
+async function getContractsDetails(user:OAuthUser, contract, options:Options) {
+  const url = getNodeUrl(options);
+  const urlParams = {
+    address: contract.address
+  };
+  const endpoint = constructEndpoint(Endpoint.CONTRACTS_CONTRACT_DETAILS , options, urlParams);
   return get(url, endpoint, setAuthHeaders(user, options));
 }
 
@@ -322,52 +302,6 @@ async function createChains(body, options:Options) {
   return await post(url, endpoint, body, options);
 }
 
-//#deprecate-7.5
-async function uploadExtStorage(body, options:Options) {
-  const url = getNodeUrl(options);
-  const endpoint = constructEndpoint(Endpoint.EXT_UPLOAD, options);
-  return await post(url, endpoint, body, options);
-}
-
-//#deprecate-7.5
-async function attestExtStorage(body, options:Options) {
-  const url = getNodeUrl(options);
-  const endpoint = constructEndpoint(Endpoint.EXT_ATTEST, options);
-  return await post(url, endpoint, body, options);
-}
-
-//#deprecate-7.5
-async function verifyExtStorage(user:OAuthUser, contract, options:Options) {
-  const url = getNodeUrl(options);
-  const params = {
-    contractAddress: contract.address
-  };
-  const endpoint = constructEndpoint(Endpoint.EXT_VERIFY, options, params);
-  return get(url, endpoint, setAuthHeaders(user, options));
-}
-
-//#deprecate-7.5
-async function downloadExtStorage(user:OAuthUser, contract, options:Options) {
-  const url = getNodeUrl(options);
-  const params = {
-    contractAddress: contract.address
-  };
-  const endpoint = constructEndpoint(Endpoint.EXT_DOWNLOAD, options, params);
-  return get(url, endpoint, setAuthHeaders(user, options));
-}
-
-//#deprecate-7.5
-async function listExtStorage(user:OAuthUser, args, options:Options) {
-  const url = getNodeUrl(options);
-  const { limit, offset } = args;
-  const params = {
-    limit,
-    offset
-  };
-  const endpoint = constructEndpoint(Endpoint.EXT_LIST, options, params);
-  return get(url, endpoint, setAuthHeaders(user, options));
-}
-
 async function pingOauth(user:OAuthUser, options:Options) {
   const url = getNodeUrl(options);
   const endpoint = constructEndpoint(Endpoint.KEY, options);
@@ -505,18 +439,16 @@ export default {
   getAccounts,
   getHealth,
   getStatus,
-  getVersion,
   getBalance,
-  createUser,
   getCreateArgs,
   compileContracts,
   postContractsXabi,
   createContract,
   createContractList,
-  fill,
   blocResults,
   getContracts,
   getContractsContract,
+  getContractsDetails,
   getState,
   getCallArgs,
   call,
@@ -531,11 +463,6 @@ export default {
   getChains,
   createChain,
   createChains,
-  uploadExtStorage,
-  attestExtStorage,
-  verifyExtStorage,
-  downloadExtStorage,
-  listExtStorage,
   pingOauth,
   debugStatus,
   debugPause,

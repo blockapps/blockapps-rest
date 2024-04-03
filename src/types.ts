@@ -58,11 +58,6 @@ interface Chain {
   }
 }
 
-interface StratoUser {
-  password:string,
-  username:string,
-}
-
 interface BlockChainUser {
   token:string,
   address:string
@@ -111,7 +106,6 @@ interface CallArgs {
 export {
   Options,
   Config,
-  StratoUser,
   OAuthUser,
   BlockChainUser,
   Contract,
